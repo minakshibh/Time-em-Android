@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dp"
+    android:layout_height="fill_parent" 
+    android:background="@drawable/bg_gradient">
+    
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+   		android:orientation="vertical" >
+   		
+    <RelativeLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/gradientBgStart"
+        android:padding="2dp">
+        
+        <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Profile"
+        android:padding="10dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/textColor"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        />
+    
+        <ImageView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/menuSlider"
+             android:layout_centerInParent="true"
+             android:layout_alignParentLeft="true"
+            android:src="@drawable/ic_launcher"/>
+    </RelativeLayout>
+   
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/profile">
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/profileIcon"/>
+        
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My Profile"
+        android:textColor="@color/textColor"
+        android:layout_toRightOf="@+id/profileIcon"
+        android:paddingLeft="10dp"
+        android:layout_centerInParent="true"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        />
+    <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"
+            android:src="@drawable/ic_launcher"/>
+    </RelativeLayout>
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator"
+        />
+    
+     <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/sync">
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/syncIcon"/>
+        
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sync"
+        android:textColor="@color/textColor"
+        android:layout_toRightOf="@+id/syncIcon"
+        android:paddingLeft="10dp"
+        android:layout_centerInParent="true"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        />
+    <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"
+            android:src="@drawable/ic_launcher"/>
+    </RelativeLayout>
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator"
+        />
+
+     <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/scanBarcode">
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/barcodeIcon"/>
+        
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan Barcode"
+        android:textColor="@color/textColor"
+        android:layout_toRightOf="@+id/barcodeIcon"
+        android:paddingLeft="10dp"
+        android:layout_centerInParent="true"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        />
+    <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"
+            android:src="@drawable/ic_launcher"/>
+    </RelativeLayout>
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator"
+        />
+    
+   <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/nfcTapping">
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/nfcIcon"/>
+        
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NFC Tapping"
+        android:textColor="@color/textColor"
+        android:layout_toRightOf="@+id/nfcIcon"
+        android:paddingLeft="10dp"
+        android:layout_centerInParent="true"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        />
+    <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"
+            android:src="@drawable/ic_launcher"/>
+    </RelativeLayout>
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator"
+        />
+    
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/signOut">
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/signOutIcon"/>
+        
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log out"
+        android:textColor="@color/textColor"
+        android:layout_toRightOf="@+id/signOutIcon"
+        android:paddingLeft="10dp"
+        android:layout_centerInParent="true"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        />
+    <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"
+            android:src="@drawable/ic_launcher"/>
+    </RelativeLayout>
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/seperator"
+        />
+    
+     
+</LinearLayout>
+</ScrollView>
