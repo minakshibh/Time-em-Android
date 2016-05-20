@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="f8efd0096475e0daf054267b61544e10dc776503">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-22.2.1_0a47e4449a9683d1ce11555b0e8cdf34317229c6.jar" />
+    </item>
+    <item
+        jar="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="83a47a13a028156a8066bb5a4d41f005be3cdff7">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_b86c89b43ff8e93ee7de7c015bb22512d60b127c.jar" />
+    </item>
+    <item
+        jar="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars/libs/internal_impl-22.2.1.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.1_7fedc8902e40d5456b8bfd20b100ce9155206edf.jar" />
+    </item>
+    <item
+        jar="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/libs/AndroidSwipeLayout-v1.1.8.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="c092dd2f2bdea6c04c5bf4122db66cb3495a3c35">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/AndroidSwipeLayout-v1.1.8_1064c33f9c6100ace06888efc16b0da62bc05d14.jar" />
+    </item>
+    <item
+        jar="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/libs/mpandroidchartlibrary-2-2-4.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="e5455fb794bfcbeb75da252dffd907794614f7fd">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/mpandroidchartlibrary-2-2-4_451ce098e67ec7d4d04a28ce4974970da8b61d20.jar" />
+    </item>
+    <item
+        jar="/Applications/adt-bundle-mac-x86_64-20140702/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.1/support-annotations-22.2.1.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="61a0ff5c29295ec56d7e0bd3d25d95dbf71b4b2b">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/support-annotations-22.2.1_5b22cc9173cfe6d58e99cd022d27d8124ccf2245.jar" />
+    </item>
+    <item
+        jar="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="df4e138da32d787330b57916d0ed4b1967f96137">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/instant-run_3402cbff222d57b1ed80c4496e5021c675a14538.jar" />
+    </item>
+    <item
+        jar="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="4486e953d1f35f8ccab098b1dd67146366d5f731">
+        <dex dex="/Users/minakshi/GitHub/Projects/Time&apos;em-Android/Time_em_Studio/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-22.2.1_0a0761497509e1a2d6e04c4bf2562870cf4eb214.jar" />
+    </item>
+
+</items>

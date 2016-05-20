@@ -1,0 +1,145 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:2:1-47:12
+	xmlns:android
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:2:11-69
+	package
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:3:5-34
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+	android:versionName
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:5:5-30
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+	android:versionCode
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:4:5-28
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+uses-sdk
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:appcompat-v7:22.2.1] /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:22.2.1] /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:22.2.1] /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/AndroidManifest.xml:20:5-43
+	android:targetSdkVersion
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:9:9-38
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:8:9-34
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml
+uses-permission#android.permission.INTERNET
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:11:6-68
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:11:23-65
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:12:6-80
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:12:23-77
+application
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:14:5-40:19
+MERGED from [com.android.support:appcompat-v7:22.2.1] /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.1/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:22.2.1] /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:22.2.1] /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/AndroidManifest.xml:22:5-20
+	android:label
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:17:9-41
+	android:allowBackup
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:15:9-35
+	android:icon
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:16:9-45
+	android:theme
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:18:9-40
+activity#com.time_em.android.SplashActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:19:9-28:20
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:22:13-49
+	android:label
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:21:13-45
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:20:13-62
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:23:13-27:29
+action#android.intent.action.MAIN
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:24:17-69
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:24:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:26:17-77
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:26:27-74
+activity#com.time_em.authentication.TokenRegistrationActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:29:9-135
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:29:87-123
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:29:19-86
+activity#com.time_em.authentication.LoginActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:30:9-123
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:30:75-111
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:30:19-74
+activity#com.time_em.authentication.ChangeStatusActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:31:9-174
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:31:82-118
+	android:theme
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:31:119-162
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:31:19-81
+activity#com.time_em.dashboard.HomeActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:32:9-117
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:32:69-105
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:32:19-68
+activity#com.time_em.authentication.PINAuthentication
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:33:9-127
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:33:79-115
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:33:19-78
+activity#com.time_em.authentication.PinAuthentication
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:34:9-127
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:34:79-115
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:34:19-78
+activity#com.time_em.android.BaseActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:35:9-115
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:35:67-103
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:35:19-66
+activity#com.time_em.tasks.TaskListActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:36:9-117
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:36:69-105
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:36:19-68
+activity#com.time_em.team.UserListActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:37:9-116
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:37:68-104
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:37:19-67
+activity#com.time_em.tasks.AddTaskActivity
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:38:9-116
+	android:screenOrientation
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:38:68-104
+	android:name
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:38:19-67
+supports-screens
+ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:41:1-46:32
+	android:resizeable
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:45:5-30
+	android:largeScreens
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:43:5-32
+	android:anyDensity
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:46:5-30
+	android:normalScreens
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:42:5-33
+	android:xlargeScreens
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:44:5-33
+	android:smallScreens
+		ADDED from /Users/minakshi/GitHub/Projects/Time'em-Android/Time_em_Studio/app/src/main/AndroidManifest.xml:41:19-46
