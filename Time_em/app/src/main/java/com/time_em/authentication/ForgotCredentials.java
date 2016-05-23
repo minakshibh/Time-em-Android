@@ -1,7 +1,5 @@
 package com.time_em.authentication;
 
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,28 +8,32 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
-import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
 
-public class LoginActivity extends Activity implements AsyncResponseTimeEm {
+import java.util.HashMap;
 
-	private EditText loginId, password;
-	private Button login;
+public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
+
+	private EditText loginId;
+	private TextView info;
 	private Time_emJsonParser parser;
-	private TextView forgotPassword;
-	
-    @Override
+	private ImageView back;
+	private Button submit;
+	private String trigger;
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
     	requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_forgot_credentials);
         
         initScreen();
         setClickListeners();
@@ -40,17 +42,18 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 	private void initScreen() {
 		// TODO Auto-generated method stub
 		loginId = (EditText)findViewById(R.id.loginId);
-		password = (EditText)findViewById(R.id.password);
-		login = (Button) findViewById(R.id.login);
-		forgotPassword = (TextView)findViewById(R.id.forgotPassword);
+		info = (TextView)findViewById(R.id.info);
+		back = (ImageView)findViewById(R.id.back);
+		submit = (Button)findViewById(R.id.submit);
+		parser = new Time_emJsonParser(ForgotCredentials.this);
 
-		parser = new Time_emJsonParser(LoginActivity.this);
+		trigger = getIntent().getStringExtra("trigger");
 	}
 
 	private void setClickListeners() {
 		// TODO Auto-generated method stub
-		login.setOnClickListener(listener);
-		forgotPassword.setOnClickListener(listener);
+		submit.setOnClickListener(listener);
+		back.setOnClickListener(listener);
 	}
 
 	private View.OnClickListener listener = new View.OnClickListener() {
@@ -58,39 +61,40 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			if(v == login){
-				if(loginId.getText().toString().trim().equals("") || password.getText().toString().trim().equals(""))
-					Utils.showToast(LoginActivity.this, "Please enter required information");
+			if(v == submit){
+				if(loginId.getText().toString().trim().equals(""))
+					Utils.showToast(ForgotCredentials.this, "Please enter login id");
 				else
-					login();
-			}else if(v == forgotPassword){
-				Intent intent = new Intent(LoginActivity.this, ForgotCredentials.class);
-				intent.putExtra("trigger","password");
-				startActivity(intent);
+					submit();
+			}else if(v == back){
+				finish();
 			}
 		}
 	};
 	
-	private void login() {
+	private void submit() {
 		// TODO Auto-generated method stub
-		if (Utils.isNetworkAvailable(LoginActivity.this)) {
-
+		if (Utils.isNetworkAvailable(ForgotCredentials.this)) {
 			HashMap<String, String> postDataParameters = new HashMap<String, String>();
 			
 			String _loginId = loginId.getText().toString().trim();
-			String _password = password.getText().toString().trim();
-//			=admin&=training
-			postDataParameters.put("loginId", _loginId);
-			postDataParameters.put("password", _password);
+			String methodName;
+
+			if(trigger.equals("password"))
+				methodName = Utils.forgotPasswordAPI;
+			else
+				methodName = Utils.forgotPinAPI;
+
+			postDataParameters.put("email", _loginId);
 			
 			AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-					LoginActivity.this, "get", Utils.loginAPI,
+					ForgotCredentials.this, "post", methodName,
 					postDataParameters, true, "Please wait...");
-			mWebPageTask.delegate = (AsyncResponseTimeEm) LoginActivity.this;
+			mWebPageTask.delegate = (AsyncResponseTimeEm) ForgotCredentials.this;
 			mWebPageTask.execute();
 
 		} else {
-			Utils.alertMessage(LoginActivity.this, Utils.network_error);
+			Utils.alertMessage(ForgotCredentials.this, Utils.network_error);
 		}
 	}
 
@@ -99,14 +103,14 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 		// TODO Auto-generated method stub
 		Log.e("output", output);
 		
-//		Utils.alertMessage(LoginActivity.this, output);
-		HomeActivity.user = parser.getUserDetails(output , methodName);
+		Utils.alertMessage(ForgotCredentials.this, "Method name: "+methodName +" ,Output: "+output);
+		/*HomeActivity.user = parser.getUserDetails(output , methodName);
 		 if(HomeActivity.user != null){
-			 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+			 Intent intent = new Intent(ForgotCredentials.this, HomeActivity.class);
 			 intent.putExtra("trigger", "login");
 			 startActivity(intent);
 			 finish();
-		 }
+		 }*/
 		 
 //		 Utils.alertMessage(LoginActivity.this, "Data fetched for "+user.getFirstName()+" "+user.getLastName());
 //		Utils.showToast(LoginActivity.this, output);

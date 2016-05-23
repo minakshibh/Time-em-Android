@@ -30,13 +30,13 @@
         <activity android:name="com.time_em.authentication.LoginActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.authentication.ChangeStatusActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog"></activity>
         <activity android:name="com.time_em.dashboard.HomeActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name="com.time_em.authentication.PINAuthentication" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.authentication.PinAuthentication" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.android.BaseActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.tasks.TaskListActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.team.UserListActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.tasks.AddTaskActivity" android:screenOrientation="portrait"></activity>
-    
+        <activity android:name="com.time_em.authentication.ForgotCredentials" android:screenOrientation="portrait"></activity>
+
     </application>
 <supports-screens android:smallScreens="true"
     android:normalScreens="true"

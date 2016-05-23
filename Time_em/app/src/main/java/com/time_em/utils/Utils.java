@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -46,6 +47,8 @@ static public String sigOutAPI = "/UserActivity/SignOutByLoginId";
 static public String pinAuthenticationAPI = "/User/GetValidateUserByPin";
 static public String getTeamAPI = "/User/GetAllUsersList";
 static public String getTaskListAPI = "/UserTask/GetUserActivityTask";
+static public String forgotPasswordAPI = "/USER/ForgetPassword";
+static public String forgotPinAPI = "/USER/ForgetPin";
 
 	public static void showToast(Context context, String message){
 		Toast.makeText(context, message, Toast.LENGTH_LONG).show();

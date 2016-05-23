@@ -35,26 +35,16 @@ import com.time_em.utils.Utils;
 
 public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 
-	String userEntered;
-	
-	final int PIN_LENGTH = 4;
-	boolean keyPadLockedFlag = false;
-	Context appContext;
-	
-	TextView pinBox0;
-	TextView pinBox1;
-	TextView pinBox2;
-	TextView pinBox3;
-	
-	TextView [] pinBoxArray;
-	
-	LinearLayout btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnDelete;
-	
+	private String userEntered;
+	private final int PIN_LENGTH = 4;
+	private TextView pinBox0, pinBox1, pinBox2, pinBox3, forgotPin;
+	private TextView [] pinBoxArray;
+	private LinearLayout btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnDelete;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		appContext = this;
+
 		userEntered = "";
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -81,7 +71,8 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  pinBox1 = (TextView)findViewById(R.id.pinBox1);
 		  pinBox2 = (TextView)findViewById(R.id.pinBox2);
 		  pinBox3 = (TextView)findViewById(R.id.pinBox3);
-			
+		  forgotPin = (TextView)findViewById(R.id.forgotPin);
+
 		  btn0.setTag("0");
 		  btn1.setTag("1");
 		  btn2.setTag("2");
@@ -112,16 +103,12 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  btn8.setOnClickListener(pinButtonHandler);
 		  btn9.setOnClickListener(pinButtonHandler);
 		  btnDelete.setOnClickListener(pinButtonHandler);
+		forgotPin.setOnClickListener(pinButtonHandler);
 	}
 	
 	View.OnClickListener pinButtonHandler = new View.OnClickListener() {
 	    public void onClick(View v) {
-	    	
-	    	if (keyPadLockedFlag == true)
-	    	{
-	    		return;
-	    	}
-	    	
+
 	    	if(v== btnDelete){
 	    		
 		    	if (userEntered.length()>0)
@@ -129,7 +116,12 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		    		userEntered = userEntered.substring(0,userEntered.length()-1);
 		    		pinBoxArray[userEntered.length()].setText("");
 		    	}
-	    	}else{
+	    	}else if(v == forgotPin){
+				Intent intent = new Intent(PinAuthentication.this, ForgotCredentials.class);
+				intent.putExtra("trigger","pin");
+				startActivity(intent);
+
+			}else{
 	    	
 	    	LinearLayout pressedButton = (LinearLayout)v;
     		
