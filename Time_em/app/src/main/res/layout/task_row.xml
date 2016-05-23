@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/swipe"
+    android:layout_width="fill_parent" android:layout_height="wrap_content">
+    <!-- Bottom View Start-->
+     <LinearLayout
+        android:background="@color/white"
+        android:id="@+id/bottom_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <!--What you want to show-->
+        <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:id="@+id/edit"
+            android:background="@color/editBg">
+        <ImageView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:src="@drawable/edit"
+            />
+        </LinearLayout>
+         <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:id="@+id/delete"
+            android:background="@color/deleteBg">
+        <ImageView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:src="@drawable/delete"
+            />
+        </LinearLayout>
+        
+    </LinearLayout>
+    <!-- Bottom View End-->
+
+<!-- Surface View Start -->
+     <LinearLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:id="@+id/swipeLayout"
+        android:layout_height="match_parent">
+        <!--What you want to show in SurfaceView-->
+<RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        
+           android:padding="5dp"
+        >
+       <LinearLayout
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:orientation="vertical"
+           android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/hours">
+    <TextView
+                android:id="@+id/taskName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/sendTextColor"
+                android:textSize="14sp"
+                android:text="Task Name"
+                android:textStyle="bold" />
+    
+    <TextView
+                android:id="@+id/taskComments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gradientBgStart"
+                android:layout_alignParentLeft="true"
+                android:textSize="12sp"
+                android:text="Comments goes here"
+                android:layout_marginTop="5dp"
+                android:minLines="1"
+                android:maxLines="3"/>
+        </LinearLayout>
+             <TextView 
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginLeft="5dp"
+		        android:id="@+id/hours"
+		        
+           android:layout_centerInParent="true"
+		        android:textColor="@color/alphabeticalTextColor"
+		        android:layout_alignParentRight="true"
+		        android:maxLines="2"
+		        android:minLines="1"
+		        android:text = "(2 Hours)"
+		        android:textSize="10sp"/>
+     
+       
+</RelativeLayout>
+  </LinearLayout>
+    <!-- Surface View End -->
+</com.daimajia.swipe.SwipeLayout>
