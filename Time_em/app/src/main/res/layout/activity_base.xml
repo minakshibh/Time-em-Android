@@ -13,9 +13,7 @@
             android:id="@+id/headerLayout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/gradientBgStart"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp">
+            android:background="@color/gradientBgStart">
 
             <RelativeLayout
                 android:id="@+id/btnSlider"
@@ -24,15 +22,13 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerInParent="true"
                 android:paddingBottom="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="15dp"
-                android:paddingTop="5dp">
+                android:padding="15dp">
 
                 <ImageView
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ic_launcher" />
+                    android:background="@drawable/toggle" />
             </RelativeLayout>
 
 
@@ -43,7 +39,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerInParent="true"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/ic_launcher"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </RelativeLayout>
@@ -53,6 +48,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="@color/gradientBgStart"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -60,7 +56,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/gradientBgStart"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="5dp">
@@ -83,7 +78,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/gradientBgStart"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="5dp">
@@ -106,7 +100,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/gradientBgStart"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="5dp">
@@ -129,7 +122,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/gradientBgStart"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="5dp">

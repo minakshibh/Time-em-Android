@@ -89,7 +89,7 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 		Boolean isError;
 		Log.e("output", output);
 		
-		Utils.alertMessage(ChangeStatusActivity.this, output);
+//		Utils.alertMessage(ChangeStatusActivity.this, output);
 		isError = parser.parseChangeStatusResponse(output, methodName);
 		if(!isError)
 			updateUI();

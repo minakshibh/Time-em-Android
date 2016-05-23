@@ -33,8 +33,9 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	private ArrayList<User> team;
 	private Time_emJsonParser parser;
 	private HorizontalScrollView sView;
-	private TextView swipeInfo;
-	
+	private TextView swipeInfo, headerText;
+	private ImageView back, addTask;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -53,9 +54,19 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 		parser = new Time_emJsonParser(UserListActivity.this);
 		sView = (HorizontalScrollView)findViewById(R.id.dateSlider);
 		swipeInfo = (TextView)findViewById(R.id.swipeInfo);
-		
+		back = (ImageView)findViewById(R.id.back);
+		addTask = (ImageView) findViewById(R.id.AddButton);
+		headerText = (TextView)findViewById(R.id.headerText);
 		sView.setVisibility(View.GONE);
 		swipeInfo.setVisibility(View.GONE);
+		addTask.setVisibility(View.GONE);
+		headerText.setText("My Team");
+		back.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 	}
 	
 	private void getUserList(int userId){
@@ -147,7 +158,6 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
 		Log.e("output", ",,, ::: "+output);
-		Utils.alertMessage(UserListActivity.this, output);
 		team = parser.getTeamList(output, methodName);
 		taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
 	}

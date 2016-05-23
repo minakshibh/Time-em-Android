@@ -36,7 +36,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private ArrayList<TaskEntry> tasks;
     private Time_emJsonParser parser;
     private int UserId;
-    private ImageView addTaskButton;
+    private ImageView addTaskButton, back;
 
     private Intent intent;
 
@@ -52,18 +52,25 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         String currentDate = postFormater.format(new Date());
         UserId = HomeActivity.user.getId();
 
-//		getTaskList(HomeActivity.user.getId(),currentDate); 
 
         getTaskList(UserId, "05-16-2016");
     }
 
     private void initScreen() {
         addTaskButton = (ImageView) findViewById(R.id.AddButton);
+        addTaskButton.setVisibility(View.GONE);
         addTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
                 startActivity(intent);
+            }
+        });
+        back = (ImageView)findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
@@ -192,7 +199,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     public void processFinish(String output, String methodName) {
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
-        Utils.alertMessage(TaskListActivity.this, output);
+//        Utils.alertMessage(TaskListActivity.this, output);
         ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId);
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
         dbHandler.updateTask(taskEntries);

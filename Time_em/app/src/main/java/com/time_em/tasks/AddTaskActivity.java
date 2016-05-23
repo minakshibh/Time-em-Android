@@ -58,7 +58,6 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     private AddTaskPresenter presenter;
 
     private ProgressDialog pDialog;
-    String url = "http://timeemapi.azurewebsites.net/api/Usertask/AddUpdateUserTaskActivity";
 
     Activity act;
 

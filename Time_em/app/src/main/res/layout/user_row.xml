@@ -16,20 +16,35 @@
             android:layout_centerInParent="true"
             android:layout_marginRight="10dp"/>
      
-    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toRightOf="@+id/status"
+        android:layout_toLeftOf="@+id/shiftInfo">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/userName"
+            android:text="User Name goes here"
+            android:layout_centerInParent="true"
+            android:textColor="@color/alphabeticalTextColor"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"/>
 
-<TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_toRightOf="@+id/status"
-    android:id="@+id/userName"
-    android:text="User Name goes here"
-    android:layout_centerInParent="true"
-    android:textColor="@color/alphabeticalTextColor"
-    android:textSize="12sp"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp"
-    android:layout_toLeftOf="@+id/shiftInfo"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/signInInfo"
+            android:text="Sign In At"
+            android:layout_centerInParent="true"
+            android:textColor="@color/alphabeticalTextColor"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
+
+
 
         
         <ImageView

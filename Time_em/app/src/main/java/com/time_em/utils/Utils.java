@@ -86,7 +86,7 @@ public class Utils {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
-                //((Activity) context).finish();
+                ((Activity) context).finish();
             }
 
 

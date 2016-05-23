@@ -11,14 +11,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.AlphaAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.time_em.authentication.LoginActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
+
+import org.w3c.dom.Text;
 
 
 public class BaseActivity extends Activity{
@@ -32,6 +36,7 @@ public class BaseActivity extends Activity{
 	public RelativeLayout slider;
 	private LinearLayout myTasks, myTeam, notifications,settings;
 	private Resources resources;
+	public ImageView menuUserStatus;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -63,6 +68,7 @@ public class BaseActivity extends Activity{
 		notifications = (LinearLayout) findViewById(R.id.notifications);
 		settings = (LinearLayout) findViewById(R.id.settings);
 		resources = BaseActivity.this.getResources();
+		menuUserStatus = (ImageView) findViewById(R.id.menuUserStatus);
 	}
 	
 	private void setClickListeners(){
@@ -162,6 +168,8 @@ public class BaseActivity extends Activity{
 
 			/** Called when a drawer has settled in a completely open state. */
 			public void onDrawerOpened(View drawerView) {
+
+
 				super.onDrawerOpened(drawerView);
 			}
 		};
