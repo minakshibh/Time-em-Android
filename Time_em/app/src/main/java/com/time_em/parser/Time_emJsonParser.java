@@ -245,4 +245,24 @@ public class Time_emJsonParser {
 
 		return isError;
 	}
+
+	public ArrayList<TaskEntry> parseSpinnneData(String webResponse, int id) {
+		ArrayList<TaskEntry> taskList = new ArrayList<TaskEntry>();
+		try {
+			jObject = new JSONObject(webResponse);
+
+			JSONArray jArray = jObject.getJSONArray("ReturnKeyValueViewModel");
+			for(int i = 0; i<jArray.length(); i++) {
+				JSONObject taskObject = jArray.getJSONObject(i);
+				TaskEntry task = new TaskEntry();
+				task.setTaskId(taskObject.getInt("TaskId"));
+				task.setTaskName(taskObject.getString("TaskName"));
+				taskList.add(task);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return taskList;
+	}
 }
