@@ -1,11 +1,14 @@
 package com.time_em.model;
 
-public class TaskEntry {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class TaskEntry implements Parcelable{
 	
 	private int id, activityId, taskId, userId;
 	private String taskName, comments, startTime, createdDate, endTime, selectedDate, token;
 	private Double timeSpent, signedInHours;
-	private Boolean isActive;
+	private Boolean isActive = true;
 	
 	public int getId() {
 		return id;
@@ -91,5 +94,62 @@ public class TaskEntry {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	
+
+	public TaskEntry(){
+
+	}
+	public TaskEntry(Parcel source) {
+		id = source.readInt();
+		activityId = source.readInt();
+		taskId = source.readInt();
+		userId = source.readInt();
+		taskName = source.readString();
+		comments = source.readString();
+		startTime = source.readString();
+		createdDate = source.readString();
+		endTime = source.readString();
+		selectedDate = source.readString();
+		token = source.readString();
+		timeSpent = source.readDouble();
+		signedInHours = source.readDouble();
+		isActive = source.readByte() != 0;
+	}
+
+	public static final Parcelable.Creator<TaskEntry> CREATOR
+			= new Parcelable.Creator<TaskEntry>()
+	{
+		public TaskEntry createFromParcel(Parcel in)
+		{
+			return new TaskEntry(in);
+		}
+
+		public TaskEntry[] newArray (int size)
+		{
+			return new TaskEntry[size];
+		}
+	};
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return this.hashCode();
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(id);
+		dest.writeInt(activityId);
+		dest.writeInt(taskId);
+		dest.writeInt(userId);
+		dest.writeString(taskName);
+		dest.writeString(comments);
+		dest.writeString(startTime);
+		dest.writeString(createdDate);
+		dest.writeString(endTime);
+		dest.writeString(selectedDate);
+		dest.writeString(token);
+		dest.writeDouble(timeSpent);
+		dest.writeDouble(signedInHours);
+		dest.writeByte((byte) (isActive ? 1 : 0));
+	}
 }

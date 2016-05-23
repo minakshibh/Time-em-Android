@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -29,13 +30,13 @@ import com.time_em.model.TaskEntry;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
 
-public class TaskListActivity extends Activity implements AsyncResponseTimeEm, View.OnClickListener {
+public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
     private ListView taskListview;
     private ArrayList<TaskEntry> tasks;
     private Time_emJsonParser parser;
     private int UserId;
-    private ImageView AddTaskButton;
+    private ImageView addTaskButton;
 
     private Intent intent;
 
@@ -53,17 +54,32 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm, V
 
 //		getTaskList(HomeActivity.user.getId(),currentDate); 
 
-
-//		[11/05/16 6:08:18 pm] Rahul Bhatnagar: 10
-//		[11/05/16 6:08:19 pm] Rahul Bhatnagar: 22/12/2015
         getTaskList(UserId, "05-16-2016");
     }
 
     private void initScreen() {
-        AddTaskButton = (ImageView) findViewById(R.id.AddButton);
-        AddTaskButton.setOnClickListener(this);
+        addTaskButton = (ImageView) findViewById(R.id.AddButton);
+        addTaskButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                startActivity(intent);
+            }
+        });
+
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
+
+        taskListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
+                intent.putExtra("taskEntry", tasks.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     private void getTaskList(int userId, String createdDate) {
@@ -90,17 +106,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm, V
 
         } else {
             Utils.alertMessage(TaskListActivity.this, Utils.network_error);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.AddButton:
-                intent = new Intent(this, AddTaskActivity.class);
-                startActivity(intent);
-                break;
-                //handle multiple view click events
         }
     }
 

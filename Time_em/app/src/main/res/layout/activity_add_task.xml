@@ -6,44 +6,4 @@
 
     <include layout="@layout/include_toolbar"></include>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="15dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Selected Notification Type" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_weight=".2"
-                android:layout_height="wrap_content"
-                android:padding="15dp"
-                android:src="@drawable/scan_signin" />
-
-            <Button
-                style="?android:attr/spinnerDropDownItemStyle"
-                android:layout_width="0dp"
-                android:layout_weight=".8"
-                android:text="dlfsdlf"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:textColor="@color/grey"/>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Selected Notification Type" />
-
-    </LinearLayout>
 </LinearLayout>

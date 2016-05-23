@@ -36,6 +36,7 @@
         <activity android:name="com.time_em.team.UserListActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.tasks.AddTaskActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="com.time_em.authentication.ForgotCredentials" android:screenOrientation="portrait"></activity>
+        <activity android:name="com.time_em.tasks.TaskDetailActivity" android:screenOrientation="portrait"></activity>
 
     </application>
 <supports-screens android:smallScreens="true"
