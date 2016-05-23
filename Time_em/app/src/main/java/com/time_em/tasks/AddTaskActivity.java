@@ -3,6 +3,7 @@ package com.time_em.tasks;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,10 +31,30 @@ import com.time_em.utils.CameraHelper;
 import com.time_em.utils.ExifUtils;
 import com.time_em.utils.Utils;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
-public class AddTaskActivity extends Activity implements View.OnClickListener, AsyncResponseTimeEm, AddTaskPresenter.IAddTaskView {
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AddTaskActivity extends Activity implements View.OnClickListener, AsyncResponseTimeEm, AddTaskPresenter.IAddTaskView, SurfaceHolder.Callback {
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -58,7 +80,6 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     private AddTaskPresenter presenter;
 
     private ProgressDialog pDialog;
-    String url = "http://timeemapi.azurewebsites.net/api/Usertask/AddUpdateUserTaskActivity";
 
     Activity act;
 
@@ -199,4 +220,230 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         adapter_state.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         SpnTaskName.setAdapter(adapter_state);
     }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
+    }
+
+    public String getPath(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
+    @SuppressWarnings("deprecation")
+    public String uploadFileToserver() {
+        FileBody videoBody, imgBody;
+
+        String serverResponse = "";
+        try {
+
+//			long fileLength = file.length();
+//			Log.d("", "fileLength " + fileLength);
+
+            HttpClient client = new DefaultHttpClient();
+
+            HttpPost post = new HttpPost(upLoadServerUri);
+
+            @SuppressWarnings("deprecation")
+            MultipartEntity reqEntity = new MultipartEntity(
+                    HttpMultipartMode.BROWSER_COMPATIBLE);
+
+
+            File file1 = new File(ImagePathUri);
+            imgBody = new FileBody(file1);
+            reqEntity.addPart("img", imgBody);
+
+            reqEntity.addPart("ActivityId", new StringBody(patrolID));
+            reqEntity.addPart("officer_id", new StringBody(
+                    DashboardActivity.officer.getOfficerId()));
+            reqEntity.addPart("shift_id", new StringBody(
+                    DashboardActivity.officer.getShiftId()));
+
+            reqEntity.addPart("event_name", new StringBody("MME"));
+            reqEntity.addPart("latitude",
+                    new StringBody(String.valueOf(DashboardActivity.myLat)));
+            reqEntity.addPart("longitude",
+                    new StringBody(String.valueOf(DashboardActivity.myLon)));
+            reqEntity.addPart("checkpoint_id",
+                    new StringBody(scannedCheckPoint));
+            reqEntity.addPart("text", new StringBody(en_notes_str));
+            post.setEntity(reqEntity);
+            HttpResponse response = client.execute(post);
+            HttpEntity resEntity = response.getEntity();
+
+            if (resEntity != null) {
+                serverResponse = EntityUtils.toString(resEntity);
+                Log.i("RESPONSE", serverResponse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return serverResponse;
+    }
+
+    public class Soap {
+
+
+
+        public static String AudioVideoBaseURL = "http://abcd.com";
+
+
+
+        public static String getSoapResponseForVideoAudio(String postFixOfUrl,
+                                                          List nameValuePairs,
+                                                          List filenameValuePairs) {
+            String xmlString = null;
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpContext localContext = new BasicHttpContext();
+            HttpPost httpPost = new HttpPost(AudioVideoBaseURL + postFixOfUrl);
+
+            try {
+                MultipartEntity entity = new MultipartEntity();
+
+                for (int index = 0; index < filenameValuePairs.size(); index++) {
+                    File myFile = new File(filenameValuePairs.get(index).getValue());
+                    FileBody fileBody = new FileBody(myFile);
+                    entity.addPart(filenameValuePairs.get(index).getName(),
+                            fileBody);
+                }
+
+                for (int index = 0; index < nameValuePairs.size(); index++) {
+
+                    entity.addPart(nameValuePairs.get(index).getName(),
+                            new StringBody(nameValuePairs.get(index).getValue(),
+                                    Charset.forName("UTF-8")));
+
+                }
+
+                httpPost.setEntity(entity);
+
+                HttpResponse response = httpClient.execute(httpPost, localContext);
+                HttpEntity r_entity = response.getEntity();
+                xmlString = EntityUtils.toString(r_entity);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return xmlString.toString();
+        }
+
+
+        public static String apiUploadSong(int userId, int songId,
+                                           String songTitle, String songArtist, String isVideo, String fileData)
+                throws ClientProtocolException, IOException {
+
+            ArrayList alNameValuePairsFile = new ArrayList();
+            NameValuePair nameValuePairsFile = new BasicNameValuePair("fileData",
+                    fileData);
+            alNameValuePairsFile.add(nameValuePairsFile);
+
+            ArrayList alNameValuePairs = new ArrayList();
+
+            NameValuePair nameValuePairs = new BasicNameValuePair("userId", ""
+                    + userId);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("songId", ""+songId);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("songTitle", songTitle);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("songArtist", songArtist);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("isVideo", isVideo);
+            alNameValuePairs.add(nameValuePairs);
+
+            String result = Soap.getSoapResponseForVideoAudio(
+                    "?action=save_video_audio", alNameValuePairs,
+                    alNameValuePairsFile);
+            Log.e("SOAP", "save_video_audio : " + result);
+
+            return result;
+        }
+    }
+
+    public class Soap {
+        public String AudioVideoBaseURL = "http://abcd.com";
+        public String getSoapResponseForVideoAudio(String postFixOfUrl,
+                                                   List nameValuePairs,
+                                                   List filenameValuePairs) {
+            String xmlString = null;
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpContext localContext = new BasicHttpContext();
+            HttpPost httpPost = new HttpPost(AudioVideoBaseURL + postFixOfUrl);
+
+            try {
+                MultipartEntity entity = new MultipartEntity();
+
+                for (int index = 0; index < filenameValuePairs.size(); index++) {
+                    File myFile = new File(filenameValuePairs.get(index).getValue());
+                    FileBody fileBody = new FileBody(myFile);
+                    entity.addPart(filenameValuePairs.get(index).getName(),
+                            fileBody);
+                }
+
+                for (int index = 0; index < nameValuePairs.size(); index++) {
+
+                    entity.addPart(nameValuePairs.get(index).getName(),
+                            new StringBody(nameValuePairs.get(index).getValue(),
+                                    Charset.forName("UTF-8")));
+
+                }
+
+                httpPost.setEntity(entity);
+
+                HttpResponse response = httpClient.execute(httpPost, localContext);
+                HttpEntity r_entity = response.getEntity();
+                xmlString = EntityUtils.toString(r_entity);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return xmlString.toString();
+        }
+
+
+        public  String apiUploadSong(int userId, int songId,
+                                           String songTitle, String songArtist, String isVideo, String fileData)
+                throws ClientProtocolException, IOException {
+
+            ArrayList alNameValuePairsFile = new ArrayList();
+            NameValuePair nameValuePairsFile = new BasicNameValuePair("fileData",
+                    fileData);
+            alNameValuePairsFile.add(nameValuePairsFile);
+
+            ArrayList alNameValuePairs = new ArrayList();
+
+            NameValuePair nameValuePairs = new BasicNameValuePair("userId", ""
+                    + userId);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("songId", ""+songId);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("songTitle", songTitle);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("songArtist", songArtist);
+            alNameValuePairs.add(nameValuePairs);
+            nameValuePairs = new BasicNameValuePair("isVideo", isVideo);
+            alNameValuePairs.add(nameValuePairs);
+
+            String result = Soap.getSoapResponseForVideoAudio("?action=save_video_audio", alNameValuePairs,alNameValuePairsFile);
+            Log.e("SOAP", "save_video_audio : " + result);
+
+            return result;
+        }
+    }
+
 }
