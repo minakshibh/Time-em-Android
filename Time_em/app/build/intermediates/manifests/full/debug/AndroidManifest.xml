@@ -48,9 +48,6 @@
             android:name="com.time_em.dashboard.HomeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.time_em.authentication.PINAuthentication"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.time_em.authentication.PinAuthentication"
             android:screenOrientation="portrait" />
         <activity
@@ -64,6 +61,12 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.tasks.AddTaskActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.time_em.authentication.ForgotCredentials"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.time_em.tasks.TaskDetailActivity"
             android:screenOrientation="portrait" />
     </application>
 
