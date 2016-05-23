@@ -196,5 +196,6 @@ public class BaseActivity extends Activity{
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		setSelection(false, false, false, false);
 	}
 }

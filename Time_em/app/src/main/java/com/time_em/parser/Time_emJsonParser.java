@@ -47,9 +47,11 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			user = null;
 			e.printStackTrace();
-			Utils.alertMessage(context, e.getMessage());
+			Utils.showToast(context, e.getMessage());
 		}
-//		Utils.alertMessage(context, message);
+
+		if(isError)
+			Utils.showToast(context, message);
 
 		return user;
 	}
@@ -85,8 +87,11 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			teamList = new ArrayList<User>();
 			e.printStackTrace();
-			Utils.alertMessage(context, e.getMessage());
+			Utils.showToast(context, e.getMessage());
 		}
+
+		if(isError)
+			Utils.showToast(context, message);
 
 		return teamList;
 	}
@@ -134,7 +139,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			user = new User();
 			e.printStackTrace();
-			Utils.alertMessage(context, e.getMessage());
+			Utils.showToast(context, e.getMessage());
 		}
 
 		return user;
@@ -190,8 +195,12 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			taskList = new ArrayList<TaskEntry>();
 			e.printStackTrace();
-			Utils.alertMessage(context, e.getMessage());
+			Utils.showToast(context, e.getMessage());
 		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
 		return taskList;
 	}
 	
@@ -232,7 +241,7 @@ public class Time_emJsonParser {
 			e.printStackTrace();
 		}
 
-		Utils.alertMessage(context, message + " activity id: " + id);
+		Utils.showToast(context, message);
 
 		return isError;
 	}
