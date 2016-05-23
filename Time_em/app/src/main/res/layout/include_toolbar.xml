@@ -11,12 +11,14 @@
         style="@style/LeftArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:padding="15dp"/>
 
     <TextView
         style="@style/titleTextSub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:text="@string/my_tasks" />
 
     <ImageView
@@ -27,6 +29,5 @@
         android:visibility="visible"
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
-        android:src="@drawable/add"
-        android:layout_marginRight="15dp"/>
+        android:src="@drawable/add"/>
 </RelativeLayout>

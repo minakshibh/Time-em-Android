@@ -5,7 +5,6 @@
     android:orientation="vertical">
 
     <include layout="@layout/include_toolbar"></include>
-    <include layout="@layout/template_blue_view"></include>
 
     <HorizontalScrollView
         android:id="@+id/dateSlider"
