@@ -315,10 +315,10 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 	}
 
-	public ArrayList<User> getTeam() {
+	public ArrayList<User> getTeam(int userId) {
 		ArrayList<User> team = new ArrayList<User>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_TEAM;
+		String selectQuery = "SELECT  * FROM " + TABLE_TEAM +" where "+SupervisorId+" = "+userId;
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {

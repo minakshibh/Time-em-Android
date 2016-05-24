@@ -8,6 +8,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,12 +48,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         setContentView(R.layout.activity_task_list);
 
         initScreen();
-        SimpleDateFormat postFormater = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat postFormater = new SimpleDateFormat("dd-MM-yyyy");
 
         String currentDate = postFormater.format(new Date());
         UserId = HomeActivity.user.getId();
-
-
         getTaskList(UserId, "05-16-2016");
     }
 
@@ -116,6 +115,24 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         }
     }
 
+    private void deleteTask(int taskEntryId) {
+
+        if (Utils.isNetworkAvailable(TaskListActivity.this)) {
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+
+            postDataParameters.put("Id", String.valueOf(taskEntryId));
+
+            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                    TaskListActivity.this, "post", Utils.deleteTaskAPI,
+                    postDataParameters, true, "Please wait...");
+            mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
+            mWebPageTask.execute();
+
+        } else {
+            Utils.alertMessage(TaskListActivity.this, Utils.network_error);
+        }
+    }
+
     public class TaskAdapter extends BaseSwipeAdapter {
         private Context context;
         private TextView taskName, hours, taskComments;
@@ -168,7 +185,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     alert.setTitle("Delete this task?");
                     alert.setMessage("Are you sure?");
                     alert.setPositiveButton("No", null);
-                    alert.setNegativeButton("Yes", null);
+                    alert.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteTask(tasks.get(position).getId());
+                        }
+                    });
 
                     alert.show();
                 }
@@ -199,12 +221,18 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     public void processFinish(String output, String methodName) {
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
-//        Utils.alertMessage(TaskListActivity.this, output);
-        ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId);
-        TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
-        dbHandler.updateTask(taskEntries);
+        if(methodName.equals(Utils.getTaskListAPI)) {
+            ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId);
+            TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
+            dbHandler.updateTask(taskEntries);
 
-        tasks = dbHandler.getTaskEnteries(HomeActivity.user.getId());
-        taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
+            tasks = dbHandler.getTaskEnteries(HomeActivity.user.getId());
+            taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
+        }else if(methodName.equals(Utils.deleteTaskAPI)) {
+//            Utils.alertMessage(TaskListActivity.this, output);
+            boolean error = parser.parseDeleteTaskResponse(output);
+            if(!error)
+                getTaskList(UserId, "05-16-2016");
+        }
     }
 }

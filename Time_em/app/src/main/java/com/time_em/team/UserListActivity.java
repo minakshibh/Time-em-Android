@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,13 +16,17 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.db.TimeEmDbHandler;
+import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
@@ -72,9 +77,9 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	private void getUserList(int userId){
 		
 		if (Utils.isNetworkAvailable(UserListActivity.this)) {
-			String timeStamp = Utils.getSharedPrefs(UserListActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
-			if(timeStamp==null || timeStamp.equals(null) || timeStamp.equals("null"))
-				timeStamp="";
+//			String timeStamp = Utils.getSharedPrefs(UserListActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
+//			if(timeStamp==null || timeStamp.equals(null) || timeStamp.equals("null"))
+			String timeStamp="";
 			
 			HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
@@ -94,13 +99,13 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 			Utils.alertMessage(UserListActivity.this, Utils.network_error);
 		}
 	}
-	
-	public class TeamAdapter extends BaseAdapter {
+
+	public class TeamAdapter extends BaseSwipeAdapter {
 		private Context context;
-		private TextView userName;
+		private TextView userName, signInInfo, txtStatus;
 		private ImageView status, shift;
 		private User user;
-		
+
 		public TeamAdapter(Context ctx) {
 			context = ctx;
 		}
@@ -124,41 +129,76 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 		}
 
 		@Override
-		public View getView(final int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) context
-			        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			if(convertView == null){
-			    convertView = inflater.inflate(R.layout.user_row, parent, false);
-			    
-			   
-			}
+		public void fillValues(final int position, View convertView) {
+			// TODO Auto-generated method stub
 			user = team.get(position);
-		
-			 userName = (TextView)convertView.findViewById(R.id.userName);
-			    shift = (ImageView)convertView.findViewById(R.id.shiftInfo);
-			    status = (ImageView)convertView.findViewById(R.id.status);
-			    			
-			    userName.setText(user.getFullName());
-			    
-			    if(user.isSignedIn())
-			    	status.setImageResource(R.drawable.online);
-			    else
-			    	status.setImageResource(R.drawable.offline);
-			    
-			    if(user.isNightShift())
-			    	shift.setImageResource(R.drawable.night);
-			    else
-			    	shift.setImageResource(R.drawable.day);
-			    
-			    return convertView;
-		}		
+
+			userName = (TextView)convertView.findViewById(R.id.userName);
+			shift = (ImageView)convertView.findViewById(R.id.shiftInfo);
+			status = (ImageView)convertView.findViewById(R.id.status);
+			signInInfo = (TextView)convertView.findViewById(R.id.signInInfo);
+			txtStatus = (TextView)convertView.findViewById(R.id.txtUserStatus);
+
+			userName.setText(user.getFullName());
+
+			if(user.isSignedIn()) {
+				status.setImageResource(R.drawable.online);
+				signInInfo.setText("Signed In At: "+user.getSignInAt());
+				txtStatus.setText("Sign Out");
+			}else {
+				status.setImageResource(R.drawable.offline);
+
+				if(user.getSignInAt()==null || user.getSignInAt().equals(""))
+					signInInfo.setVisibility(View.GONE);
+				else
+					signInInfo.setText("Signed Out At: "+user.getSignOutAt());
+
+				txtStatus.setText("Sign In");
+			}
+
+			if(user.isNightShift())
+				shift.setImageResource(R.drawable.night);
+			else
+				shift.setImageResource(R.drawable.day);
+
+			txtStatus.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					user = team.get(position);
+					Utils.ChangeStatus(UserListActivity.this,user);
+				}
+			});
+		}
+
+		@Override
+		public View generateView(int arg0, ViewGroup arg1) {
+			return LayoutInflater.from(UserListActivity.this).inflate(
+					R.layout.user_row, null);
+
+		}
+
+		@Override
+		public int getSwipeLayoutResourceId(int arg0) {
+			// TODO Auto-generated method stub
+			return R.id.swipe;
+		}
 	}
 
 	@Override
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
-		Log.e("output", ",,, ::: "+output);
-		team = parser.getTeamList(output, methodName);
-		taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
+		if(methodName.equals(Utils.getTeamAPI)) {
+			Log.e("output", ",,, ::: " + output);
+			ArrayList<User> teamMembers = parser.getTeamList(output, methodName);
+			TimeEmDbHandler dbHandler = new TimeEmDbHandler(UserListActivity.this);
+			dbHandler.updateTeam(teamMembers);
+
+			team = dbHandler.getTeam(HomeActivity.user.getId());
+
+			taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
+		}else{
+			Utils.showToast(UserListActivity.this, output);
+			getUserList(HomeActivity.user.getId());
+		}
 	}
 }

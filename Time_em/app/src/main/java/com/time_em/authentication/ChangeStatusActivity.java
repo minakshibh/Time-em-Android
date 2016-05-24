@@ -74,7 +74,7 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			if(v == changeStatus){
-				Utils.ChangeStatus(ChangeStatusActivity.this);
+				Utils.ChangeStatus(ChangeStatusActivity.this, HomeActivity.user);
 			}else if (v == cancel){
 				finish();
 			}

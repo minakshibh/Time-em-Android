@@ -103,16 +103,16 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 		// TODO Auto-generated method stub
 		Log.e("output", output);
 		
-		Utils.alertMessage(ForgotCredentials.this, "Method name: "+methodName +" ,Output: "+output);
-		/*HomeActivity.user = parser.getUserDetails(output , methodName);
-		 if(HomeActivity.user != null){
+		Utils.alertMessage(ForgotCredentials.this, output);
+		/*HomeActivity.user_black = parser.getUserDetails(output , methodName);
+		 if(HomeActivity.user_black != null){
 			 Intent intent = new Intent(ForgotCredentials.this, HomeActivity.class);
 			 intent.putExtra("trigger", "login");
 			 startActivity(intent);
 			 finish();
 		 }*/
 		 
-//		 Utils.alertMessage(LoginActivity.this, "Data fetched for "+user.getFirstName()+" "+user.getLastName());
+//		 Utils.alertMessage(LoginActivity.this, "Data fetched for "+user_black.getFirstName()+" "+user_black.getLastName());
 //		Utils.showToast(LoginActivity.this, output);
 		
 		// response: 
