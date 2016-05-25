@@ -38,8 +38,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private Time_emJsonParser parser;
     private int UserId;
     private ImageView addTaskButton, back;
-
+    private TextView headerText;
     private Intent intent;
+    private LinearLayout footer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,11 +49,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         setContentView(R.layout.activity_task_list);
 
         initScreen();
-        SimpleDateFormat postFormater = new SimpleDateFormat("dd-MM-yyyy");
 
-        String currentDate = postFormater.format(new Date());
-        UserId = HomeActivity.user.getId();
-        getTaskList(UserId, "05-16-2016");
     }
 
     private void initScreen() {
@@ -86,23 +83,38 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 startActivity(intent);
             }
         });
+        headerText = (TextView)findViewById(R.id.headerText);
+        SimpleDateFormat postFormater = new SimpleDateFormat("dd-MM-yyyy");
+
+        String currentDate = postFormater.format(new Date());
+        UserId = getIntent().getIntExtra("UserId",HomeActivity.user.getId());
+
+        if(UserId == HomeActivity.user.getId()){
+            headerText.setText("My Tasks");
+        }else{
+            String username = getIntent().getStringExtra("UserName");
+            headerText.setText(username+"'s Tasks");
+        }
+        footer = (LinearLayout)findViewById(R.id.footer);
+        footer.setVisibility(View.GONE);
+        getTaskList("05-16-2016");
     }
 
-    private void getTaskList(int userId, String createdDate) {
+    private void getTaskList(String createdDate) {
 
         if (Utils.isNetworkAvailable(TaskListActivity.this)) {
 
-            String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, userId + getResources().getString(R.string.taskTimeStampStr));
+            String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId + getResources().getString(R.string.taskTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
                 timeStamp = "";
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
-            postDataParameters.put("userId", String.valueOf(userId));
+            postDataParameters.put("userId", String.valueOf(UserId));
             postDataParameters.put("createdDate", createdDate);
             postDataParameters.put("TimeStamp", timeStamp);
 
-            Log.e("values", "userid: " + String.valueOf(userId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
+            Log.e("values", "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
 
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     TaskListActivity.this, "post", Utils.getTaskListAPI,
@@ -226,13 +238,13 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
             dbHandler.updateTask(taskEntries);
 
-            tasks = dbHandler.getTaskEnteries(HomeActivity.user.getId());
+            tasks = dbHandler.getTaskEnteries(UserId);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
         }else if(methodName.equals(Utils.deleteTaskAPI)) {
 //            Utils.alertMessage(TaskListActivity.this, output);
             boolean error = parser.parseDeleteTaskResponse(output);
             if(!error)
-                getTaskList(UserId, "05-16-2016");
+                getTaskList("05-16-2016");
         }
     }
 }

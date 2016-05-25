@@ -59,18 +59,26 @@
                     android:text="User Name goes here"
                     android:layout_centerInParent="true"
                     android:textColor="@color/alphabeticalTextColor"
-                    android:textSize="14sp"
-                    android:layout_marginBottom="5dp"/>
+                    android:textSize="14sp"/>
 
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/signInInfo"
                     android:text="Sign In At"
+                    android:layout_marginTop="5dp"
                     android:layout_centerInParent="true"
                     android:textColor="@color/alphabeticalTextColor"
                     android:textSize="12sp"/>
-
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/signOutInfo"
+                    android:text="Sign Out At"
+                    android:layout_marginTop="5dp"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/alphabeticalTextColor"
+                    android:textSize="12sp"/>
             </LinearLayout>
 
 

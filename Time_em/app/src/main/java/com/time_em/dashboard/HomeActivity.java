@@ -128,6 +128,9 @@ public class HomeActivity extends BaseActivity {
 		txtUserStatus = (TextView)findViewById(R.id.txtUserStatus);
 		imgStatus = (ImageView)findViewById(R.id.imgStatus);
 		trigger = getIntent().getStringExtra("trigger");
+
+		if(user.getUserTypeId()==4)
+			myTeam.setVisibility(View.GONE);
 	}
 
 	private void setClickListeners() {
@@ -156,12 +159,12 @@ public class HomeActivity extends BaseActivity {
 		super.onResume();
 		if(HomeActivity.user.isSignedIn()) {
 			menuUserStatus.setImageResource(R.drawable.user_online);
-			userStatus.setImageResource(R.drawable.online);
+			userStatus.setImageResource(R.drawable.user_online);
 			imgStatus.setImageResource(R.drawable.scan_signout);
 			txtUserStatus.setText("Sign Out");
 		}else {
 			menuUserStatus.setImageResource(R.drawable.user_offline);
-			userStatus.setImageResource(R.drawable.offline);
+			userStatus.setImageResource(R.drawable.user_offline);
 			imgStatus.setImageResource(R.drawable.scan_signin);
 			txtUserStatus.setText("Sign In");
 		}

@@ -34,7 +34,7 @@ public class BaseActivity extends Activity{
 	public AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.2F);
 	public RelativeLayout contentFrame, profile, sync, scanBarcode, nfcTapping, logout;
 	public RelativeLayout slider;
-	private LinearLayout myTasks, myTeam, notifications,settings;
+	public LinearLayout myTasks, myTeam, notifications,settings;
 	private Resources resources;
 	public ImageView menuUserStatus;
 	
@@ -130,6 +130,7 @@ public class BaseActivity extends Activity{
 			}else if (v == myTasks) {
 				setSelection(true, false, false, false);
 				Intent intent = new Intent(BaseActivity.this, TaskListActivity.class);
+				intent.putExtra("UserId", HomeActivity.user.getId());
 				startActivity(intent);
 			} else if (v == myTeam) {
 				setSelection(false, true, false, false);
