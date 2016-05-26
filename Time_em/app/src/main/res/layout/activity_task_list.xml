@@ -2,20 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <include android:id="@+id/headerLayout" layout="@layout/include_toolbar"></include>
 
-    <HorizontalScrollView
-        android:id="@+id/dateSlider"
-        android:layout_width="fill_parent"
-        android:layout_below="@+id/headerLayout"
-        android:layout_height="wrap_content"
-        android:background="@color/gradientBgStart"
-        android:visibility="gone"
-        android:padding="10dp">
-
-    </HorizontalScrollView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_below="@+id/headerLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:scrollbars="none"
+            tools:listitem="@layout/date_slider_row"/>
 
     <TextView
         android:id="@+id/swipeInfo"
@@ -25,7 +23,7 @@
         android:padding="5dp"
         android:text="Swipe left to edit or delete"
         android:textColor="@color/alphabeticalTextColor"
-        android:layout_below="@+id/dateSlider"
+        android:layout_below="@+id/recycler_view"
         android:textSize="11sp" />
 
     <ListView
