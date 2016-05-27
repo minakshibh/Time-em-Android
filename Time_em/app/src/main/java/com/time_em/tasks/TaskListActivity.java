@@ -48,7 +48,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
     private Intent intent;
     private LinearLayout footer;
     private RecyclerView recyclerView;
-    private SimpleDateFormat apiDateFormater;
+    private SimpleDateFormat apiDateFormater, dateFormatter, dayFormatter;
     ArrayList<Calendar> arrayList;
     private int selectedPos = 14;
     private String selectedDate;
@@ -58,45 +58,21 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
+
+        populatRecyclerView();
         initScreen();
+        setUpClickListeners();
+        getTaskList(selectedDate);
     }
 
     private void initScreen() {
-        arrayList = new ArrayList<>();
-        recyclerView = (RecyclerView)
-                findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-
         addTaskButton = (ImageView) findViewById(R.id.AddButton);
         addTaskButton.setVisibility(View.GONE);
-        addTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
-                startActivity(intent);
-            }
-        });
         back = (ImageView)findViewById(R.id.back);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
-
-        taskListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
-                intent.putExtra("taskEntry", tasks.get(position));
-                startActivity(intent);
-            }
-        });
         headerText = (TextView)findViewById(R.id.headerText);
         UserId = getIntent().getIntExtra("UserId",HomeActivity.user.getId());
 
@@ -108,34 +84,17 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         }
         footer = (LinearLayout)findViewById(R.id.footer);
         footer.setVisibility(View.GONE);
-        populatRecyclerView();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(TaskListActivity.this, LinearLayoutManager.HORIZONTAL, false);
         layoutManager.scrollToPositionWithOffset(selectedPos - 2, 20);
-
         recyclerView.setLayoutManager(layoutManager);
-
-        apiDateFormater = new SimpleDateFormat("dd-MM-yyyy");
+        apiDateFormater = new SimpleDateFormat("MM-dd-yyyy");
         selectedDate = apiDateFormater.format(arrayList.get(selectedPos).getTime());
-        getTaskList(selectedDate);
-    }
 
-    private void populatRecyclerView() {
+        dateFormatter = new SimpleDateFormat("dd");
+        dayFormatter = new SimpleDateFormat("E", Locale.US);
 
-        Date myDate = new Date();
 
-        for (int i = 0; i < 14; i++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(myDate);
-            calendar.add(Calendar.DAY_OF_YEAR, i - 14);
-            arrayList.add(calendar);
-        }
-        for (int i = 0; i <= 14; i++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(myDate);
-            calendar.add(Calendar.DAY_OF_YEAR, i);
-            arrayList.add(calendar);
-        }
 
         DateSliderAdapter  adapter = new DateSliderAdapter(arrayList, new OnItemClickListener() {
             @Override
@@ -151,14 +110,61 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         });
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
         adapter.notifyDataSetChanged();// Notify the adapter
+    }
 
+
+
+    private void setUpClickListeners() {
+        addTaskButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        taskListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
+                intent.putExtra("taskEntry", tasks.get(position));
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void populatRecyclerView() {
+
+        arrayList = new ArrayList<>();
+        Date myDate = new Date();
+
+        for (int i = 0; i < selectedPos; i++) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(myDate);
+            calendar.add(Calendar.DAY_OF_YEAR, i - selectedPos);
+            arrayList.add(calendar);
+        }
+        for (int i = 0; i <= selectedPos; i++) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(myDate);
+            calendar.add(Calendar.DAY_OF_YEAR, i);
+            arrayList.add(calendar);
+        }
     }
 
     private void getTaskList(String createdDate) {
 
         if (Utils.isNetworkAvailable(TaskListActivity.this)) {
 
-            String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId + getResources().getString(R.string.taskTimeStampStr));
+            String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId+"-"+selectedDate+"-" + getResources().getString(R.string.taskTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
                 timeStamp = "";
 
@@ -288,20 +294,20 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
         if(methodName.equals(Utils.getTaskListAPI)) {
-            ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId);
+            ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
-            dbHandler.updateTask(taskEntries);
+            dbHandler.updateTask(taskEntries, selectedDate);
 
-            tasks = dbHandler.getTaskEnteries(UserId);
+            tasks = dbHandler.getTaskEnteries(UserId, selectedDate);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
         }else if(methodName.equals(Utils.deleteTaskAPI)) {
-//            Utils.alertMessage(TaskListActivity.this, output);
             boolean error = parser.parseDeleteTaskResponse(output);
             if(!error) {
                 getTaskList(selectedDate);
             }
         }
     }
+
     public class DateSliderAdapter extends RecyclerView.Adapter<DateSliderAdapter.ViewHolder> {
 
         private final ArrayList<Calendar> items;
@@ -338,21 +344,17 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
 
             public void bind(final Calendar item, final OnItemClickListener listener, final int pos) {
                 if(selectedPos==pos) {
-                    date.setBackgroundColor(Color.BLACK);
+                    date.setBackgroundResource(R.drawable.date_bg);
                     date.setTextColor(Color.WHITE);
                 }else {
-                    date.setBackgroundColor(Color.WHITE);
+                    date.setBackgroundResource(R.drawable.date_bg_grey);
                     date.setTextColor(Color.BLACK);
                 }
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
-                date.setText(dateFormat.format(item.getTime()));
 
-                SimpleDateFormat dayFormat = new SimpleDateFormat("E", Locale.US);
-                day.setText(dayFormat.format(item.getTime()));
-
+                date.setText(dateFormatter.format(item.getTime()));
+                day.setText(dayFormatter.format(item.getTime()));
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override public void onClick(View v) {
-
                         notifyItemChanged(selectedPos);
                         selectedPos = pos;
                         notifyItemChanged(selectedPos);

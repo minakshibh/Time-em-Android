@@ -4,9 +4,10 @@
     android:id="@+id/bg_date"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="10dp"
+    android:padding="5dp"
     android:gravity="center"
     android:orientation="vertical"
+    android:background="@color/date_bg"
     >
 
 
@@ -14,17 +15,19 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:text="22"
+            android:background="@drawable/date_bg_grey"
+            android:gravity="center"
             android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:text="MON"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="2dp"
             android:textColor="@color/alphabeticalTextColor"/>
 
     </LinearLayout>

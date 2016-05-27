@@ -15,4 +15,5 @@
     <color name="editBg">#222222</color>
     <color name="deleteBg">#d11910</color>
     <color name="textBg">#d4d4d4</color>
+    <color name="date_bg">#e7e7e7</color>
 </resources>

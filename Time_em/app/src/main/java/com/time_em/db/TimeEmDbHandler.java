@@ -43,6 +43,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String Token = "Token";
 	private String TimeSpent = "TimeSpent";
 	private String SignedInHours = "SignedInHours";
+	private String TaskDate = "TaskDate";
 
 	// fields for user table
 	// private String UserId = "UserId";
@@ -86,7 +87,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 	public TimeEmDbHandler(Context context) {
 
-		super(context, DB_NAME, null, 1);
+		super(context, DB_NAME, null, 2);
 		this.myContext = context;
 	}
 
@@ -102,7 +103,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ " TEXT," + UserId + " TEXT," + TaskName + " TEXT," + Comments
 				+ " TEXT," + StartTime + " TEXT," + CreatedDate + " TEXT,"
 				+ EndTime + " TEXT," + SelectedDate + " TEXT," + Token
-				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT)";
+				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + TaskDate + " TEXT)";
 
 		String CREATE_USER_TABLE = "CREATE TABLE if NOT Exists " + TABLE_TEAM
 				+ "(" + UserId + " TEXT," + SupervisorId + " TEXT,"
@@ -139,7 +140,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public void updateTask(ArrayList<TaskEntry> taskList) {
+	public void updateTask(ArrayList<TaskEntry> taskList, String taskDate) {
+		// Fetch only records with selected Date
+
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < taskList.size(); i++) {
 			TaskEntry taskEntry = taskList.get(i);
@@ -162,7 +165,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(TimeSpent, String.valueOf(taskEntry.getTimeSpent()));
 				values.put(SignedInHours,
 						String.valueOf(taskEntry.getSignedInHours()));
-
+				values.put(TaskDate,
+						taskDate);
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if (cursor.moveToFirst()) {
 					// updating row
@@ -254,11 +258,12 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	 * }catch(Exception e){ e.printStackTrace(); } // db.close(); }
 	 */
 
-	public ArrayList<TaskEntry> getTaskEnteries(int userId) {
+	public ArrayList<TaskEntry> getTaskEnteries(int userId, String date) {
 		ArrayList<TaskEntry> taskEntryList = new ArrayList<TaskEntry>();
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
-				+ UserId + "=" + userId;
+				+ UserId + "=" + userId +" AND "+ TaskDate + "=\"" + date+"\"";
+
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {

@@ -169,7 +169,8 @@ public class Time_emJsonParser {
 		Utils.showToast(context, message);
 		return isError;
 	}
-	public ArrayList<TaskEntry> parseTaskList(String webResponse, int userId){
+	public ArrayList<TaskEntry> parseTaskList(String webResponse, int userId, String selectedDate){
+
 		String timeStamp="";
 		ArrayList<TaskEntry> taskList = new ArrayList<TaskEntry>();
 		Resources res = context.getResources();
@@ -201,7 +202,7 @@ public class Time_emJsonParser {
 			taskList.add(task);
 		}
 		
-		Utils.saveInSharedPrefs(context, userId+res.getString(R.string.taskTimeStampStr), timeStamp);
+		Utils.saveInSharedPrefs(context, userId+"-"+selectedDate+"-"+res.getString(R.string.taskTimeStampStr), timeStamp);
 		
 		}catch (JSONException e) {
 			// TODO Auto-generated catch block

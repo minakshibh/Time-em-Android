@@ -39,7 +39,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	private ListView taskListview;
 	private ArrayList<User> team;
 	private Time_emJsonParser parser;
-	private HorizontalScrollView sView;
+//	private HorizontalScrollView sView;
 	private TextView swipeInfo, headerText;
 	private ImageView back, addTask;
 
@@ -59,12 +59,12 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	private void initScreen(){
 		taskListview = (ListView)findViewById(R.id.taskList);
 		parser = new Time_emJsonParser(UserListActivity.this);
-		sView = (HorizontalScrollView)findViewById(R.id.dateSlider);
+//		sView = (HorizontalScrollView)findViewById(R.id.dateSlider);
 		swipeInfo = (TextView)findViewById(R.id.swipeInfo);
 		back = (ImageView)findViewById(R.id.back);
 		addTask = (ImageView) findViewById(R.id.AddButton);
 		headerText = (TextView)findViewById(R.id.headerText);
-		sView.setVisibility(View.GONE);
+//		sView.setVisibility(View.GONE);
 		swipeInfo.setVisibility(View.GONE);
 		addTask.setVisibility(View.GONE);
 		headerText.setText("My Team");
