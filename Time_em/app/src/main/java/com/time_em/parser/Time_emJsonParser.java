@@ -1,6 +1,7 @@
 package com.time_em.parser;
 
 import java.util.ArrayList;
+import java.util.concurrent.Exchanger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -156,7 +157,18 @@ public class Time_emJsonParser {
 		}
 		return false;
 	}
-	
+
+	public boolean parseDeleteTaskResponse(String webResponse){
+		try {
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("isError");
+			message = jObject.getString("Message");
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		Utils.showToast(context, message);
+		return isError;
+	}
 	public ArrayList<TaskEntry> parseTaskList(String webResponse, int userId){
 		String timeStamp="";
 		ArrayList<TaskEntry> taskList = new ArrayList<TaskEntry>();
@@ -216,27 +228,28 @@ public class Time_emJsonParser {
 			id = jObject.getInt("UserId");
 			signInAt = jObject.getString("SignInAt");
 
-			if (methodName.equals(Utils.signInAPI)) {
-				id = jObject.getInt("Id");
-				if (isError)
-					HomeActivity.user.setSignedIn(false);
-				else {
-					HomeActivity.user.setSignedIn(true);
-					HomeActivity.user.setActivityId(id);
+			if(id == HomeActivity.user.getId()) {
+				if (methodName.equals(Utils.signInAPI)) {
+					id = jObject.getInt("Id");
+					if (isError)
+						HomeActivity.user.setSignedIn(false);
+					else {
+						HomeActivity.user.setSignedIn(true);
+						HomeActivity.user.setActivityId(id);
+					}
+				} else {
+					signOutAt = jObject.getString("SignOutAt");
+					if (isError)
+						HomeActivity.user.setSignedIn(true);
+					else {
+						HomeActivity.user.setSignedIn(false);
+						HomeActivity.user.setActivityId(0);
+					}
 				}
-			} else {
-				signOutAt = jObject.getString("SignOutAt");
-				if (isError)
-					HomeActivity.user.setSignedIn(true);
-				else {
-					HomeActivity.user.setSignedIn(false);
-					HomeActivity.user.setActivityId(0);
-				}
-			}
 
-			Utils.saveInSharedPrefs(context, "isSignedIn", String.valueOf(HomeActivity.user.isSignedIn()));
-			Utils.saveInSharedPrefs(context, "activityId", String.valueOf(HomeActivity.user.getActivityId()));
-			
+				Utils.saveInSharedPrefs(context, "isSignedIn", String.valueOf(HomeActivity.user.isSignedIn()));
+				Utils.saveInSharedPrefs(context, "activityId", String.valueOf(HomeActivity.user.getActivityId()));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

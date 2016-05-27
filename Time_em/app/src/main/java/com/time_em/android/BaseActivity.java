@@ -11,14 +11,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.AlphaAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.time_em.authentication.LoginActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
+
+import org.w3c.dom.Text;
 
 
 public class BaseActivity extends Activity{
@@ -30,8 +34,9 @@ public class BaseActivity extends Activity{
 	public AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.2F);
 	public RelativeLayout contentFrame, profile, sync, scanBarcode, nfcTapping, logout;
 	public RelativeLayout slider;
-	private LinearLayout myTasks, myTeam, notifications,settings;
+	public LinearLayout myTasks, myTeam, notifications,settings;
 	private Resources resources;
+	public ImageView menuUserStatus;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -63,6 +68,7 @@ public class BaseActivity extends Activity{
 		notifications = (LinearLayout) findViewById(R.id.notifications);
 		settings = (LinearLayout) findViewById(R.id.settings);
 		resources = BaseActivity.this.getResources();
+		menuUserStatus = (ImageView) findViewById(R.id.menuUserStatus);
 	}
 	
 	private void setClickListeners(){
@@ -124,6 +130,7 @@ public class BaseActivity extends Activity{
 			}else if (v == myTasks) {
 				setSelection(true, false, false, false);
 				Intent intent = new Intent(BaseActivity.this, TaskListActivity.class);
+				intent.putExtra("UserId", HomeActivity.user.getId());
 				startActivity(intent);
 			} else if (v == myTeam) {
 				setSelection(false, true, false, false);
@@ -162,6 +169,8 @@ public class BaseActivity extends Activity{
 
 			/** Called when a drawer has settled in a completely open state. */
 			public void onDrawerOpened(View drawerView) {
+
+
 				super.onDrawerOpened(drawerView);
 			}
 		};

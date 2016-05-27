@@ -1,45 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="10dp"
-    android:background="@color/white">
-    
-     <ImageView
-            android:layout_width="wrap_content"
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/swipe"
+    android:layout_width="fill_parent" android:layout_height="wrap_content">
+    <!-- Bottom View Start-->
+    <LinearLayout
+        android:background="@color/sendTextColor"
+        android:id="@+id/bottom_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="right|center">
+        <!--What you want to show-->
+
+        <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/online"
-            android:id="@+id/status"
-            android:layout_alignParentLeft="true"
-            android:layout_centerInParent="true"
-            android:layout_marginRight="10dp"/>
-     
-    
+            android:text="Sign in"
+            android:id="@+id/txtUserStatus"
+            android:textColor="@color/textColor"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            />
 
-<TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_toRightOf="@+id/status"
-    android:id="@+id/userName"
-    android:text="User Name goes here"
-    android:layout_centerInParent="true"
-    android:textColor="@color/alphabeticalTextColor"
-    android:textSize="12sp"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp"
-    android:layout_toLeftOf="@+id/shiftInfo"/>
+    </LinearLayout>
+    <!-- Bottom View End-->
 
-        
-        <ImageView
-            android:layout_width="wrap_content"
+    <!-- Surface View Start -->
+    <LinearLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:id="@+id/swipeLayout"
+        android:layout_height="match_parent">
+        <!--What you want to show in SurfaceView-->
+        <RelativeLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/night"
-            android:layout_marginLeft="10dp" 
-            android:id="@+id/shiftInfo"
-            android:layout_centerInParent="true"
-            android:layout_alignParentRight="true"/>
+            android:padding="10dp"
+            android:background="@color/white"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/online"
+                android:id="@+id/status"
+                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="10dp"/>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toRightOf="@+id/status"
+                android:layout_toLeftOf="@+id/shiftInfo">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/userName"
+                    android:text="User Name goes here"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/alphabeticalTextColor"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/signInInfo"
+                    android:text="Sign In At"
+                    android:layout_marginTop="5dp"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/alphabeticalTextColor"
+                    android:textSize="12sp"/>
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/signOutInfo"
+                    android:text="Sign Out At"
+                    android:layout_marginTop="5dp"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/alphabeticalTextColor"
+                    android:textSize="12sp"/>
+            </LinearLayout>
 
 
-</RelativeLayout>
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/night"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/shiftInfo"
+                android:layout_centerInParent="true"
+                android:layout_alignParentRight="true"/>
+
+
+
+        </RelativeLayout>
+    </LinearLayout>
+    <!-- Surface View End -->
+</com.daimajia.swipe.SwipeLayout>
+

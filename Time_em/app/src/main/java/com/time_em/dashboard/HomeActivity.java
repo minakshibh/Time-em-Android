@@ -8,8 +8,10 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
@@ -30,7 +32,9 @@ public class HomeActivity extends BaseActivity {
 	public static User user;
 	private LinearLayout changeStatus;
 	private String trigger;
-	
+	private ImageView userStatus, imgStatus;
+	private TextView txtUserStatus;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -120,7 +124,13 @@ public class HomeActivity extends BaseActivity {
 	
 	private void initScreen() {
 		changeStatus = (LinearLayout) findViewById(R.id.changeStatus);
+		userStatus = (ImageView)findViewById(R.id.userStatus);
+		txtUserStatus = (TextView)findViewById(R.id.txtUserStatus);
+		imgStatus = (ImageView)findViewById(R.id.imgStatus);
 		trigger = getIntent().getStringExtra("trigger");
+
+		if(user.getUserTypeId()==4)
+			myTeam.setVisibility(View.GONE);
 	}
 
 	private void setClickListeners() {
@@ -142,5 +152,21 @@ public class HomeActivity extends BaseActivity {
 		Intent intent = new Intent(HomeActivity.this,
 				ChangeStatusActivity.class);
 		startActivity(intent);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(HomeActivity.user.isSignedIn()) {
+			menuUserStatus.setImageResource(R.drawable.user_online);
+			userStatus.setImageResource(R.drawable.user_online);
+			imgStatus.setImageResource(R.drawable.scan_signout);
+			txtUserStatus.setText("Sign Out");
+		}else {
+			menuUserStatus.setImageResource(R.drawable.user_offline);
+			userStatus.setImageResource(R.drawable.user_offline);
+			imgStatus.setImageResource(R.drawable.scan_signin);
+			txtUserStatus.setText("Sign In");
+		}
 	}
 }

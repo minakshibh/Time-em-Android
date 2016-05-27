@@ -31,6 +31,7 @@ import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.User;
 
 public class Utils {
 
@@ -51,6 +52,7 @@ public class Utils {
     static public String forgotPinAPI = "/USER/ForgetPin";
     static public String getSpinnerTypeAPI = "/Task/GetAssignedTaskIList";
     static public String GetAddUpdateUserTaskAPI = "UserTask/AddUpdateUserTaskActivity";
+    static public String deleteTaskAPI = "/UserTask/DeleteTask";
 
 
     public static void showToast(Context context, String message) {
@@ -86,7 +88,7 @@ public class Utils {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
-                //((Activity) context).finish();
+                ((Activity) context).finish();
             }
 
 
@@ -226,21 +228,21 @@ public class Utils {
         return response;
     }
 
-    public static void ChangeStatus(Context context) {
+    public static void ChangeStatus(Context context, User user) {
         String apiMethod = "";
 
         if (Utils.isNetworkAvailable(context)) {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
-            postDataParameters.put("userId", String.valueOf(HomeActivity.user.getId()));
-            postDataParameters.put("LoginId", HomeActivity.user.getLoginID());
+            postDataParameters.put("userId", String.valueOf(user.getId()));
+            postDataParameters.put("LoginId", user.getLoginID());
 
-            Log.e("values", "login Id: " + HomeActivity.user.getLoginID() + " ,user Id: " + HomeActivity.user.getId() + " ,activity id: " + String.valueOf(HomeActivity.user.getActivityId()));
+            Log.e("values", "login Id: " + user.getLoginID() + " ,user Id: " + user.getId() + " ,activity id: " + String.valueOf(user.getActivityId()));
 
-            if (HomeActivity.user.isSignedIn()) {
+            if (user.isSignedIn()) {
                 apiMethod = Utils.sigOutAPI;
-                postDataParameters.put("ActivityId", String.valueOf(HomeActivity.user.getActivityId()));
+                postDataParameters.put("ActivityId", String.valueOf(user.getActivityId()));
             } else {
                 apiMethod = Utils.signInAPI;
             }
