@@ -5,12 +5,12 @@
     android:versionName="1.0">
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="10"
         android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.CAMERA"/>
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
@@ -59,6 +59,9 @@
             android:screenOrientation="portrait"></activity>
         <activity
             android:name="com.time_em.tasks.TaskDetailActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.time_em.barcode.BarcodeScanActivity"
             android:screenOrientation="portrait"></activity>
 
     </application>
