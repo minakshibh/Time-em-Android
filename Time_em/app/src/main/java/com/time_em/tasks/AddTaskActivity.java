@@ -1,13 +1,19 @@
 package com.time_em.tasks;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ParseException;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -47,12 +53,22 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class AddTaskActivity extends Activity implements View.OnClickListener, AsyncResponseTimeEm, AddTaskPresenter.IAddTaskView, SurfaceHolder.Callback {
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
@@ -72,7 +88,7 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     private int ActivityId;
     private int TaskId;
     private String TaskName;
-    private String ImagePathUri;
+    private String ImagePathUri, NumberOfHoursStr, CommentStr;
     private String BaseEncodingStr;
 
     public CameraHelper cameraHelper;
@@ -86,6 +102,8 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     private ArrayList<TaskEntry> taskEntries;
     private Spinner SpnTaskName;
 
+    String url = "http://timeemapi.azurewebsites.net/api/Usertask/AddUpdateUserTaskActivity";
+    String id = "1";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -137,20 +155,14 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.uploadLayout:
-                cameraHelper = new CameraHelper();
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                fileUri = cameraHelper.getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
-                // start the image capture Intent
-                startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
+                selectImage();
                 break;
             case R.id.AddTaskBtn:
-                String NumberOfHoursStr = NumberHoursEdit.getText().toString();
-                String CommentStr = CommentEdit.getText().toString();
+                NumberOfHoursStr = NumberHoursEdit.getText().toString();
+                CommentStr = CommentEdit.getText().toString();
                 if (Utils.isNetworkAvailable(act)) {
-                    presenter.Init(ActivityId, UserId, NumberOfHoursStr, CommentStr, TaskId, TaskName, "555", "1");
+                   new uploadimage().execute();
+                   // presenter.Init(ActivityId, UserId, NumberOfHoursStr, CommentStr, TaskId, TaskName, "", "1");
                 } else {
                     Utils.alertMessage(act, Utils.network_error);
                 }
@@ -158,48 +170,218 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         }
     }
 
-    /**
-     * Receiving activity result method will be called after closing the camera
-     */
+//    /**
+//     * Receiving activity result method will be called after closing the camera
+//     */
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        // if the result is capturing Image
+//        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
+//            if (resultCode == RESULT_OK) {
+//                // bimatp factory
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//
+//                // downsizing image as it throws OutOfMemory Exception for
+//                options.inSampleSize = 8;
+//                ImagePathUri = fileUri.getPath();
+//
+//                final Bitmap bitmap = BitmapFactory.decodeFile(ImagePathUri, options);
+//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//                byteArray = stream.toByteArray();
+//                // Encode Image to String
+//                BaseEncodingStr = Base64.encodeToString(byteArray, 0);
+//                Log.d("", "BaseEncodingStr" + BaseEncodingStr);
+//
+//                UploadImage.setVisibility(View.VISIBLE);
+//                UploadImage.setImageBitmap(ExifUtils.rotateBitmap(
+//                        fileUri.getPath(), bitmap));
+//
+//            }
+//
+//        } else if (resultCode == RESULT_CANCELED) {
+//
+//            // user cancelled recording
+//            Toast.makeText(getApplicationContext(),
+//                    "User cancelled video recording", Toast.LENGTH_SHORT)
+//                    .show();
+//
+//        } else {
+//            // failed to record video
+//            Toast.makeText(getApplicationContext(),
+//                    "Sorry! Failed to record video", Toast.LENGTH_SHORT)
+//                    .show();
+//        }
+//    }
+
+    protected void selectImage() {
+
+        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                AddTaskActivity.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo")) {
+                    Intent takePictureIntent = new Intent(
+                            MediaStore.ACTION_IMAGE_CAPTURE);
+                    // Ensure that there's a camera activity to handle the
+                    // intent
+                    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                        // Create the File where the photo should go
+                        File photoFile = null;
+                        try {
+                            // mCurrentPhotoPath = Util.createImageFile();
+
+                            // photoFile = new File(mCurrentPhotoPath);
+                        } catch (Exception ex) {
+                            // Error occurred while creating the File
+                            ex.printStackTrace();
+                        }
+                        // Continue only if the File was successfully created
+                        if (photoFile != null) {
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                    Uri.fromFile(photoFile));
+                            startActivityForResult(takePictureIntent, 1);
+                        }
+                    }
+                } else if (options[item].equals("Choose from Gallery")) {
+                    // check=1;
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Select Picture"), 2);
+                } else if (options[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if the result is capturing Image
-        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                // bimatp factory
-                BitmapFactory.Options options = new BitmapFactory.Options();
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
 
-                // downsizing image as it throws OutOfMemory Exception for
-                options.inSampleSize = 8;
-                ImagePathUri = fileUri.getPath();
+            String imagePath;
+            if (requestCode == 1) {
 
-                final Bitmap bitmap = BitmapFactory.decodeFile(ImagePathUri, options);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byteArray = stream.toByteArray();
-                // Encode Image to String
-                BaseEncodingStr = Base64.encodeToString(byteArray, 0);
-                Log.d("", "BaseEncodingStr" + BaseEncodingStr);
+                Bitmap bitmap = BitmapFactory.decodeFile("");
+                Bitmap bm2 = ExifUtils.rotateBitmap("", bitmap);
 
-                UploadImage.setVisibility(View.VISIBLE);
-                UploadImage.setImageBitmap(ExifUtils.rotateBitmap(
-                        fileUri.getPath(), bitmap));
+                UploadImage.setImageBitmap(bm2);
+                imagePath = SaveImage(bm2);
+
+                //new uploadimage().execute();
+
+            } else if (requestCode == 2) {
+
+
+                if (Build.VERSION.SDK_INT < 19) {
+
+                    Uri selectedImageUri = data.getData();
+
+                    Cursor cursor = getContentResolver()
+                            .query(selectedImageUri,
+                                    new String[]{android.provider.MediaStore.Images.ImageColumns.DATA},
+                                    null, null, null);
+                    cursor.moveToFirst();
+
+                    // Link to the image
+                    final String imageFilePath = cursor.getString(0);
+                    cursor.close();
+                    imagePath = imageFilePath;
+
+                    Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                    Bitmap bm2 = ExifUtils.rotateBitmap(imagePath, bitmap);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bm2.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byteArray = stream.toByteArray();
+                    // Encode Image to String
+                    //BaseEncodingStr = Base64.encodeToString(byteArray, 0);
+                    UploadImage.setImageBitmap(bm2);
+                    BaseEncodingStr = SaveImage(bm2);
+                } else {
+                    try {
+                        InputStream imInputStream = getContentResolver().openInputStream(data.getData());
+                        Bitmap bitmap = BitmapFactory.decodeStream(imInputStream);
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byteArray = stream.toByteArray();
+                        // Encode Image to String
+                       // BaseEncodingStr = Base64.encodeToString(byteArray, 0);
+
+                       BaseEncodingStr = saveGalaryImageOnLitkat(bitmap);
+                        UploadImage.setImageBitmap(BitmapFactory.decodeFile(BaseEncodingStr));
+                        //encodeImage();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+                // new uploadimage().execute();
 
             }
-
-        } else if (resultCode == RESULT_CANCELED) {
-
-            // user cancelled recording
-            Toast.makeText(getApplicationContext(),
-                    "User cancelled video recording", Toast.LENGTH_SHORT)
-                    .show();
-
-        } else {
-            // failed to record video
-            Toast.makeText(getApplicationContext(),
-                    "Sorry! Failed to record video", Toast.LENGTH_SHORT)
-                    .show();
+            // Log.d("encodedImage=",encodedImage);
         }
+    }
+
+    private File temp_path;
+    private final int COMPRESS = 100;
+
+    private String saveGalaryImageOnLitkat(Bitmap bitmap) {
+        try {
+            File cacheDir;
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+                cacheDir = new File(Environment.getExternalStorageDirectory(), getResources().getString(R.string.app_name));
+            else
+                cacheDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            if (!cacheDir.exists())
+                cacheDir.mkdirs();
+            String filename = System.currentTimeMillis() + ".jpg";
+            File file = new File(cacheDir, filename);
+            temp_path = file.getAbsoluteFile();
+            // if(!file.exists())
+            //  file.createNewFile();
+            FileOutputStream out = new FileOutputStream(temp_path);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS, out);
+            return file.getAbsolutePath();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+    private String SaveImage(Bitmap finalBitmap) {
+
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/saved_images");
+        myDir.mkdirs();
+        Random generator = new Random();
+        int n = 10000;
+        n = generator.nextInt(n);
+        String fname = "Image-" + n + ".jpg";
+        File file = new File(myDir, fname);
+        if (file.exists())
+            file.delete();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file.getAbsolutePath();
     }
 
     @Override
@@ -245,43 +427,193 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         return cursor.getString(column_index);
     }
 
-    @SuppressWarnings("deprecation")
+    private class uploadimage extends AsyncTask<Void, Void, Void> { // Async_task
+        // class
+        String res;
+        private ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(AddTaskActivity.this);
+
+            // pDialog.setTitle("Loading");
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            try {//because i need growth
+
+                String upLoadServerUri = url + "ActivityId=" + ActivityId + "&TaskId=" + TaskId + "&UserId=" + UserId + "&TimeSpent=" + NumberOfHoursStr + "&CreatedDate=05-20-2016&Comments="+CommentStr+"&TaskName="+TaskName+"&ID ="+id;
+
+                Log.d("", "upLoadServerUri" + upLoadServerUri);
+                Log.d("", "upLoadServerUri" + upLoadServerUri);
+                Log.d("", "BaseEncodingStr" + BaseEncodingStr);
+               res = multipartRequest(upLoadServerUri, BaseEncodingStr);
+               res = uploadFileToserver();
+                Log.d("", "resres" + res);
+                // uploadFile1(imagePath);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            pDialog.dismiss();
+        }
+
+        // image upload in multi part
+        public String multipartRequest(String urlTo, String filepath)
+                throws ParseException, IOException {
+            HttpURLConnection connection = null;
+            DataOutputStream outputStream = null;
+            InputStream inputStream = null;
+
+            String twoHyphens = "--";
+            String boundary = "*****" + Long.toString(System.currentTimeMillis())
+                    + "*****";
+            String lineEnd = "\r\n";
+
+            String result = "";
+
+            int bytesRead, bytesAvailable, bufferSize;
+            byte[] buffer;
+            int maxBufferSize = 1 * 1024 * 1024;
+
+            String[] q = filepath.split("/");
+            int idx = q.length - 1;
+
+            try {
+                File file = new File(filepath);
+                FileInputStream fileInputStream = new FileInputStream(file);
+
+                URL url = new URL(urlTo);
+                connection = (HttpURLConnection) url.openConnection();
+
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setUseCaches(false);
+
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Connection", "Keep-Alive");
+                connection.setRequestProperty("User-Agent",
+                        "Android Multipart HTTP Client 1.0");
+                connection.setRequestProperty("Content-Type",
+                        "multipart/form-data; boundary=" + boundary);
+
+                outputStream = new DataOutputStream(connection.getOutputStream());
+                outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                outputStream
+                        .writeBytes("Content-Disposition: form-data;filename=\""
+                                + q[idx] + "\"" + lineEnd);
+                outputStream.writeBytes("Content-Type: image/jpeg" + lineEnd);
+                outputStream.writeBytes("Content-Transfer-Encoding: binary"
+                        + lineEnd);
+                outputStream.writeBytes(lineEnd);
+
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                while (bytesRead > 0) {
+                    outputStream.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                }
+
+                outputStream.writeBytes(lineEnd);
+
+                outputStream.writeBytes(twoHyphens + boundary + twoHyphens
+                        + lineEnd);
+
+                inputStream = connection.getInputStream();
+                result = this.convertStreamToString(inputStream);
+                Log.d("", "result----------------------------------->>>>>>>>>>>" + result);
+                Log.d("", "result----------------------------------->>>>>>>>>>>" + result);
+                Log.d("", "result----------------------------------->>>>>>>>>>>" + result);
+                fileInputStream.close();
+                inputStream.close();
+                outputStream.flush();
+                outputStream.close();
+                Log.e("Multipart result", result);
+                return result;
+            } catch (Exception e) {
+                Log.e("MultipartRequest", "Multipart Form Upload Error");
+                e.printStackTrace();
+                return "error";
+            }
+        }
+
+        private String convertStreamToString(InputStream is) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+
     public String uploadFileToserver() {
         FileBody videoBody, imgBody;
 
         String serverResponse = "";
         try {
 
-//			long fileLength = file.length();
-//			Log.d("", "fileLength " + fileLength);
-
             HttpClient client = new DefaultHttpClient();
 
-            HttpPost post = new HttpPost(upLoadServerUri);
+            HttpPost post = new HttpPost(url);
 
-            @SuppressWarnings("deprecation")
+
             MultipartEntity reqEntity = new MultipartEntity(
                     HttpMultipartMode.BROWSER_COMPATIBLE);
 
+//            if(!filepath.equals("")){
+//
+//                File file = new File(filepath);
+//                videoBody = new FileBody(file);
+//                reqEntity.addPart("video", videoBody);
+//            }
 
-            File file1 = new File(ImagePathUri);
-            imgBody = new FileBody(file1);
-            reqEntity.addPart("img", imgBody);
+            // "&timespant=" + NumberOfHoursStr + "&createddate=05-20-2016&comments=" + CommentStr;
+                File file1 = new File(BaseEncodingStr);
+                imgBody =  new FileBody(file1);
+                reqEntity.addPart("ActiIvityId",imgBody);
 
-            reqEntity.addPart("ActivityId", new StringBody(patrolID));
-            reqEntity.addPart("officer_id", new StringBody(
-                    DashboardActivity.officer.getOfficerId()));
-            reqEntity.addPart("shift_id", new StringBody(
-                    DashboardActivity.officer.getShiftId()));
 
-            reqEntity.addPart("event_name", new StringBody("MME"));
-            reqEntity.addPart("latitude",
-                    new StringBody(String.valueOf(DashboardActivity.myLat)));
-            reqEntity.addPart("longitude",
-                    new StringBody(String.valueOf(DashboardActivity.myLon)));
-            reqEntity.addPart("checkpoint_id",
-                    new StringBody(scannedCheckPoint));
-            reqEntity.addPart("text", new StringBody(en_notes_str));
+            reqEntity.addPart("ActiIvityId", new StringBody(String.valueOf(ActivityId)));
+            reqEntity.addPart("Taskd", new StringBody(String.valueOf(TaskId)));
+            reqEntity.addPart("UserId", new StringBody(String.valueOf(UserId)));
+            reqEntity.addPart("TimeSpent", new StringBody(NumberOfHoursStr));
+            reqEntity.addPart("CreatedDate", new StringBody("05-20-2016"));
+            reqEntity.addPart("Comments", new StringBody(String.valueOf(CommentStr)));
+            reqEntity.addPart("ID", new StringBody(String.valueOf(CommentStr)));
+
             post.setEntity(reqEntity);
             HttpResponse response = client.execute(post);
             HttpEntity resEntity = response.getEntity();
@@ -296,154 +628,16 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         return serverResponse;
     }
 
-    public class Soap {
+    public static String getContent(HttpResponse response) throws IOException {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(response
+                .getEntity().getContent()));
+        String body = "";
+        String content = "";
 
-
-
-        public static String AudioVideoBaseURL = "http://abcd.com";
-
-
-
-        public static String getSoapResponseForVideoAudio(String postFixOfUrl,
-                                                          List nameValuePairs,
-                                                          List filenameValuePairs) {
-            String xmlString = null;
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpContext localContext = new BasicHttpContext();
-            HttpPost httpPost = new HttpPost(AudioVideoBaseURL + postFixOfUrl);
-
-            try {
-                MultipartEntity entity = new MultipartEntity();
-
-                for (int index = 0; index < filenameValuePairs.size(); index++) {
-                    File myFile = new File(filenameValuePairs.get(index).getValue());
-                    FileBody fileBody = new FileBody(myFile);
-                    entity.addPart(filenameValuePairs.get(index).getName(),
-                            fileBody);
-                }
-
-                for (int index = 0; index < nameValuePairs.size(); index++) {
-
-                    entity.addPart(nameValuePairs.get(index).getName(),
-                            new StringBody(nameValuePairs.get(index).getValue(),
-                                    Charset.forName("UTF-8")));
-
-                }
-
-                httpPost.setEntity(entity);
-
-                HttpResponse response = httpClient.execute(httpPost, localContext);
-                HttpEntity r_entity = response.getEntity();
-                xmlString = EntityUtils.toString(r_entity);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return xmlString.toString();
+        while ((body = rd.readLine()) != null) {
+            content += body + "\n";
         }
-
-
-        public static String apiUploadSong(int userId, int songId,
-                                           String songTitle, String songArtist, String isVideo, String fileData)
-                throws ClientProtocolException, IOException {
-
-            ArrayList alNameValuePairsFile = new ArrayList();
-            NameValuePair nameValuePairsFile = new BasicNameValuePair("fileData",
-                    fileData);
-            alNameValuePairsFile.add(nameValuePairsFile);
-
-            ArrayList alNameValuePairs = new ArrayList();
-
-            NameValuePair nameValuePairs = new BasicNameValuePair("userId", ""
-                    + userId);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("songId", ""+songId);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("songTitle", songTitle);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("songArtist", songArtist);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("isVideo", isVideo);
-            alNameValuePairs.add(nameValuePairs);
-
-            String result = Soap.getSoapResponseForVideoAudio(
-                    "?action=save_video_audio", alNameValuePairs,
-                    alNameValuePairsFile);
-            Log.e("SOAP", "save_video_audio : " + result);
-
-            return result;
-        }
-    }
-
-    public class Soap {
-        public String AudioVideoBaseURL = "http://abcd.com";
-        public String getSoapResponseForVideoAudio(String postFixOfUrl,
-                                                   List nameValuePairs,
-                                                   List filenameValuePairs) {
-            String xmlString = null;
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpContext localContext = new BasicHttpContext();
-            HttpPost httpPost = new HttpPost(AudioVideoBaseURL + postFixOfUrl);
-
-            try {
-                MultipartEntity entity = new MultipartEntity();
-
-                for (int index = 0; index < filenameValuePairs.size(); index++) {
-                    File myFile = new File(filenameValuePairs.get(index).getValue());
-                    FileBody fileBody = new FileBody(myFile);
-                    entity.addPart(filenameValuePairs.get(index).getName(),
-                            fileBody);
-                }
-
-                for (int index = 0; index < nameValuePairs.size(); index++) {
-
-                    entity.addPart(nameValuePairs.get(index).getName(),
-                            new StringBody(nameValuePairs.get(index).getValue(),
-                                    Charset.forName("UTF-8")));
-
-                }
-
-                httpPost.setEntity(entity);
-
-                HttpResponse response = httpClient.execute(httpPost, localContext);
-                HttpEntity r_entity = response.getEntity();
-                xmlString = EntityUtils.toString(r_entity);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return xmlString.toString();
-        }
-
-
-        public  String apiUploadSong(int userId, int songId,
-                                           String songTitle, String songArtist, String isVideo, String fileData)
-                throws ClientProtocolException, IOException {
-
-            ArrayList alNameValuePairsFile = new ArrayList();
-            NameValuePair nameValuePairsFile = new BasicNameValuePair("fileData",
-                    fileData);
-            alNameValuePairsFile.add(nameValuePairsFile);
-
-            ArrayList alNameValuePairs = new ArrayList();
-
-            NameValuePair nameValuePairs = new BasicNameValuePair("userId", ""
-                    + userId);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("songId", ""+songId);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("songTitle", songTitle);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("songArtist", songArtist);
-            alNameValuePairs.add(nameValuePairs);
-            nameValuePairs = new BasicNameValuePair("isVideo", isVideo);
-            alNameValuePairs.add(nameValuePairs);
-
-            String result = Soap.getSoapResponseForVideoAudio("?action=save_video_audio", alNameValuePairs,alNameValuePairsFile);
-            Log.e("SOAP", "save_video_audio : " + result);
-
-            return result;
-        }
+        return content.trim();
     }
 
 }
