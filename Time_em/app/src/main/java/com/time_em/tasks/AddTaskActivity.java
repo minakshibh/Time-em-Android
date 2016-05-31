@@ -88,22 +88,25 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     private int ActivityId;
     private int TaskId;
     private String TaskName;
+    private String CreatedDate;
     private String ImagePathUri, NumberOfHoursStr, CommentStr;
     private String BaseEncodingStr;
 
     public CameraHelper cameraHelper;
     private Time_emJsonParser parser;
     private AddTaskPresenter presenter;
-
+    private TaskEntry taskEntry;
     private ProgressDialog pDialog;
-
+    private ArrayAdapter<String> adapterstate;
     Activity act;
 
     private ArrayList<TaskEntry> taskEntries;
+    ArrayList<String> taskEntryStr;
     private Spinner SpnTaskName;
 
     String url = "http://timeemapi.azurewebsites.net/api/Usertask/AddUpdateUserTaskActivity";
     String id = "1";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -112,20 +115,16 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         act = this;
         UserId = HomeActivity.user.getId();
         ActivityId = HomeActivity.user.getActivityId();
+        taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
 
         presenter = new AddTaskPresenter(this, act);
-
-        if (Utils.isNetworkAvailable(act)) {
-            presenter.Init(UserId);
-        } else {
-            Utils.alertMessage(act, Utils.network_error);
-        }
 
         InitView();
         parser = new Time_emJsonParser(AddTaskActivity.this);
     }
 
     private void InitView() {
+
         NumberHoursEdit = (EditText) findViewById(R.id.NumberHoursEdit);
         CommentEdit = (EditText) findViewById(R.id.CommentEdit);
         AddTaskBtn = (LinearLayout) findViewById(R.id.AddTaskBtn);
@@ -149,6 +148,12 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
             }
 
         });
+
+        if (Utils.isNetworkAvailable(act)) {
+            presenter.Init(UserId, taskEntry);
+        } else {
+            Utils.alertMessage(act, Utils.network_error);
+        }
     }
 
     @Override
@@ -161,8 +166,8 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
                 NumberOfHoursStr = NumberHoursEdit.getText().toString();
                 CommentStr = CommentEdit.getText().toString();
                 if (Utils.isNetworkAvailable(act)) {
-                   new uploadimage().execute();
-                   // presenter.Init(ActivityId, UserId, NumberOfHoursStr, CommentStr, TaskId, TaskName, "", "1");
+                    // new uploadimage().execute();
+                    presenter.Init(ActivityId, UserId, NumberOfHoursStr, CommentStr, TaskId, TaskName, "05-30-2016", "0");
                 } else {
                     Utils.alertMessage(act, Utils.network_error);
                 }
@@ -314,9 +319,9 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byteArray = stream.toByteArray();
                         // Encode Image to String
-                       // BaseEncodingStr = Base64.encodeToString(byteArray, 0);
+                        // BaseEncodingStr = Base64.encodeToString(byteArray, 0);
 
-                       BaseEncodingStr = saveGalaryImageOnLitkat(bitmap);
+                        BaseEncodingStr = saveGalaryImageOnLitkat(bitmap);
                         UploadImage.setImageBitmap(BitmapFactory.decodeFile(BaseEncodingStr));
                         //encodeImage();
                     } catch (FileNotFoundException e) {
@@ -394,13 +399,39 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         }
     }
 
-    public void LoadSpinnerData(ArrayList<String> taskEntry, ArrayList<TaskEntry> taskEntries) {
+    public void LoadSpinnerData(ArrayList<String> taskEntryStr, ArrayList<TaskEntry> taskEntries) {
         this.taskEntries = taskEntries;
+        this.taskEntryStr = taskEntryStr;
 
-        ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, taskEntry);
-        adapter_state.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        SpnTaskName.setAdapter(adapter_state);
+       adapterstate = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, taskEntryStr);
+        adapterstate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        SpnTaskName.setAdapter(adapterstate);
+
+        if (!TaskName.equals(null)) {
+            int spinnerPosition = adapterstate.getPosition(TaskName);
+            SpnTaskName.setSelection(spinnerPosition);
+        }
+    }
+
+    @Override
+    public void LoadCreateDate(String CreatedDate) {
+        this.CreatedDate = CreatedDate;
+    }
+
+    @Override
+    public void LoadComment(String commentStr) {
+        CommentEdit.setText(commentStr);
+    }
+
+    @Override
+    public void LoadSignInHours(Double signinHours) {
+        NumberHoursEdit.setText(String.valueOf(signinHours));
+    }
+
+    @Override
+    public void LoadTaskName(String TaskName) {
+        this.TaskName = TaskName;
     }
 
     @Override
@@ -449,13 +480,13 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
 
             try {//because i need growth
 
-                String upLoadServerUri = url + "ActivityId=" + ActivityId + "&TaskId=" + TaskId + "&UserId=" + UserId + "&TimeSpent=" + NumberOfHoursStr + "&CreatedDate=05-20-2016&Comments="+CommentStr+"&TaskName="+TaskName+"&ID ="+id;
+                String upLoadServerUri = url + "ActivityId=" + ActivityId + "&TaskId=" + TaskId + "&UserId=" + UserId + "&TimeSpent=" + NumberOfHoursStr + "&CreatedDate=05-20-2016&Comments=" + CommentStr + "&TaskName=" + TaskName + "&ID =" + id;
 
                 Log.d("", "upLoadServerUri" + upLoadServerUri);
                 Log.d("", "upLoadServerUri" + upLoadServerUri);
                 Log.d("", "BaseEncodingStr" + BaseEncodingStr);
-               res = multipartRequest(upLoadServerUri, BaseEncodingStr);
-               res = uploadFileToserver();
+                res = multipartRequest(upLoadServerUri, BaseEncodingStr);
+                // res = uploadFileToserver();
                 Log.d("", "resres" + res);
                 // uploadFile1(imagePath);
             } catch (Exception e) {
@@ -601,9 +632,9 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
 //            }
 
             // "&timespant=" + NumberOfHoursStr + "&createddate=05-20-2016&comments=" + CommentStr;
-                File file1 = new File(BaseEncodingStr);
-                imgBody =  new FileBody(file1);
-                reqEntity.addPart("ActiIvityId",imgBody);
+            File file1 = new File(BaseEncodingStr);
+            imgBody = new FileBody(file1);
+            reqEntity.addPart("ActiIvityId", imgBody);
 
 
             reqEntity.addPart("ActiIvityId", new StringBody(String.valueOf(ActivityId)));

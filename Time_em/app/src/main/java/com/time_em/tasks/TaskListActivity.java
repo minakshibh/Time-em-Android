@@ -37,7 +37,7 @@ import com.time_em.model.TaskEntry;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
 
-public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
+public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
     private ListView taskListview;
     private ArrayList<TaskEntry> tasks;
@@ -69,20 +69,20 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         addTaskButton = (ImageView) findViewById(R.id.AddButton);
-        addTaskButton.setVisibility(View.GONE);
-        back = (ImageView)findViewById(R.id.back);
+        // addTaskButton.setVisibility(View.GONE);
+        back = (ImageView) findViewById(R.id.back);
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
-        headerText = (TextView)findViewById(R.id.headerText);
-        UserId = getIntent().getIntExtra("UserId",HomeActivity.user.getId());
+        headerText = (TextView) findViewById(R.id.headerText);
+        UserId = getIntent().getIntExtra("UserId", HomeActivity.user.getId());
 
-        if(UserId == HomeActivity.user.getId()){
+        if (UserId == HomeActivity.user.getId()) {
             headerText.setText("My Tasks");
-        }else{
+        } else {
             String username = getIntent().getStringExtra("UserName");
-            headerText.setText(username+"'s Tasks");
+            headerText.setText(username + "'s Tasks");
         }
-        footer = (LinearLayout)findViewById(R.id.footer);
+        footer = (LinearLayout) findViewById(R.id.footer);
         footer.setVisibility(View.GONE);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(TaskListActivity.this, LinearLayoutManager.HORIZONTAL, false);
@@ -95,14 +95,13 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         dayFormatter = new SimpleDateFormat("E", Locale.US);
 
 
-
-        DateSliderAdapter  adapter = new DateSliderAdapter(arrayList, new OnItemClickListener() {
+        DateSliderAdapter adapter = new DateSliderAdapter(arrayList, new OnItemClickListener() {
             @Override
             public void onItemClick(Calendar item, int position) {
                 String weekDay;
                 SimpleDateFormat dayFormat = new SimpleDateFormat("E", Locale.US);
                 weekDay = dayFormat.format(item.getTime());
-                Utils.showToast(TaskListActivity.this, item.get(Calendar.DAY_OF_MONTH)+" "+weekDay+" Clicked");
+                Utils.showToast(TaskListActivity.this, item.get(Calendar.DAY_OF_MONTH) + " " + weekDay + " Clicked");
 
                 selectedDate = apiDateFormater.format(item.getTime());
                 getTaskList(selectedDate);
@@ -111,7 +110,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
         adapter.notifyDataSetChanged();// Notify the adapter
     }
-
 
 
     private void setUpClickListeners() {
@@ -164,7 +162,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
 
         if (Utils.isNetworkAvailable(TaskListActivity.this)) {
 
-            String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId+"-"+selectedDate+"-" + getResources().getString(R.string.taskTimeStampStr));
+            String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId + "-" + selectedDate + "-" + getResources().getString(R.string.taskTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
                 timeStamp = "";
 
@@ -270,7 +268,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                    intent.putExtra("taskEntry", tasks.get(position));
+                    startActivity(intent);
                 }
             });
         }
@@ -293,16 +293,16 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
     public void processFinish(String output, String methodName) {
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
-        if(methodName.equals(Utils.getTaskListAPI)) {
+        if (methodName.equals(Utils.getTaskListAPI)) {
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
             dbHandler.updateTask(taskEntries, selectedDate);
 
             tasks = dbHandler.getTaskEnteries(UserId, selectedDate);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
-        }else if(methodName.equals(Utils.deleteTaskAPI)) {
+        } else if (methodName.equals(Utils.deleteTaskAPI)) {
             boolean error = parser.parseDeleteTaskResponse(output);
-            if(!error) {
+            if (!error) {
                 getTaskList(selectedDate);
             }
         }
@@ -318,16 +318,19 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             this.listener = listener;
         }
 
-        @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.date_slider_row, parent, false);
             return new ViewHolder(v);
         }
 
-        @Override public void onBindViewHolder(ViewHolder holder, int position) {
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
             holder.bind(items.get(position), listener, position);
         }
 
-        @Override public int getItemCount() {
+        @Override
+        public int getItemCount() {
             return items.size();
         }
 
@@ -343,10 +346,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             }
 
             public void bind(final Calendar item, final OnItemClickListener listener, final int pos) {
-                if(selectedPos==pos) {
+                if (selectedPos == pos) {
                     date.setBackgroundResource(R.drawable.date_bg);
                     date.setTextColor(Color.WHITE);
-                }else {
+                } else {
                     date.setBackgroundResource(R.drawable.date_bg_grey);
                     date.setTextColor(Color.BLACK);
                 }
@@ -354,7 +357,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
                 date.setText(dateFormatter.format(item.getTime()));
                 day.setText(dayFormatter.format(item.getTime()));
                 itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override public void onClick(View v) {
+                    @Override
+                    public void onClick(View v) {
                         notifyItemChanged(selectedPos);
                         selectedPos = pos;
                         notifyItemChanged(selectedPos);
