@@ -53,6 +53,9 @@ public class Utils {
     static public String getSpinnerTypeAPI = "/Task/GetAssignedTaskIList";
     static public String GetAddUpdateUserTaskAPI = "UserTask/AddUpdateUserTaskActivity";
     static public String deleteTaskAPI = "/UserTask/DeleteTask";
+    static public String GetUsersListByLoginCode = "/User/GetUsersListByLoginCode";
+    static public String SignInByUserId =  "/UserActivity/SignInByUserId";
+    static public String SignOutByUserId =  "/UserActivity/SignOutByUserId";
 
 
     public static void showToast(Context context, String message) {
@@ -134,6 +137,7 @@ public class Utils {
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 while ((line = br.readLine()) != null) {
                     response += line;
+                    Log.d(functionName,response);
                 }
             } else {
                 response = "";
@@ -213,6 +217,7 @@ public class Utils {
                 BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 while ((line = br.readLine()) != null) {
                     response += line;
+                    Log.d(functionName,response);
                 }
             } else {
                 response = "";
@@ -228,26 +233,34 @@ public class Utils {
         return response;
     }
 
-    public static void ChangeStatus(Context context, User user) {
-        String apiMethod = "";
+    public static void ChangeStatus(Context context,String userIds,String status) {
+
 
         if (Utils.isNetworkAvailable(context)) {
+           String methodName="";
 
-            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+      //      postDataParameters.put("LoginId", user.getLoginID());
 
-            postDataParameters.put("userId", String.valueOf(user.getId()));
-            postDataParameters.put("LoginId", user.getLoginID());
+          //  Log.e("values", "login Id: " + user.getLoginID() + " ,user Id: " + user.getId() + " ,activity id: " + String.valueOf(user.getActivityId()));
 
-            Log.e("values", "login Id: " + user.getLoginID() + " ,user Id: " + user.getId() + " ,activity id: " + String.valueOf(user.getActivityId()));
-
-            if (user.isSignedIn()) {
+           /* if (user.isSignedIn()) {
                 apiMethod = Utils.sigOutAPI;
                 postDataParameters.put("ActivityId", String.valueOf(user.getActivityId()));
             } else {
                 apiMethod = Utils.signInAPI;
+            }*/
+            if(status.equalsIgnoreCase("signIn")) {
+                methodName=Utils.SignInByUserId;
             }
+            else if(status.equalsIgnoreCase("signOut")) {
+                methodName=Utils.SignOutByUserId;
+            }
+
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("Userids", userIds);
+
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                    (Activity) context, "post", apiMethod,
+                    (Activity) context, "get",  methodName,
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) context;
             mWebPageTask.execute();

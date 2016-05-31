@@ -182,7 +182,8 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 				@Override
 				public void onClick(View v) {
 					user = team.get(position);
-					Utils.ChangeStatus(UserListActivity.this,user);
+
+					Utils.ChangeStatus(UserListActivity.this,""+user.getId(),"signIn");
 				}
 			});
 		}

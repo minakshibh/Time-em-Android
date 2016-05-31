@@ -74,7 +74,11 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			if(v == changeStatus){
-				Utils.ChangeStatus(ChangeStatusActivity.this, HomeActivity.user);
+				if(HomeActivity.user.isSignedIn()) {
+					Utils.ChangeStatus(ChangeStatusActivity.this, "" + HomeActivity.user.getId(),"signOut");
+				}else{
+					Utils.ChangeStatus(ChangeStatusActivity.this, "" + HomeActivity.user.getId(),"signIn");
+				}
 			}else if (v == cancel){
 				finish();
 			}
@@ -90,8 +94,8 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 		Log.e("output", output);
 		
 //		Utils.alertMessage(ChangeStatusActivity.this, output);
-		isError = parser.parseChangeStatusResponse(output, methodName);
-		if(!isError)
-			updateUI();
+		//isError = parser.parseChangeStatusResponse(output, methodName);
+		//if(!isError)
+			//updateUI();
 	}
 }

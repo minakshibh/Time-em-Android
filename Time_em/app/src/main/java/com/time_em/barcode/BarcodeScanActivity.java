@@ -7,7 +7,6 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,31 +16,34 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.time_em.android.R;
+import com.time_em.asynctasks.AsyncResponseTimeEm;
+import com.time_em.asynctasks.AsyncTaskTimeEm;
+import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
-import com.time_em.model.ScanDetail;
 import com.time_em.model.User;
+import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.Utils;
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
-public class BarcodeScanActivity extends Activity {
+public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm {
 
     private Camera mCamera;
     private CameraPreview mPreview;
     private Handler autoFocusHandler;
     private ListView listView;
-    public ArrayList<ScanDetail> arrayList = new ArrayList<>();
+    public ArrayList<String> arrayList_scanCode = new ArrayList<>();
     private int i = 0;
     private Button scanButton;
     private ImageScanner scanner;
@@ -57,7 +59,8 @@ public class BarcodeScanActivity extends Activity {
     private TextView headerText;
     private ImageView back, AddButton;
     private String strUserIds="";
-    int code;
+    long scanCode=0;
+    private Time_emJsonParser parser;
     static {
         System.loadLibrary("iconv");
     }
@@ -78,39 +81,11 @@ public class BarcodeScanActivity extends Activity {
 
 
 
-    private void fetchUserByBarCode() {
-        dbHandler = new TimeEmDbHandler(getApplicationContext());
 
-           if(arrayList!=null && arrayList.size()>0) {
-              for(int i=0;i<arrayList.size();i++) {
-                code = Integer.parseInt(arrayList.get(i).getCode().trim());
-                  user=  dbHandler.getTeamByLoginId(code);
-                      if(user==null) {
-                          Toast.makeText(getApplicationContext(),"User not found "+code,Toast.LENGTH_LONG).show();
-                      }
-                      else {
-                          arrayListUsers.add(user);
-                      }
-                  }
-
-
-          }
-       /* user = dbHandler.getTeamByLoginId(1001);
-        arrayListUsers.add(user);
-        user = dbHandler.getTeamByLoginId(1006);
-        arrayListUsers.add(user);*/
-
-    }
 
     private void UISetUp() {
 
-        if (barcodeScanned) {
-            barcodeScanned = false;
-            mCamera.setPreviewCallback(previewCb);
-            mCamera.startPreview();
-            previewing = true;
-            mCamera.autoFocus(autoFocusCB);
-        }
+
         headerText=(TextView)findViewById(R.id.headerText);
         headerText.setText("BarCode Scan");
         back=(ImageView)findViewById(R.id.back);
@@ -132,27 +107,34 @@ public class BarcodeScanActivity extends Activity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                releaseCamera();
                 finish();
             }
         });
         btn_signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Log.e("Ids=", getAllUsersIds(arrayListUsers));
-                finish();
+                String Ids=getAllUsersIds(arrayListUsers);
+                Log.e("Ids=", Ids);
+                releaseCamera();
+                Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"signIn");
+               // finish();;
 
             }
         });
         btn_signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Ids=", getAllUsersIds(arrayListUsers));
-                finish();
+                String Ids=getAllUsersIds(arrayListUsers);
+                Log.e("Ids=", Ids);
+                releaseCamera();
+                Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"SignOut");
+              //  finish();
             }
         });
     }
     private void initControls() {
-        arrayList.clear();
+        arrayList_scanCode.clear();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 
@@ -192,9 +174,7 @@ public class BarcodeScanActivity extends Activity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
-
-    /**
+   /**
      * A safe way to get an instance of the Camera object.
      */
     public static Camera getCameraInstance() {
@@ -205,7 +185,6 @@ public class BarcodeScanActivity extends Activity {
         }
         return c;
     }
-
     private void releaseCamera() {
         if (mCamera != null) {
             previewing = false;
@@ -240,18 +219,13 @@ public class BarcodeScanActivity extends Activity {
                 SymbolSet syms = scanner.getResults();
                 for (Symbol sym : syms) {
 
-                    Log.i("<<<<<<Asset Code>>>>> ",
-                            "<<<<Bar Code>>> " + sym.getData());
+                    Log.i("<<<<<<Asset Code>>>>> ", "<<<<Bar Code>>> " + sym.getData());
                     String scanResult = sym.getData().trim();
-
-
                     showAlertDialog(scanResult);
 
                   /*  Toast.makeText(BarcodeScanActivity.this, scanResult,
                             Toast.LENGTH_SHORT).show();*/
-
                     barcodeScanned = true;
-
                     break;
                 }
             }
@@ -266,17 +240,17 @@ public class BarcodeScanActivity extends Activity {
     };
 
 
-    private void showAlertDialog(String message) {
+    private void showAlertDialog(String code) {
 
         //add value to array List
-        i++;
-        ScanDetail scan = new ScanDetail();
-        scan.setId(i);
-        scan.setCode(message);
-        arrayList.add(scan);
+       // i++;
+       // ScanDetail scan = new ScanDetail();
+       // scan.setId(i);
+       // scan.setCode(message);
+        arrayList_scanCode.add(code);
 
         new AlertDialog.Builder(this)
-                .setTitle(message)
+                .setTitle(code)
                 .setCancelable(false)
                 .setMessage("Barcode scan successfully. Do you want to scan another barcode?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -293,10 +267,11 @@ public class BarcodeScanActivity extends Activity {
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        fetchUserByBarCode();
                         setAdapter();
                         lay_listView.setVisibility(View.VISIBLE);
                         preview.setVisibility(View.GONE);
-
+                        releaseCamera();
                     }
                 })
 
@@ -304,7 +279,7 @@ public class BarcodeScanActivity extends Activity {
     }
 
     private void setAdapter() {
-        fetchUserByBarCode();
+
         if (arrayListUsers.size() == 0) {
             lay_listView.setVisibility(View.GONE);
         } else {
@@ -312,6 +287,36 @@ public class BarcodeScanActivity extends Activity {
             listView.setAdapter(adapter);
             lay_listView.setVisibility(View.VISIBLE);
         }
+    }
+    private void fetchUserByBarCode() {
+        dbHandler = new TimeEmDbHandler(getApplicationContext());
+
+        if(arrayList_scanCode!=null && arrayList_scanCode.size()>0) {
+            for(int i=0;i<arrayList_scanCode.size();i++) {
+                try {
+                    scanCode = Long.parseLong(arrayList_scanCode.get(i).trim());
+                    user=  dbHandler.getTeamByLoginCode(scanCode);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),"Try again..",Toast.LENGTH_LONG).show();
+                }
+
+                if(user==null) {
+                    Toast.makeText(getApplicationContext(),"User not found "+scanCode,Toast.LENGTH_LONG).show();
+                    getUserDetails(scanCode);
+                }
+                else {
+                    arrayListUsers.add(user);
+                }
+            }
+
+
+        }
+       /* user = dbHandler.getTeamByLoginId(1001);
+        arrayListUsers.add(user);
+        user = dbHandler.getTeamByLoginId(1006);
+        arrayListUsers.add(user);*/
+
     }
     private String getAllUsersIds(ArrayList<User> arrayList){
        String strUserIds="";
@@ -321,15 +326,34 @@ public class BarcodeScanActivity extends Activity {
             {
                 if(i==0)
                 {
-                    strUserIds=arrayList.get(i).getLoginID();
+                    strUserIds=""+arrayList.get(i).getId();
                     }
                 else{
-                    strUserIds=strUserIds+","+arrayList.get(i).getLoginID();
+                    strUserIds=strUserIds+","+arrayList.get(i).getId();
                      }
                 }
             }
         return strUserIds;
     }
+
+    private void getUserDetails(long userCode){
+
+        if (Utils.isNetworkAvailable(BarcodeScanActivity.this)) {
+        //http://timeemapi.azurewebsites.net/api/User/GetUsersListByLoginCode?Logincode=9105
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("Logincode", String.valueOf(userCode));
+
+            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                    BarcodeScanActivity.this, "get", Utils.GetUsersListByLoginCode,
+                    postDataParameters, true, "Please wait...");
+            mWebPageTask.delegate = (AsyncResponseTimeEm) BarcodeScanActivity.this;
+            mWebPageTask.execute();
+
+        } else {
+            Utils.alertMessage(BarcodeScanActivity.this, Utils.network_error);
+        }
+    }
+
     public class ListAdapter extends BaseAdapter {
         private Context context;
         private ArrayList<User> arrayList;
@@ -429,6 +453,64 @@ public class BarcodeScanActivity extends Activity {
             ImageView status, shift;
         }
     }
+
+
+    @Override
+    public void processFinish(String output, String methodName) {
+        parser = new Time_emJsonParser(BarcodeScanActivity.this);
+
+
+        if(methodName.contains(Utils.GetUsersListByLoginCode)) {
+              ArrayList<User> teamMembers = parser.getTeamList(output, methodName);
+              arrayListUsers.addAll(teamMembers);
+              setAdapter();
+            //  TimeEmDbHandler dbHandler = new TimeEmDbHandler(BarcodeScanActivity.this);
+            //  dbHandler.updateTeam(teamMembers);
+            }
+         else if(methodName.contains(Utils.SignInByUserId)){
+            ArrayList<User> teamMembers = parser.parseChangeStatusResponse(output, methodName);
+                  //if(isError)
+               //   {
+                 //     Utils.alertMessage(BarcodeScanActivity.this, " User Signed in Successfully.");
+                    if(teamMembers!=null && teamMembers.size()>0) {
+                        TimeEmDbHandler dbHandler = new TimeEmDbHandler(BarcodeScanActivity.this);
+                        for(int i=0;i<teamMembers.size();i++) {
+                            dbHandler.updateStatus(teamMembers.get(i).getId(),""+teamMembers.get(i).getActivityId()
+                                    ,teamMembers.get(i).getSignInAt(),true);
+                        }
+
+                       // setAdapter();
+                    }
+                   //   }
+
+                  else{
+                      Utils.alertMessage(BarcodeScanActivity.this, "User already Signed In.");
+                  }
+
+              //finish();
+              }
+          else if(methodName.contains(Utils.SignOutByUserId)){
+            ArrayList<User> teamMembers = parser.parseChangeStatusResponse(output, methodName);
+            if(teamMembers!=null && teamMembers.size()>0) {
+                TimeEmDbHandler dbHandler = new TimeEmDbHandler(BarcodeScanActivity.this);
+                for (int i = 0; i < teamMembers.size(); i++) {
+                    dbHandler.updateStatus(teamMembers.get(i).getId(), "" + teamMembers.get(i).getActivityId()
+                            , teamMembers.get(i).getSignInAt(), false);
+                }
+               // arrayListUsers = dbHandler.getTeam(HomeActivity.user.getId());
+            }
+                  else{
+                      Utils.alertMessage(BarcodeScanActivity.this, " User already Signed Out.");
+
+                    }
+             // finish();
+                }
+
+        }
+
+
+
+
 }
 
 
