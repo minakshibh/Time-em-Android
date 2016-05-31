@@ -54,7 +54,7 @@ public class AddTaskPresenter {
         if (taskEntry != null) {
             taskEntryPre.CreatedDate = taskEntry.getCreatedDate();
             taskEntryPre.CommentStr = taskEntry.getComments();
-            taskEntryPre.SigninHours = taskEntry.getSignedInHours();
+            taskEntryPre.TimeSpent = taskEntry.getTimeSpent();
             taskEntryPre.TaskName = taskEntry.getTaskName();
 
             view.LoadCreateDate(taskEntryPre.CreatedDate);
@@ -62,8 +62,8 @@ public class AddTaskPresenter {
             if (taskEntryPre.CommentStr != null)
                 view.LoadComment(taskEntryPre.CommentStr);
 
-            if (taskEntryPre.SigninHours != null)
-                view.LoadSignInHours(taskEntryPre.SigninHours);
+            if (taskEntryPre.TimeSpent != null)
+                view.LoadTimeSpent(taskEntryPre.TimeSpent);
 
             if (taskEntryPre.TaskName != null)
                 view.LoadTaskName(taskEntryPre.TaskName);
@@ -111,7 +111,7 @@ public class AddTaskPresenter {
 
         void LoadComment(String commentStr);
 
-        void LoadSignInHours(Double signinHours);
+        void LoadTimeSpent(Double signinHours);
 
         void LoadTaskName(String taskName);
     }
@@ -120,7 +120,7 @@ public class AddTaskPresenter {
         public String CreatedDate;
         public String TaskName;
         public String CommentStr;
-        public Double SigninHours;
+        public Double TimeSpent;
 
     }
 }

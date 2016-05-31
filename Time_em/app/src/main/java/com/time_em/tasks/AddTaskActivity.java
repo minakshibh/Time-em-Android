@@ -89,8 +89,10 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     private int TaskId;
     private String TaskName;
     private String CreatedDate;
+    private String AddNewtask;
     private String ImagePathUri, NumberOfHoursStr, CommentStr;
     private String BaseEncodingStr;
+    private String selectedDate;
 
     public CameraHelper cameraHelper;
     private Time_emJsonParser parser;
@@ -115,8 +117,14 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         act = this;
         UserId = HomeActivity.user.getId();
         ActivityId = HomeActivity.user.getActivityId();
-        taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
+        selectedDate = getIntent().getStringExtra("selectedDate");
+        AddNewtask = getIntent().getStringExtra("AddNewtask");
 
+        taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
+        if (AddNewtask == null ){
+            AddNewtask = String.valueOf(taskEntry.getId());
+            TaskId = taskEntry.getTaskId();
+        }
         presenter = new AddTaskPresenter(this, act);
 
         InitView();
@@ -167,7 +175,7 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
                 CommentStr = CommentEdit.getText().toString();
                 if (Utils.isNetworkAvailable(act)) {
                     // new uploadimage().execute();
-                    presenter.Init(ActivityId, UserId, NumberOfHoursStr, CommentStr, TaskId, TaskName, "05-30-2016", "0");
+                    presenter.Init(ActivityId, UserId, NumberOfHoursStr, CommentStr, TaskId, TaskName, selectedDate, AddNewtask);
                 } else {
                     Utils.alertMessage(act, Utils.network_error);
                 }
@@ -425,8 +433,8 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     }
 
     @Override
-    public void LoadSignInHours(Double signinHours) {
-        NumberHoursEdit.setText(String.valueOf(signinHours));
+    public void LoadTimeSpent(Double TimeSpent) {
+        NumberHoursEdit.setText(String.valueOf(TimeSpent));
     }
 
     @Override

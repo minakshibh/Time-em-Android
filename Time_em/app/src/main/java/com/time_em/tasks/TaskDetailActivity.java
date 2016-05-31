@@ -43,7 +43,7 @@ public class TaskDetailActivity extends Activity {
         txtDate.setText(date);
         taskDesc.setText(taskEntry.getTaskName());
         taskComments.setText(taskEntry.getComments());
-        hoursWorked.setText(String.valueOf(taskEntry.getSignedInHours()));
+        hoursWorked.setText(String.valueOf(taskEntry.getTimeSpent()));
     }
 
     private void setClickListeners(){

@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.time_em.android.DependencyResolver;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
@@ -39,10 +40,12 @@ import com.time_em.utils.Utils;
 
 public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
+    private DependencyResolver resolver;
+
     private ListView taskListview;
     private ArrayList<TaskEntry> tasks;
     private Time_emJsonParser parser;
-    private int UserId;
+    private String UserId;
     private ImageView addTaskButton, back;
     private TextView headerText;
     private Intent intent;
@@ -53,11 +56,15 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private int selectedPos = 14;
     private String selectedDate;
 
+    public Context mContext;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
+        mContext = getApplicationContext();
+        resolver = new DependencyResolver(mContext);
 
         populatRecyclerView();
         initScreen();
@@ -74,9 +81,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
         headerText = (TextView) findViewById(R.id.headerText);
-        UserId = getIntent().getIntExtra("UserId", HomeActivity.user.getId());
+        UserId = resolver.pref().GetUserId();
 
-        if (UserId == HomeActivity.user.getId()) {
+        if (UserId.equalsIgnoreCase(String.valueOf(HomeActivity.user.getId()))) {
             headerText.setText("My Tasks");
         } else {
             String username = getIntent().getStringExtra("UserName");
@@ -117,6 +124,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             @Override
             public void onClick(View v) {
                 intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                intent.putExtra("selectedDate", selectedDate);
+                intent.putExtra("AddNewtask", "0");
                 startActivity(intent);
             }
         });
@@ -168,11 +177,11 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
-            postDataParameters.put("userId", String.valueOf(UserId));
+            postDataParameters.put("userId", UserId);
             postDataParameters.put("createdDate", createdDate);
             postDataParameters.put("TimeStamp", timeStamp);
 
-            Log.e("values", "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
+            Log.e("values", "userid: " + UserId + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
 
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     TaskListActivity.this, "post", Utils.getTaskListAPI,
@@ -244,7 +253,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
             taskName.setText(selectedtask.getTaskName());
             taskComments.setText(selectedtask.getComments());
-            hours.setText("(" + String.valueOf(selectedtask.getSignedInHours()) + ") Hours");
+            hours.setText("(" + String.valueOf(selectedtask.getTimeSpent()) + ") Hours");
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -270,6 +279,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 public void onClick(View v) {
                     Intent intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
                     intent.putExtra("taskEntry", tasks.get(position));
+                    intent.putExtra("selectedDate", selectedDate);
                     startActivity(intent);
                 }
             });
@@ -294,11 +304,11 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
         if (methodName.equals(Utils.getTaskListAPI)) {
-            ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
+            ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, Integer.parseInt(UserId), selectedDate);
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
             dbHandler.updateTask(taskEntries, selectedDate);
 
-            tasks = dbHandler.getTaskEnteries(UserId, selectedDate);
+            tasks = dbHandler.getTaskEnteries(Integer.parseInt(UserId), selectedDate);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
         } else if (methodName.equals(Utils.deleteTaskAPI)) {
             boolean error = parser.parseDeleteTaskResponse(output);
