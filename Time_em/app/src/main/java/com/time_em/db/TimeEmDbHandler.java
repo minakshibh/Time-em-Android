@@ -466,12 +466,12 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 	}
 
-	public void updateStatus(int userId,String activityId,String signInAt,boolean isSignedIn) {
+	public void updateStatus(int userId,String activityId,String signInAt,String signOutAt,boolean isSignedIn) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		//for (int i = 0; i < team.size(); i++) {
 		//	User user = team.get(i);
 			String selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where "
-					+ UserId + "=" + userId;
+					+ UserId + " = " + userId;
 			try {
 				ContentValues values = new ContentValues();
 
@@ -485,7 +485,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(ActivityId, String.valueOf(activityId));
 				//values.put(TaskActivityId,String.valueOf(user.getTaskActivityId()));
 				//values.put(LoginID, user.getLoginID());
-				//values.put(SignOutAt, user.getSignOutAt());
+				values.put(SignOutAt, signOutAt);
 				values.put(SignInAt, signInAt);
 			//	values.put(FirstName, user.getFirstName());
 			//	values.put(LastName, user.getLastName());

@@ -183,7 +183,11 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 				public void onClick(View v) {
 					user = team.get(position);
 
-					Utils.ChangeStatus(UserListActivity.this,""+user.getId(),"signIn");
+					if(user.isSignedIn()) {
+						Utils.ChangeStatus(UserListActivity.this, "" + user.getId(), "signOut");
+					}else{
+						Utils.ChangeStatus(UserListActivity.this, "" + user.getId(), "signIn");
+					}
 				}
 			});
 		}
@@ -212,6 +216,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 			dbHandler.updateTeam(teamMembers);
 
 			team = dbHandler.getTeam(HomeActivity.user.getId());
+
 
 			taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
 		}else{

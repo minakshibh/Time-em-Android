@@ -217,9 +217,9 @@ public class Time_emJsonParser {
 		return taskList;
 	}
 	
-	public ArrayList<User> parseChangeStatusResponse(String webResponse,String methodName) {
+	public ArrayList<User> parseSignInChangeStatusResponse(String webResponse,String methodName) {
 		int id = 0, activeId=0;
-		String signInAt = "", signOutAt = "";
+		String signInAt = "";
 		ArrayList<User> array_user = new ArrayList<User>();
 		JSONArray jArray=null;
 		try {
@@ -227,55 +227,51 @@ public class Time_emJsonParser {
 			isError = jObject.getBoolean("isError");
 			message = jObject.getString("Message");
 			if(!isError) {
-				if (methodName.contains(Utils.SignInByUserId)){
-					 jArray = jObject.getJSONArray("SignedinUser");
-				}else{
-					 jArray = jObject.getJSONArray("SignedOutUser");
-				}
-			for(int i = 0; i<jArray.length(); i++) {
+				if (!message.contains("User already")) {
+					jArray = jObject.getJSONArray("SignedinUser");
 
-				User user=new User();
-				JSONObject taskObject = jArray.getJSONObject(i);
-				activeId = taskObject.getInt("Id");
-				user.setActivityId(activeId);
-				id = taskObject.getInt("UserId");
-				user.setId(id);
+					for (int i = 0; i < jArray.length(); i++) {
 
-				if (methodName.contains(Utils.SignInByUserId)) {
-					signInAt = taskObject.getString("SignInAt");
-				}else{
-					signInAt = taskObject.getString("SignOutAt");
-				}
+						User user = new User();
+						JSONObject taskObject = jArray.getJSONObject(i);
 
-				user.setSignInAt(signInAt);
-				array_user.add(user);
+						activeId = taskObject.getInt("Id");
+						user.setActivityId(activeId);
 
-			///save id to home screen
-				if(id == HomeActivity.user.getId()) {
-					if (methodName.equals(Utils.signInAPI)) {
-						id = jObject.getInt("Id");
-						if (isError)
-							HomeActivity.user.setSignedIn(false);
-						else {
-							HomeActivity.user.setSignedIn(true);
-							HomeActivity.user.setActivityId(id);
-						}
-					} else {
-						//signOutAt = jObject.getString("SignOutAt");
-						if (isError)
-							HomeActivity.user.setSignedIn(true);
-						else {
-							HomeActivity.user.setSignedIn(false);
-							HomeActivity.user.setActivityId(0);
+						id = taskObject.getInt("UserId");
+						user.setId(id);
+
+						signInAt = taskObject.getString("SignInAt");
+						user.setSignInAt(signInAt);
+
+						array_user.add(user);
+
+						///save id to home screen
+						if (id == HomeActivity.user.getId()) {
+							if (methodName.equals(Utils.signInAPI)) {
+								id = taskObject.getInt("Id");
+								if (isError)
+									HomeActivity.user.setSignedIn(false);
+								else {
+									HomeActivity.user.setSignedIn(true);
+									HomeActivity.user.setActivityId(id);
+								}
+							} else {
+								//signOutAt = jObject.getString("SignOutAt");
+								if (isError)
+									HomeActivity.user.setSignedIn(true);
+								else {
+									HomeActivity.user.setSignedIn(false);
+									HomeActivity.user.setActivityId(0);
+								}
+							}
+
+							Utils.saveInSharedPrefs(context, "isSignedIn", String.valueOf(HomeActivity.user.isSignedIn()));
+							Utils.saveInSharedPrefs(context, "activityId", String.valueOf(HomeActivity.user.getActivityId()));
 						}
 					}
-
-					Utils.saveInSharedPrefs(context, "isSignedIn", String.valueOf(HomeActivity.user.isSignedIn()));
-					Utils.saveInSharedPrefs(context, "activityId", String.valueOf(HomeActivity.user.getActivityId()));
-				}
 				}
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -284,7 +280,73 @@ public class Time_emJsonParser {
 
 		return array_user;
 	}
+	public ArrayList<User> parseSignOutChangeStatusResponse(String webResponse,String methodName) {
+		int id = 0, activeId=0;
+		String  signOutAt = "",SignInAt="";
+		ArrayList<User> array_user = new ArrayList<User>();
+		JSONArray jArray=null;
+		try {
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("isError");
+			message = jObject.getString("Message");
+			if(!isError) {
 
+				if (!message.contains("User already")) {
+					jArray = jObject.getJSONArray("SignedOutUser");
+
+					for (int i = 0; i < jArray.length(); i++) {
+
+						User user = new User();
+						JSONObject taskObject = jArray.getJSONObject(i);
+
+					//	activeId = taskObject.getInt("Id");
+					//	user.setActivityId(activeId);
+
+						id = taskObject.getInt("UserId");
+						user.setId(id);
+
+						SignInAt = taskObject.getString("SignInAt");
+						user.setSignInAt(SignInAt);
+
+						signOutAt = taskObject.getString("SignOutAt");
+						user.setSignInAt(signOutAt);
+
+						array_user.add(user);
+
+					/*	///save id to home screen
+						if (id == HomeActivity.user.getId()) {
+							if (methodName.equals(Utils.signInAPI)) {
+								id = taskObject.getInt("Id");
+								if (isError)
+									HomeActivity.user.setSignedIn(false);
+								else {
+									HomeActivity.user.setSignedIn(true);
+									HomeActivity.user.setActivityId(id);
+								}
+							} else {
+								//signOutAt = jObject.getString("SignOutAt");
+								if (isError)
+									HomeActivity.user.setSignedIn(true);
+								else {
+									HomeActivity.user.setSignedIn(false);
+									HomeActivity.user.setActivityId(0);
+								}
+							}
+
+							Utils.saveInSharedPrefs(context, "isSignedIn", String.valueOf(HomeActivity.user.isSignedIn()));
+							Utils.saveInSharedPrefs(context, "activityId", String.valueOf(HomeActivity.user.getActivityId()));
+						}*/
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Utils.showToast(context, message);
+
+		return array_user;
+	}
 	public ArrayList<TaskEntry> parseSpinnneData(String webResponse, int id) {
 		ArrayList<TaskEntry> taskList = new ArrayList<TaskEntry>();
 		try {

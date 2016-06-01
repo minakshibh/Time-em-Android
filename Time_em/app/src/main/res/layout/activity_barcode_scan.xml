@@ -31,20 +31,31 @@
             android:layout_alignBottom="@+id/listView"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal" >
-        <Button
+        <TextView
             android:id="@+id/btn_signIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="Sign In" />
-            <Button
-                android:id="@+id/btn_signOut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:text="Sign Out" />
+            android:padding="12dp"
+            android:gravity="center"
+            android:drawableLeft="@drawable/signin"
+            android:textColor="@color/white"
+            android:background="@color/sendTextColor"
+            android:text="Sign In All" />
+        <TextView
+            android:id="@+id/btn_signOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="1dp"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:gravity="center"
+            android:drawableLeft="@drawable/signout"
+            android:textColor="@color/white"
+            android:background="@color/sendTextColor"
+            android:text="Sign Out All" />
     </LinearLayout>
 
 </RelativeLayout>
