@@ -42,6 +42,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String EndTime = "EndTime";
 	private String SelectedDate = "SelectedDate";
 	private String Token = "Token";
+	private String AttachementImageFile = "AttachementImageFile";
 	private String TimeSpent = "TimeSpent";
 	private String SignedInHours = "SignedInHours";
 	private String TaskDate = "TaskDate";
@@ -104,7 +105,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ " TEXT," + UserId + " TEXT," + TaskName + " TEXT," + Comments
 				+ " TEXT," + StartTime + " TEXT," + CreatedDate + " TEXT,"
 				+ EndTime + " TEXT," + SelectedDate + " TEXT," + Token
-				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + TaskDate + " TEXT)";
+				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachementImageFile + " TEXT," + TaskDate + " TEXT)";
+
 
 		String CREATE_USER_TABLE = "CREATE TABLE if NOT Exists " + TABLE_TEAM
 				+ "(" + UserId + " TEXT," + SupervisorId + " TEXT,"
@@ -192,6 +194,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(EndTime, taskEntry.getEndTime());
 				values.put(SelectedDate, taskEntry.getSelectedDate());
 				values.put(Token, taskEntry.getToken());
+				values.put(AttachementImageFile, taskEntry.GetAttachementImageFile());
 				values.put(TimeSpent, String.valueOf(taskEntry.getTimeSpent()));
 				values.put(SignedInHours,
 						String.valueOf(taskEntry.getSignedInHours()));
@@ -360,6 +363,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 							.getColumnIndex(SelectedDate)));
 					taskEntry.setToken(cursor.getString(cursor
 							.getColumnIndex(Token)));
+					taskEntry.setToken(cursor.getString(cursor
+							.getColumnIndex(AttachementImageFile)));
 					taskEntry.setTimeSpent(Double.valueOf(cursor
 							.getString(cursor.getColumnIndex(TimeSpent))));
 					taskEntry.setSignedInHours(Double.valueOf(cursor

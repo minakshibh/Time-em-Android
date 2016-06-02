@@ -1,9 +1,11 @@
 package com.time_em.ImageLoader;
 
+
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class Utils {
+public class ImageLoaderUtils {
+
     public static void CopyStream(InputStream is, OutputStream os)
     {
         final int buffer_size=1024;
