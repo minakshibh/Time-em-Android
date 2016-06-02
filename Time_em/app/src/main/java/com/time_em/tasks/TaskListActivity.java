@@ -76,7 +76,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         addTaskButton = (ImageView) findViewById(R.id.AddButton);
-        // addTaskButton.setVisibility(View.GONE);
+        addTaskButton.setVisibility(View.VISIBLE);
         back = (ImageView) findViewById(R.id.back);
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);

@@ -77,7 +77,7 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
 
     private LinearLayout AddTaskBtn;
     private LinearLayout uploadLayout;
-    private ImageView UploadImage;
+    private ImageView UploadImage, back;
     private EditText CommentEdit;
     private EditText NumberHoursEdit;
 
@@ -121,7 +121,7 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         AddNewtask = getIntent().getStringExtra("AddNewtask");
 
         taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
-        if (AddNewtask == null ){
+        if (AddNewtask == null) {
             AddNewtask = String.valueOf(taskEntry.getId());
             TaskId = taskEntry.getTaskId();
         }
@@ -132,7 +132,8 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     }
 
     private void InitView() {
-
+        back = (ImageView) findViewById(R.id.back);
+        back.setOnClickListener(this);
         NumberHoursEdit = (EditText) findViewById(R.id.NumberHoursEdit);
         CommentEdit = (EditText) findViewById(R.id.CommentEdit);
         AddTaskBtn = (LinearLayout) findViewById(R.id.AddTaskBtn);
@@ -179,7 +180,10 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
                 } else {
                     Utils.alertMessage(act, Utils.network_error);
                 }
-
+                break;
+            case R.id.back:
+                finish();
+                break;
         }
     }
 
@@ -411,7 +415,7 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         this.taskEntries = taskEntries;
         this.taskEntryStr = taskEntryStr;
 
-       adapterstate = new ArrayAdapter<String>(this,
+        adapterstate = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, taskEntryStr);
         adapterstate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         SpnTaskName.setAdapter(adapterstate);
@@ -579,9 +583,6 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
 
                 inputStream = connection.getInputStream();
                 result = this.convertStreamToString(inputStream);
-                Log.d("", "result----------------------------------->>>>>>>>>>>" + result);
-                Log.d("", "result----------------------------------->>>>>>>>>>>" + result);
-                Log.d("", "result----------------------------------->>>>>>>>>>>" + result);
                 fileInputStream.close();
                 inputStream.close();
                 outputStream.flush();
