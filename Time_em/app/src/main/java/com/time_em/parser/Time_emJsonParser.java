@@ -199,6 +199,7 @@ public class Time_emJsonParser {
 			task.setSelectedDate(taskObject.getString("SelectedDate"));
 			task.setToken(taskObject.getString("Token"));
 			task.setIsActive(taskObject.getBoolean("isActive"));
+			task.SetAttachementImageFile(taskObject.getString("AttachmentImageFile"));
 			
 			taskList.add(task);
 		}

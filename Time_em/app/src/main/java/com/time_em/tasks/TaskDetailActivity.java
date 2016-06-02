@@ -1,19 +1,37 @@
 package com.time_em.tasks;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.model.TaskEntry;
 import com.time_em.utils.Utils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class TaskDetailActivity extends Activity {
 
     private ImageView back, attachment;
     private TextView info, taskDesc, taskComments, hoursWorked, txtDate;
     private TaskEntry taskEntry;
+    private TextView AttachementTxt;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,7 +43,7 @@ public class TaskDetailActivity extends Activity {
         setClickListeners();
     }
 
-    private void initScreen(){
+    private void initScreen() {
         txtDate = (TextView) findViewById(R.id.date);
         info = (TextView) findViewById(R.id.info);
         taskDesc = (TextView) findViewById(R.id.taskDesc);
@@ -33,20 +51,40 @@ public class TaskDetailActivity extends Activity {
         hoursWorked = (TextView) findViewById(R.id.hoursWorked);
         back = (ImageView) findViewById(R.id.back);
         attachment = (ImageView) findViewById(R.id.attachment);
+        AttachementTxt = (TextView) findViewById(R.id.AttachementTxt);
+        attachment.setVisibility(View.GONE);
+        AttachementTxt.setVisibility(View.GONE);
         taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
-
+        taskComments.setMovementMethod(new ScrollingMovementMethod());
         info.setText("Task Details");
         String date = taskEntry.getCreatedDate();
-//        if(date.contains(" "))
-//            date = date.split(" ")[0];
 
-        txtDate.setText(date);
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+            Date newDate = format.parse(date);
+            format = new SimpleDateFormat("EEE dd MMM,yyyy");
+            String datestr = format.format(newDate);
+            txtDate.setText(datestr);
+        } catch (Exception e) {
+
+        }
+
         taskDesc.setText(taskEntry.getTaskName());
         taskComments.setText(taskEntry.getComments());
         hoursWorked.setText(String.valueOf(taskEntry.getSignedInHours()));
+
+        String image_url = taskEntry.GetAttachementImageFile();
+        int loader = R.drawable.add;
+        // ImageLoader class instance
+        if (!(image_url.equalsIgnoreCase("null"))) {
+            attachment.setVisibility(View.VISIBLE);
+            AttachementTxt.setVisibility(View.VISIBLE);
+            ImageLoader imgLoader = new ImageLoader(getApplicationContext());
+            imgLoader.DisplayImage(image_url, loader, attachment);
+        }
     }
 
-    private void setClickListeners(){
+    private void setClickListeners() {
         back.setOnClickListener(listener);
     }
 
@@ -55,7 +93,7 @@ public class TaskDetailActivity extends Activity {
         @Override
         public void onClick(View v) {
             // TODO Auto-generated method stub
-            if(v == back){
+            if (v == back) {
                 finish();
             }
         }
