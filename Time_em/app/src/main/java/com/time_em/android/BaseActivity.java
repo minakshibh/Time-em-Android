@@ -14,16 +14,14 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.time_em.authentication.LoginActivity;
+import com.time_em.barcode.BarcodeScanActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.notifications.SendNotification;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
-
-import org.w3c.dom.Text;
 
 
 public class BaseActivity extends Activity{
@@ -104,6 +102,8 @@ public class BaseActivity extends Activity{
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
 				}
+				Intent intent = new Intent(BaseActivity.this, BarcodeScanActivity.class);
+				startActivity(intent);
 			}else if(v == nfcTapping){
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();

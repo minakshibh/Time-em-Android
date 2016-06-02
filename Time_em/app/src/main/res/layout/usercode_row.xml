@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:id="@+id/swipeLayout"
+    android:layout_height="match_parent">
+    <!--What you want to show in SurfaceView-->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@color/white"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/online"
+            android:id="@+id/status"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toRightOf="@+id/status"
+            android:layout_toLeftOf="@+id/shiftInfo">
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/userName"
+                android:text="User Name goes here"
+                android:layout_centerInParent="true"
+                android:textColor="@color/alphabeticalTextColor"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/signInInfo"
+                android:text="Sign In At"
+                android:layout_marginTop="5dp"
+                android:visibility="gone"
+                android:layout_centerInParent="true"
+                android:textColor="@color/alphabeticalTextColor"
+                android:textSize="12sp"/>
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/signOutInfo"
+                android:text="Sign Out At"
+                android:visibility="gone"
+                android:layout_marginTop="5dp"
+                android:layout_centerInParent="true"
+                android:textColor="@color/alphabeticalTextColor"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/night"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/shiftInfo"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"/>
+
+
+
+    </RelativeLayout>
+</LinearLayout>

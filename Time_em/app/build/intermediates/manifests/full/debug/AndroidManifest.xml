@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <supports-screens
         android:anyDensity="true"
@@ -81,6 +82,9 @@
             android:label="@string/title_activity_user_selection"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name="com.time_em.barcode.BarcodeScanActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

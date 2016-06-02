@@ -450,7 +450,70 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			return team;
 		}
 	}
+	public User getTeamByLoginCode(long loginCode) {
+		//ArrayList<User> team = new ArrayList<User>();
+		User user = null;
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_TEAM +" where "+LoginCode+" = "+loginCode;
+		SQLiteDatabase db = this.getReadableDatabase();
 
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					 user = new User();
+
+					user.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(UserId))));
+					user.setSupervisorId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(SupervisorId))));
+					user.setUserTypeId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(UserTypeId))));
+					user.setDepartmentId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(DepartmentId))));
+					user.setCompanyId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(CompanyId))));
+					user.setWorkSiteId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(WorkSiteId))));
+					user.setProjectId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(ProjectId))));
+					user.setActivityId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(ActivityId))));
+					user.setTaskActivityId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(TaskActivityId))));
+					user.setLoginID(cursor.getString(cursor.getColumnIndex(LoginID)));
+					user.setSignOutAt(cursor.getString(cursor.getColumnIndex(SignOutAt)));
+					user.setSignInAt(cursor.getString(cursor.getColumnIndex(SignInAt)));
+					user.setFirstName(cursor.getString(cursor.getColumnIndex(FirstName)));
+					user.setLastName(cursor.getString(cursor.getColumnIndex(LastName)));
+					user.setFullName(cursor.getString(cursor.getColumnIndex(FullName)));
+					user.setLoginCode(cursor.getString(cursor.getColumnIndex(LoginCode)));
+					user.setSupervisor(cursor.getString(cursor.getColumnIndex(Supervisor)));
+					user.setUserType(cursor.getString(cursor.getColumnIndex(UserType)));
+					user.setDepartment(cursor.getString(cursor.getColumnIndex(Department)));
+					user.setCompany(cursor.getString(cursor.getColumnIndex(Company)));
+					user.setWorksite(cursor.getString(cursor.getColumnIndex(Worksite)));
+					user.setProject(cursor.getString(cursor.getColumnIndex(Project)));
+					user.setIsSecurityPin(cursor.getString(cursor.getColumnIndex(IsSecurityPin)));
+					user.setNfcTagId(cursor.getString(cursor.getColumnIndex(NfcTagId)));
+					user.setToken(cursor.getString(cursor.getColumnIndex(Token)));
+					user.setReferenceCount(Boolean.valueOf(cursor.getString(cursor.getColumnIndex(ReferenceCount))));
+					user.setSignedIn(Boolean.valueOf(cursor.getString(cursor.getColumnIndex(IsSignedIn))));
+					user.setNightShift(Boolean.valueOf(cursor.getString(cursor.getColumnIndex(IsNightShift))));
+					user.setSignedHours(Double.valueOf(cursor.getString(cursor.getColumnIndex(SignedHours))));
+
+					//team.add(user);
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return user;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return user;
+		}
+	}
 	public void openDataBase() throws SQLException {
 
 		// Open the database
@@ -468,6 +531,62 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 		super.close();
 
+	}
+
+	public void updateStatus(int userId,String activityId,String signInAt,String signOutAt,boolean isSignedIn) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		//for (int i = 0; i < team.size(); i++) {
+		//	User user = team.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where "
+					+ UserId + " = " + userId;
+			try {
+				ContentValues values = new ContentValues();
+
+				values.put(UserId, userId);
+				//values.put(SupervisorId, String.valueOf(user.getSupervisorId()));
+				//values.put(UserTypeId, String.valueOf(user.getUserTypeId()));
+				//values.put(DepartmentId, String.valueOf(user.getDepartmentId()));
+				//values.put(CompanyId, String.valueOf(user.getCompanyId()));
+				//values.put(WorkSiteId, String.valueOf(user.getWorkSiteId()));
+				//values.put(ProjectId, String.valueOf(user.getProjectId()));
+				values.put(ActivityId, String.valueOf(activityId));
+				//values.put(TaskActivityId,String.valueOf(user.getTaskActivityId()));
+				//values.put(LoginID, user.getLoginID());
+				values.put(SignOutAt, signOutAt);
+				values.put(SignInAt, signInAt);
+			//	values.put(FirstName, user.getFirstName());
+			//	values.put(LastName, user.getLastName());
+			//	values.put(FullName, user.getFullName());
+			//	values.put(LoginCode, user.getLoginCode());
+			//	values.put(Supervisor, user.getSupervisor());
+			//	values.put(UserType, user.getUserType());
+			//	values.put(Department, user.getDepartment());
+			//	values.put(Company, user.getCompany());
+			//	values.put(Worksite, user.getWorksite());
+			//	values.put(Project, user.getProject());
+			//	values.put(IsSecurityPin, user.getIsSecurityPin());
+			//	values.put(NfcTagId, user.getNfcTagId());
+			//	values.put(Token, user.getToken());
+			//	values.put(ReferenceCount,String.valueOf(user.isReferenceCount()));
+				values.put(IsSignedIn, String.valueOf(isSignedIn));
+			//	values.put(IsNightShift, String.valueOf(user.isNightShift()));
+			//	values.put(SignedHours, String.valueOf(user.getSignedHours()));
+
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+					//if(!user.isActive())
+					//	db.delete(TABLE_TEAM, UserId + " = ?", new String[] { String.valueOf(user.getId()) });
+					//else
+						db.update(TABLE_TEAM, values, UserId + " = ?", new String[] { String.valueOf(userId) });
+			//	} else {
+				//	if(user.isActive())
+						//db.insert(TABLE_TEAM, null, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			//}
+		}
+		db.close();
 	}
 
 }
