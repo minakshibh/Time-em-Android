@@ -76,7 +76,7 @@ public class TaskDetailActivity extends Activity {
         String image_url = taskEntry.GetAttachementImageFile();
         int loader = R.drawable.add;
         // ImageLoader class instance
-        if (!(image_url.equalsIgnoreCase("null"))) {
+        if (image_url != null) {
             attachment.setVisibility(View.VISIBLE);
             AttachementTxt.setVisibility(View.VISIBLE);
             ImageLoader imgLoader = new ImageLoader(getApplicationContext());
