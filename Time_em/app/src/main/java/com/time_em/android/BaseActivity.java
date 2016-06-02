@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.time_em.authentication.LoginActivity;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.notifications.SendNotification;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
@@ -138,6 +139,8 @@ public class BaseActivity extends Activity{
 				startActivity(intent);
 			} else if (v == notifications) {
 				setSelection(false, false, true, false);
+				Intent intent = new Intent(BaseActivity.this, SendNotification.class);
+				startActivity(intent);
 			} else if (v == settings) {
 				setSelection(false, false, false, true);
 			}

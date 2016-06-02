@@ -12,6 +12,7 @@ import android.content.res.Resources;
 
 import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.NotificationType;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.utils.Utils;
@@ -216,7 +217,76 @@ public class Time_emJsonParser {
 
 		return taskList;
 	}
-	
+
+	public ArrayList<NotificationType> parseNotificationType(String webResponse){
+
+		ArrayList<NotificationType> notificationTypeList = new ArrayList<NotificationType>();
+
+		NotificationType notificationTypeHeader = new NotificationType();
+		notificationTypeHeader.setId(0);
+		notificationTypeHeader.setName("Select Notification Type");
+		notificationTypeList.add(notificationTypeHeader);
+		try{
+			JSONArray jArray = new JSONArray(webResponse);
+
+			for(int i = 0; i<jArray.length(); i++){
+				JSONObject notificationObject = jArray.getJSONObject(i);
+
+				NotificationType notificationType = new NotificationType();
+				notificationType.setId(notificationObject.getInt("id"));
+				notificationType.setName(notificationObject.getString("Name"));
+
+				notificationTypeList.add(notificationType);
+			}
+
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			notificationTypeList = new ArrayList<NotificationType>();
+			e.printStackTrace();
+			Utils.showToast(context, e.getMessage());
+		}
+
+		return notificationTypeList;
+	}
+
+	public ArrayList<User> parseActiveUsers(String webResponse){
+		ArrayList<User> userList = new ArrayList<User>();
+		String timeStamp="";
+		Resources res = context.getResources();
+
+		try{
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("IsError");
+			message = jObject.getString("Message");
+			timeStamp = jObject.getString("TimeStamp");
+
+			JSONArray jArray = jObject.getJSONArray("activeuserlist");
+
+			for(int i = 0; i<jArray.length(); i++){
+				JSONObject userObject = jArray.getJSONObject(i);
+
+				User user = new User();
+				user.setId(userObject.getInt("userid"));
+				user.setFullName(userObject.getString("FullName"));
+
+				userList.add(user);
+			}
+
+			Utils.saveInSharedPrefs(context, HomeActivity.user.getId() + res.getString(R.string.activeUsersTimeStampStr), timeStamp);
+
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			userList = new ArrayList<User>();
+			e.printStackTrace();
+			Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return userList;
+	}
+
 	public Boolean parseChangeStatusResponse(String webResponse,
 			String methodName) {
 		int id = 0;
@@ -259,6 +329,7 @@ public class Time_emJsonParser {
 
 		return isError;
 	}
+
 
 	public ArrayList<TaskEntry> parseSpinnneData(String webResponse, int id) {
 		ArrayList<TaskEntry> taskList = new ArrayList<TaskEntry>();

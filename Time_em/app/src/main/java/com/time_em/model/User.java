@@ -1,6 +1,9 @@
 package com.time_em.model;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable{
 
     int id = 0, supervisorId = 0, userTypeId = 0, departmentId = 0, companyId = 0, workSiteId = 0, projectId = 0, activityId = 0, taskActivityId = 0;
     String loginID = "", signOutAt = "", signInAt = "", firstName = "", lastName = "", fullName = "", loginCode = "",
@@ -10,6 +13,53 @@ public class User {
 
     //,"Pin":null
     //,"SignInAt":"2016-05-09T10:15:14.367","SignOutAt":"2016-05-09T10:16:14.553","TaskActivityId":0,"SignedInHours":0.02,
+
+    public User(){
+
+    }
+    public User(Parcel in) {
+        id = in.readInt();
+        supervisorId = in.readInt();
+        userTypeId = in.readInt();
+        departmentId = in.readInt();
+        companyId = in.readInt();
+        workSiteId = in.readInt();
+        projectId = in.readInt();
+        activityId = in.readInt();
+        taskActivityId = in.readInt();
+        loginID = in.readString();
+        signOutAt = in.readString();
+        signInAt = in.readString();
+        firstName = in.readString();
+        lastName = in.readString();
+        fullName = in.readString();
+        loginCode = in.readString();
+        supervisor = in.readString();
+        userType = in.readString();
+        department = in.readString();
+        company = in.readString();
+        worksite = in.readString();
+        project = in.readString();
+        isSecurityPin = in.readString();
+        nfcTagId = in.readString();
+        token = in.readString();
+        referenceCount = in.readByte() != 0;
+        isSignedIn = in.readByte() != 0;
+        isNightShift = in.readByte() != 0;
+        isActive = in.readByte() != 0;
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -254,4 +304,41 @@ public class User {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeInt(supervisorId);
+        dest.writeInt(userTypeId);
+        dest.writeInt(departmentId);
+        dest.writeInt(companyId);
+        dest.writeInt(workSiteId);
+        dest.writeInt(projectId);
+        dest.writeInt(activityId);
+        dest.writeInt(taskActivityId);
+        dest.writeString(loginID);
+        dest.writeString(signOutAt);
+        dest.writeString(signInAt);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeString(fullName);
+        dest.writeString(loginCode);
+        dest.writeString(supervisor);
+        dest.writeString(userType);
+        dest.writeString(department);
+        dest.writeString(company);
+        dest.writeString(worksite);
+        dest.writeString(project);
+        dest.writeString(isSecurityPin);
+        dest.writeString(nfcTagId);
+        dest.writeString(token);
+        dest.writeByte((byte) (referenceCount ? 1 : 0));
+        dest.writeByte((byte) (isSignedIn ? 1 : 0));
+        dest.writeByte((byte) (isNightShift ? 1 : 0));
+        dest.writeByte((byte) (isActive ? 1 : 0));
+    }
 }

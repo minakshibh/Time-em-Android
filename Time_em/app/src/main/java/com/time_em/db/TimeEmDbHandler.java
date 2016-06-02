@@ -28,6 +28,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 	private String TABLE_TASK = "Task";
 	private String TABLE_TEAM = "Team";
+	private String TABLE_ACTIVE_USERS = "ActiveUsers";
 
 	// fields for task table
 	private String Id = "Id";
@@ -119,8 +120,12 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ " TEXT," + ReferenceCount + " TEXT," + IsSignedIn + " TEXT,"
 				+ IsNightShift + " TEXT," + SignedHours + " TEXT)";
 
+		String CREATE_ACTIVE_USERS_TABLE = "CREATE TABLE if NOT Exists " + TABLE_ACTIVE_USERS
+				+ "(" + Id + " TEXT," + FullName + " TEXT)";
+
 		db.execSQL(CREATE_TASK_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
+		db.execSQL(CREATE_ACTIVE_USERS_TABLE);
 	}
 
 	@Override
@@ -137,6 +142,31 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	public void deleteTeamTable() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_TASK, null, null);
+		db.close();
+	}
+
+	public void updateActiveUsers(ArrayList<User> activeUsers) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < activeUsers.size(); i++) {
+			User user = activeUsers.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_ACTIVE_USERS + " where "
+					+ Id + "=" + user.getId();
+			try {
+				ContentValues values = new ContentValues();
+
+				values.put(Id, String.valueOf(user.getId()));
+				values.put(FullName, user.getFullName());
+
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+						db.update(TABLE_ACTIVE_USERS, values, Id + " = ?",new String[] { String.valueOf(user.getId()) });
+				} else {
+						db.insert(TABLE_ACTIVE_USERS, null, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		db.close();
 	}
 
@@ -257,6 +287,43 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	 * 
 	 * }catch(Exception e){ e.printStackTrace(); } // db.close(); }
 	 */
+
+	public ArrayList<User> getActiveUsers() {
+		ArrayList<User> users = new ArrayList<User>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_ACTIVE_USERS;
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					User user = new User();
+
+					user.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(Id))));
+					user.setFullName(cursor.getString(cursor.getColumnIndex(FullName)));
+
+					users.add(user);
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return users;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return users;
+		}
+	}
 
 	public ArrayList<TaskEntry> getTaskEnteries(int userId, String date) {
 		ArrayList<TaskEntry> taskEntryList = new ArrayList<TaskEntry>();

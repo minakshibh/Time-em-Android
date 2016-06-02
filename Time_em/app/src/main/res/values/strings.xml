@@ -11,13 +11,16 @@
     <string name="trackEmUrl">http://10.saleemserver.com/TrackemMobileInitiateApi</string>
     <string name="taskTimeStampStr">_taskTimeStamp</string>
     <string name="teamTimeStampStr">_teamTimeStamp</string>
+    <string name="activeUsersTimeStampStr">_activeUsersTimeStamp</string>
     <string name="my_tasks">My Tasks</string>
     <string name="selected_notification">Selected Notifications type</string>
     <string name="sign_in">SignIn</string>
     <string name="specify_numbers_of_hours">Specify Number of Hours</string>
     <string name="upload_image_video">Upload Image/Video</string>
-	<string name="userSignedIn">You are currently Signed In. Please click Sign Out to go offline.</string>
-	<string name="userSignedOut">You are currently Signed Out. Please click Sign In to go online.</string>
+    <string name="userSignedIn">You are currently Signed In. Please click Sign Out to go offline.</string>
+    <string name="userSignedOut">You are currently Signed Out. Please click Sign In to go online.</string>
     <string name="you_are_comment">You are comment goes here</string>
     <string name="number_of_hours">Number of hours</string>
+    <string name="title_activity_send_notification">SendNotification</string>
+    <string name="title_activity_user_selection">UserSelectionActivity</string>
 </resources>
