@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.time_em.android"
-        minSdkVersion 8
-        targetSdkVersion 21
+        minSdkVersion 10
+        targetSdkVersion 23
     }
 
     buildTypes {
@@ -29,4 +29,6 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.android.support:design:23.4.0'
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
+    compile 'me.dm7.barcodescanner:zbar:1.8.2'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }

@@ -99,6 +99,9 @@
     <color name="switch_thumb_normal_material_light">#fff1f1f1</color>
     <color name="textBg">#d4d4d4</color>
     <color name="textColor">#dbe7ff</color>
+    <color name="viewfinder_border">#ffafed44</color>
+    <color name="viewfinder_laser">#ffcc0000</color>
+    <color name="viewfinder_mask">#60000000</color>
     <color name="white">#ffffff</color>
     <declare-styleable name="ActionBar"><attr name="navigationMode"><enum name="normal" value="0"/><enum name="listMode" value="1"/><enum name="tabMode" value="2"/></attr><attr name="displayOptions"><flag name="none" value="0"/><flag name="useLogo" value="0x1"/><flag name="showHome" value="0x2"/><flag name="homeAsUp" value="0x4"/><flag name="showTitle" value="0x8"/><flag name="showCustom" value="0x10"/><flag name="disableHome" value="0x20"/></attr><attr name="title"/><attr format="string" name="subtitle"/><attr format="reference" name="titleTextStyle"/><attr format="reference" name="subtitleTextStyle"/><attr format="reference" name="icon"/><attr format="reference" name="logo"/><attr format="reference" name="divider"/><attr format="reference" name="background"/><attr format="reference|color" name="backgroundStacked"/><attr format="reference|color" name="backgroundSplit"/><attr format="reference" name="customNavigationLayout"/><attr name="height"/><attr format="reference" name="homeLayout"/><attr format="reference" name="progressBarStyle"/><attr format="reference" name="indeterminateProgressStyle"/><attr format="dimension" name="progressBarPadding"/><attr name="homeAsUpIndicator"/><attr format="dimension" name="itemPadding"/><attr format="boolean" name="hideOnContentScroll"/><attr format="dimension" name="contentInsetStart"/><attr format="dimension" name="contentInsetEnd"/><attr format="dimension" name="contentInsetLeft"/><attr format="dimension" name="contentInsetRight"/><attr format="dimension" name="elevation"/><attr format="reference" name="popupTheme"/></declare-styleable>
     <declare-styleable name="ActionBarLayout"><attr name="android:layout_gravity"/></declare-styleable>
@@ -280,6 +283,8 @@
     <integer name="cancel_button_image_alpha">127</integer>
     <integer name="design_snackbar_text_max_lines">2</integer>
     <integer name="status_bar_notification_info_maxnum">999</integer>
+    <integer name="viewfinder_border_length">60</integer>
+    <integer name="viewfinder_border_width">4</integer>
     <string name="abc_action_bar_home_description">Navigate home</string>
     <string name="abc_action_bar_home_description_format">%1$s, %2$s</string>
     <string name="abc_action_bar_home_subtitle_description_format">%1$s, %2$s, %3$s</string>
@@ -304,12 +309,14 @@
     <string name="add">Add</string>
     <string name="app_name">Time_em</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
-    <string name="attachement">Attachement</string>
+    <string name="attachement">Attachement </string>
     <string name="baseUrl">http://timeemapi.azurewebsites.net/api</string>
     <string name="bottom_sheet_behavior" translatable="false">android.support.design.widget.BottomSheetBehavior</string>
     <string name="character_counter_pattern" translatable="false">%1$d / %2$d</string>
+    <string name="comments">Comments :</string>
     <string name="enter_your_comments">Enter your Comments</string>
     <string name="hello_world">Hello world!</string>
+    <string name="hours_worked">Hours Worked </string>
     <string name="my_tasks">My Tasks</string>
     <string name="number_of_hours">Number of hours</string>
     <string name="selected_notification">Selected Notifications type</string>
@@ -317,6 +324,7 @@
     <string name="specify_numbers_of_hours">Specify Number of Hours</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <string name="taskTimeStampStr">_taskTimeStamp</string>
+    <string name="task_description">Task Description :</string>
     <string name="teamTimeStampStr">_teamTimeStamp</string>
     <string name="title_activity_send_notification">SendNotification</string>
     <string name="title_activity_user_selection">UserSelectionActivity</string>
