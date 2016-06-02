@@ -4,83 +4,105 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/header_view" android:layout_alignParentTop="true"
-        android:layout_width="fill_parent" android:layout_height="wrap_content"/>
+    <include
+        layout="@layout/header_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="May 20, 2016"
-        android:id="@+id/date"
-        android:layout_gravity="center_horizontal"
-        android:padding="10dp"
-        style="@style/HeaderText"
-        />
-        <TextView
-            style="@style/separator"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/HeaderText"
-        android:text="Task Description"
-        />
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/taskDesc"
-            style="@style/DescText"
-            android:text="Lorem ipsum Lorem ipsum Lorem ipsum um Lorem ipsum"/>
-    <TextView
-        style="@style/separator"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/HeaderText"
-            android:text="Comments"
-            />
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            style="@style/DescText"
-            android:id="@+id/taskComments"
-            android:text="Lorem ipsum Lorem ipsum Lor ipsum Lorem ipsum"/>
-        <TextView
-            style="@style/separator"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/HeaderText"
-            android:text="Hours Worked"
-            />
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            style="@style/DescText"
-            android:id="@+id/hoursWorked"
-            android:text="4"/>
-        <TextView
-            style="@style/separator"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/HeaderText"
-            android:text="Attachment"
-            />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/attachment"
-            android:src="@drawable/ic_launcher"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:scrollbars="none"
+        android:layout_height="match_parent">
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/date"
+                style="@style/HeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="" />
+
+            <TextView style="@style/separator" />
+
+            <TextView
+                style="@style/HeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="@string/task_description" />
+
+            <TextView
+                android:id="@+id/taskDesc"
+                style="@style/DescText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView style="@style/separator" />
+
+            <TextView
+                style="@style/HeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="@string/comments" />
+
+            <TextView
+                android:id="@+id/taskComments"
+                style="@style/DescText"
+                android:maxLines = "3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView style="@style/separator" />
+
+            <TextView
+                style="@style/HeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text="@string/hours_worked" />
+
+            <TextView
+                android:id="@+id/hoursWorked"
+                style="@style/DescText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView style="@style/separator" />
+
+            <TextView
+                android:id="@+id/AttachementTxt"
+                style="@style/HeaderText"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_height="wrap_content"
+                android:text="@string/attachement" />
+
+            <ImageView
+                android:id="@+id/attachment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginRight="10dp"
+                />
+
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>
