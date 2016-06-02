@@ -2,6 +2,7 @@ package com.time_em.barcode;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -51,7 +52,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
     private boolean refresh;
     private long scanCode=0;
 
-    public ArrayList<String> arrayList_scanCode = new ArrayList<>();
+    public static ArrayList<String> arrayList_scanCode = new ArrayList<>();
     private ArrayList<User> arrayListUsers = new ArrayList<>();
     private ArrayList<User> refreshArrayListUsers = new ArrayList<>();
 
@@ -80,8 +81,13 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         // initControls();
         initUI();
         //setAdapter();
-        initControls();
+        // initControls();
         setOnClickListener();
+        if (getIntent().getStringExtra("data") != null)
+        {
+             fetchUserByBarCode();
+             setAdapter(arrayListUsers);
+            }
     }
 
 
@@ -96,10 +102,10 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         btn_signIn=(TextView)findViewById(R.id.btn_signIn);
         btn_signOut=(TextView)findViewById(R.id.btn_signOut);
         lay_listView = (RelativeLayout) findViewById(R.id.lay_listView);
-        lay_listView.setVisibility(View.GONE);
+        lay_listView.setVisibility(View.VISIBLE);
        // scanButton = (Button) findViewById(R.id.ScanButton);
         preview = (FrameLayout) findViewById(R.id.cameraPreview);
-        preview.setVisibility(View.VISIBLE);
+        preview.setVisibility(View.GONE);
 
     }
     private void setOnClickListener() {
@@ -121,26 +127,26 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         public void onClick(View v) {
             // TODO Auto-generated method stub
             if (v == back) {
-                releaseCamera();
+                //releaseCamera();
                 finish();
 
             }else if (v == btn_signIn) {
                 String Ids=getAllUsersIds(arrayListUsers);
                 Log.e("Ids=", Ids);
-                releaseCamera();
+                //releaseCamera();
                 Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"signIn");
 
             }else if (v == btn_signOut) {
 
                 String Ids=getAllUsersIds(arrayListUsers);
                 Log.e("Ids=", Ids);
-                releaseCamera();
+                //releaseCamera();
                 Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"SignOut");
             }
 
         }
     };
-    private void initControls() {
+  /*  private void initControls() {
         arrayList_scanCode.clear();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -164,9 +170,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         }
         return super.onKeyDown(keyCode, event);
     }
-   /**
+   *//**
      * A safe way to get an instance of the Camera object.
-     */
+     *//*
     public static Camera getCameraInstance() {
         Camera c = null;
         try {
@@ -234,8 +240,8 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                    showAlertDialog(scanResult,true);
                }
 
-                  /*  Toast.makeText(BarcodeScanActivity.this, scanResult,
-                            Toast.LENGTH_SHORT).show();*/
+                  *//*  Toast.makeText(BarcodeScanActivity.this, scanResult,
+                            Toast.LENGTH_SHORT).show();*//*
                     barcodeScanned = true;
                     break;
                 }
@@ -298,7 +304,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             previewing = true;
             mCamera.autoFocus(autoFocusCB);
             }
-        }
+        }*/
     private void setAdapter(ArrayList<User> arrayList) {
 
         if (arrayList.size() == 0) {
@@ -308,6 +314,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             listView.setAdapter(adapter);
             lay_listView.setVisibility(View.VISIBLE);
         }
+
     }
     private void fetchUserByBarCode() {
         dbHandler = new TimeEmDbHandler(getApplicationContext());
@@ -413,9 +420,6 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                 holder.userName = (TextView) convertView.findViewById(R.id.userName);
                 holder.shift = (ImageView) convertView.findViewById(R.id.shiftInfo);
                 holder.status = (ImageView) convertView.findViewById(R.id.status);
-              //  holder.signInInfo = (TextView) convertView.findViewById(R.id.signInInfo);
-              //  holder.txtStatus = (TextView) convertView.findViewById(R.id.txtUserStatus);
-              //  holder.signOutInfo = (TextView) convertView.findViewById(R.id.signOutInfo);
                 convertView.setTag(holder);
 
             } else {
@@ -426,24 +430,11 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             holder.userName.setText(user.getFullName());
 
             if (user.isSignedIn()) {
-               // holder.signOutInfo.setVisibility(View.GONE);
                 holder.status.setImageResource(R.drawable.online);
-               // holder.signInInfo.setText("In: " + user.getSignInAt());
-                //holder.txtStatus.setText("Sign Out");
+
             } else {
                 holder.status.setImageResource(R.drawable.offline);
 
-               /* if (user.getSignInAt() == null || user.getSignInAt().equals("")) {
-                    holder.signInInfo.setVisibility(View.GONE);
-                    holder.signOutInfo.setVisibility(View.GONE);
-                } else {
-                    holder.signInInfo.setVisibility(View.VISIBLE);
-                    holder.signOutInfo.setVisibility(View.VISIBLE);
-                    holder.signInInfo.setText("In: " + user.getSignInAt());
-                    holder.signOutInfo.setText("Out: " + user.getSignOutAt());
-                }*/
-
-              //  holder.txtStatus.setText("Sign In");
             }
 
             if (user.isNightShift())
@@ -451,16 +442,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             else
                 holder.shift.setImageResource(R.drawable.day);
 
-           /* txtStatus.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    user = arrayListUsers.get(position);
-                    Utils.ChangeStatus(BarcodeScanActivity.this, user);
-                }
-            });
-        }*/
-
-            return convertView;
+              return convertView;
 
         }
 
@@ -486,6 +468,13 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                 arrayListUsers.addAll(teamMembers);
                // setAdapter(refreshArrayListUsers);
                 setAdapter(arrayListUsers);
+                Intent mIntent=new Intent(BarcodeScanActivity.this,CameraOpenActivity.class);
+                startActivity(mIntent);
+               // lay_listView.setVisibility(View.VISIBLE);
+              //  preview.setVisibility(View.GONE);
+              //  releaseCamera();
+               // initControls();
+               // againOpenCamera();
 
             }else {
                 //arrayListUsers.clear();

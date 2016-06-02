@@ -7,6 +7,7 @@
     <include android:id="@+id/headerLayout" layout="@layout/include_toolbar"></include>
     <FrameLayout
         android:id="@+id/cameraPreview"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
