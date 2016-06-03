@@ -102,8 +102,9 @@ public class BaseActivity extends Activity{
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
 				}
-				Intent intent = new Intent(BaseActivity.this, CameraOpenActivity.class);
-				startActivity(intent);
+				Intent mIntent = new Intent(BaseActivity.this, CameraOpenActivity.class);
+				mIntent.putExtra("trigger","yes");
+				startActivity(mIntent);
 			}else if(v == nfcTapping){
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();

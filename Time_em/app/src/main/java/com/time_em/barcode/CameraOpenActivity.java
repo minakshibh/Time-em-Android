@@ -13,20 +13,14 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.time_em.android.R;
-import com.time_em.db.TimeEmDbHandler;
-import com.time_em.model.User;
-import com.time_em.parser.Time_emJsonParser;
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 
-import java.util.ArrayList;
 
 
 public class CameraOpenActivity extends Activity {
@@ -34,29 +28,11 @@ public class CameraOpenActivity extends Activity {
     private Camera mCamera;
     private CameraPreview mPreview;
     private Handler autoFocusHandler;
-
-    //  private int i = 0;
-    //  private Button scanButton;
-    // private String strUserIds="";
-
     private boolean barcodeScanned = false;
     private boolean previewing = true;
-    private boolean refresh;
-    private long scanCode=0;
-
-
-
-    private TimeEmDbHandler dbHandler;
-    private User user = new User();
-
-    private Time_emJsonParser parser;
-
-    private RelativeLayout lay_listView;
-    private ListView listView;
     private ImageScanner scanner;
     private FrameLayout preview;
     private TextView headerText;
-   // private TextView btn_signIn,btn_signOut;
     private ImageView back, AddButton;
 
     @Override
@@ -64,12 +40,12 @@ public class CameraOpenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cameraopen);
 
-        // initControls();
+
         initUI();
-        //setAdapter();
         initControls();
-        //setOnClickListener();
+        setOnClickListener();
     }
+
 
 
     private void initUI() {
@@ -79,20 +55,32 @@ public class CameraOpenActivity extends Activity {
         back=(ImageView)findViewById(R.id.back);
         AddButton=(ImageView)findViewById(R.id.AddButton);
         AddButton.setVisibility(View.GONE);
-        listView = (ListView) findViewById(R.id.listView);
-      //  btn_signIn=(TextView)findViewById(R.id.btn_signIn);
-      //  btn_signOut=(TextView)findViewById(R.id.btn_signOut);
-        //lay_listView = (RelativeLayout) findViewById(R.id.lay_listView);
-      //  lay_listView.setVisibility(View.GONE);
-        // scanButton = (Button) findViewById(R.id.ScanButton);
         preview = (FrameLayout) findViewById(R.id.cameraPreview);
         preview.setVisibility(View.VISIBLE);
 
+        if(getIntent().getStringExtra("trigger")!=null)
+        {
+            BarcodeScanActivity.arrayList_scanCode.clear();
+            }
+
     }
+
+    private void setOnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                releaseCamera();
+                Intent mIntent=new Intent(CameraOpenActivity.this,BarcodeScanActivity.class);
+                mIntent.putExtra("data","data");
+                startActivity(mIntent);
+                finish();;
+            }
+        });
+    }
+
     private void initControls() {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         autoFocusHandler = new Handler();
         mCamera = getCameraInstance();
         // Instance barcode scanner
@@ -203,11 +191,7 @@ public class CameraOpenActivity extends Activity {
     private void showAlertDialog(final String code, boolean result) {
 
         String massage="";
-        //add value to array List
-        // i++;
-        // ScanDetail scan = new ScanDetail();
-        // scan.setId(i);
-        // scan.setCode(message);
+
         if (result){
             BarcodeScanActivity.arrayList_scanCode.add(code);
             massage="Barcode scanned successfully. Do you want to scan another barcode?";

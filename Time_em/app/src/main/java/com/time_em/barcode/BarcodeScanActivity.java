@@ -1,20 +1,13 @@
 package com.time_em.barcode;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,33 +21,22 @@ import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
-import net.sourceforge.zbar.Config;
-import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
-import net.sourceforge.zbar.Symbol;
-import net.sourceforge.zbar.SymbolSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm {
 
-    private Camera mCamera;
-    private CameraPreview mPreview;
-    private Handler autoFocusHandler;
 
-  //  private int i = 0;
-  //  private Button scanButton;
-  // private String strUserIds="";
-
-    private boolean barcodeScanned = false;
-    private boolean previewing = true;
     private boolean refresh;
     private long scanCode=0;
 
     public static ArrayList<String> arrayList_scanCode = new ArrayList<>();
     private ArrayList<User> arrayListUsers = new ArrayList<>();
-    private ArrayList<User> refreshArrayListUsers = new ArrayList<>();
+    private ArrayList<User> aL_UsersExistDb = new ArrayList<>();
+    private ArrayList<User> aL_UsersNotExistDb = new ArrayList<>();
+    //private ArrayList<User> refreshArrayListUsers = new ArrayList<>();
 
     private TimeEmDbHandler dbHandler;
     private User user = new User();
@@ -69,24 +51,19 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
     private TextView btn_signIn,btn_signOut;
     private ImageView back, AddButton;
 
-    static {
-        System.loadLibrary("iconv");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_barcode_scan);
 
-        // initControls();
+
         initUI();
-        //setAdapter();
-        // initControls();
         setOnClickListener();
         if (getIntent().getStringExtra("data") != null)
         {
              fetchUserByBarCode();
-             setAdapter(arrayListUsers);
+             setAdapter(aL_UsersExistDb,aL_UsersNotExistDb);
             }
     }
 
@@ -112,16 +89,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         back.setOnClickListener(Listener);
         btn_signIn.setOnClickListener(Listener);
         btn_signOut.setOnClickListener(Listener);
-     /* scanButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-
-                    lay_listView.setVisibility(View.GONE);
-                    preview.setVisibility(View.VISIBLE);
-
-                   againOpenCamera();
-                }
-            });*/
-    }
+       }
     public View.OnClickListener Listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -133,187 +101,32 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             }else if (v == btn_signIn) {
                 String Ids=getAllUsersIds(arrayListUsers);
                 Log.e("Ids=", Ids);
-                //releaseCamera();
                 Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"signIn");
 
             }else if (v == btn_signOut) {
 
                 String Ids=getAllUsersIds(arrayListUsers);
                 Log.e("Ids=", Ids);
-                //releaseCamera();
                 Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"SignOut");
             }
 
         }
     };
-  /*  private void initControls() {
-        arrayList_scanCode.clear();
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        autoFocusHandler = new Handler();
-        mCamera = getCameraInstance();
-        // Instance barcode scanner
-        scanner = new ImageScanner();
-        scanner.setConfig(0, Config.X_DENSITY, 3);
-        scanner.setConfig(0, Config.Y_DENSITY, 3);
-
-        mPreview = new CameraPreview(BarcodeScanActivity.this, mCamera, previewCb, autoFocusCB);
-        preview.addView(mPreview);
-
-    }
-
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            releaseCamera();
+    private void setAdapter(ArrayList<User> aL_UsersExistDb,ArrayList<User> aL_UsersNotExistDb) {
+            arrayListUsers.clear();
+        if (aL_UsersExistDb.size() >0) {
+            arrayListUsers.addAll(aL_UsersExistDb);
         }
-        return super.onKeyDown(keyCode, event);
-    }
-   *//**
-     * A safe way to get an instance of the Camera object.
-     *//*
-    public static Camera getCameraInstance() {
-        Camera c = null;
-        try {
-            c = Camera.open();
-        } catch (Exception e) {
-        }
-        return c;
-    }
-    private void releaseCamera() {
-        if (mCamera != null) {
-            previewing = false;
-            mCamera.setPreviewCallback(null);
-            mCamera.release();
-            mCamera = null;
-        }
-    }
+        if (aL_UsersNotExistDb.size() >0) {
 
-    private Runnable doAutoFocus = new Runnable() {
-        public void run() {
-            if (previewing)
-                mCamera.autoFocus(autoFocusCB);
-        }
-    };
-
-    Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
-        public void onPreviewFrame(byte[] data, Camera camera) {
-            Camera.Parameters parameters = camera.getParameters();
-            Camera.Size size = parameters.getPreviewSize();
-
-            Image barcode = new Image(size.width, size.height, "Y800");
-            barcode.setData(data);
-
-            int result = scanner.scanImage(barcode);
-
-            if (result != 0) {
-                previewing = false;
-                mCamera.setPreviewCallback(null);
-                mCamera.stopPreview();
-
-                SymbolSet syms = scanner.getResults();
-                for (Symbol sym : syms) {
-
-
-                    String scanResult = sym.getData().trim();
-                    Log.i("<<<<<<Asset Code>>>>> ", "<<<<Bar Code>>> " + scanResult);
-                if(arrayList_scanCode!=null && arrayList_scanCode.size()>0 ) {
-                    boolean bolResult=true;
-                   for(int i=0;i<arrayList_scanCode.size();i++){
-                       if(arrayList_scanCode.get(i).equalsIgnoreCase(scanResult))
-                       {
-                           bolResult=false;
-                        //   againOpenCamera();
-                        //   Toast.makeText(BarcodeScanActivity.this, scanResult +" code already scanned",Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                   if(bolResult)
-                   {
-                       showAlertDialog(scanResult,bolResult);
-                        }
-                   else{
-                       showAlertDialog(scanResult,bolResult);
-                   }
-               }
-               else{
-                   showAlertDialog(scanResult,true);
-               }
-
-                  *//*  Toast.makeText(BarcodeScanActivity.this, scanResult,
-                            Toast.LENGTH_SHORT).show();*//*
-                    barcodeScanned = true;
-                    break;
-                }
-            }
-        }
-    };
-
-    // Mimic continuous auto-focusing
-    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
-        public void onAutoFocus(boolean success, Camera camera) {
-            autoFocusHandler.postDelayed(doAutoFocus, 1000);
-        }
-    };
-
-
-    private void showAlertDialog(String code,boolean result) {
-
-        String massage="";
-        //add value to array List
-        // i++;
-        // ScanDetail scan = new ScanDetail();
-        // scan.setId(i);
-        // scan.setCode(message);
-        if (result){
-            arrayList_scanCode.add(code);
-            massage="Barcode scanned successfully. Do you want to scan another barcode?";
-            }
-        else{
-            massage="This Barcode already scanned. Do you want to scan another barcode?";
+            arrayListUsers.addAll(aL_UsersNotExistDb);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle(code)
-                .setCancelable(false)
-                .setMessage(massage)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+        adapter = new ListAdapter(arrayListUsers, getApplicationContext());
+        listView.setAdapter(adapter);
 
-                        againOpenCamera();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        fetchUserByBarCode();
-                        setAdapter(arrayListUsers);
-                        lay_listView.setVisibility(View.VISIBLE);
-                        preview.setVisibility(View.GONE);
-                        releaseCamera();
-                    }
-                })
 
-                .show();
-    }
-    private void againOpenCamera()
-    {
-        if (barcodeScanned) {
-            barcodeScanned = false;
-            mCamera.setPreviewCallback(previewCb);
-            mCamera.startPreview();
-            previewing = true;
-            mCamera.autoFocus(autoFocusCB);
-            }
-        }*/
-    private void setAdapter(ArrayList<User> arrayList) {
-
-        if (arrayList.size() == 0) {
-            lay_listView.setVisibility(View.GONE);
-        } else {
-            adapter = new ListAdapter(arrayList, getApplicationContext());
-            listView.setAdapter(adapter);
-            lay_listView.setVisibility(View.VISIBLE);
-        }
 
     }
     private void fetchUserByBarCode() {
@@ -333,17 +146,13 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                     refresh = false;
                     Toast.makeText(getApplicationContext(), "User not found " + scanCode, Toast.LENGTH_LONG).show();
                     getUserDetails(scanCode);
-                } else {
-                    arrayListUsers.add(user);
+                }
+                else {
+                    aL_UsersExistDb.add(user);
                 }
             }
         }
-       /* user = dbHandler.getTeamByLoginId(1001);
-        arrayListUsers.add(user);
-        user = dbHandler.getTeamByLoginId(1006);
-        arrayListUsers.add(user);*/
-
-    }
+      }
     private String getAllUsersIds(ArrayList<User> arrayList){
        String strUserIds="";
         if(arrayList!=null && arrayList.size()!=0)
@@ -463,35 +272,23 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             }catch(Exception e)
             {
                 e.printStackTrace(); }
-            if(refresh)
-            {
-                arrayListUsers.addAll(teamMembers);
-               // setAdapter(refreshArrayListUsers);
-                setAdapter(arrayListUsers);
-                Intent mIntent=new Intent(BarcodeScanActivity.this,CameraOpenActivity.class);
-                startActivity(mIntent);
-               // lay_listView.setVisibility(View.VISIBLE);
-              //  preview.setVisibility(View.GONE);
-              //  releaseCamera();
-               // initControls();
-               // againOpenCamera();
+            boolean result=true;
+            if(aL_UsersNotExistDb!=null && aL_UsersNotExistDb.size()>0) {
+                for(int i=0;i<aL_UsersNotExistDb.size();i++) {
+                    if (aL_UsersNotExistDb.get(i).getId()==teamMembers.get(0).getId())
+                    {
+                       result= false;
+                        }
+                }
 
-            }else {
-                //arrayListUsers.clear();
-                arrayListUsers.addAll(teamMembers);
-               // refreshArrayListUsers.clear();
-              //  setAdapter(arrayListUsers);
-                setAdapter(arrayListUsers);
             }
-       //     arrayListUsers.clear();
-          //  arrayListUsers.addAll(refreshArrayListUsers);
-            //refreshArrayListUsers.clear();
+            if(result)
+                aL_UsersNotExistDb.addAll(teamMembers);
+                setAdapter(aL_UsersExistDb, aL_UsersNotExistDb);
 
-
-            //  TimeEmDbHandler dbHandler = new TimeEmDbHandler(BarcodeScanActivity.this);
-            //  dbHandler.updateTeam(teamMembers);
-            }
+             }
          else if(methodName.contains(Utils.SignInByUserId)){
+            aL_UsersExistDb.clear();
             ArrayList<User> teamMembers = parser.parseSignInChangeStatusResponse(output, methodName);
 
                      if(teamMembers!=null && teamMembers.size()>0) {
@@ -512,26 +309,32 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                              }
 
                              if (user == null) {
-                                 refresh = true;
-                                 //   Toast.makeText(getApplicationContext(),"User not found "+scanCode,Toast.LENGTH_LONG).show();
-                                 getUserDetails(scanCode);
-                             } else {
-                                 refreshArrayListUsers.add(user);
+                              if(aL_UsersNotExistDb!=null && aL_UsersNotExistDb.size()>0)
+                                 {
+                                     for(int j=0;j<aL_UsersNotExistDb.size();j++){
+                                         User getUser=aL_UsersNotExistDb.get(j);
+                                         getUser.setSignedIn(true);
+                                        }
+                                    }
+
+                             }
+                             else {
+                                 aL_UsersExistDb.add(user);
 
                              }
 
                          }
 
-                         arrayListUsers.clear();
-                         arrayListUsers.addAll(refreshArrayListUsers);
-                         refreshArrayListUsers.clear();
-                         setAdapter(arrayListUsers);
+                       setAdapter(aL_UsersExistDb,aL_UsersNotExistDb);
                      }
                   else {
                          // Utils.alertMessage(BarcodeScanActivity.this, " User already Signed In.");
                      }
+            goToCameraView();
+
               }
           else if(methodName.contains(Utils.SignOutByUserId)){
+            aL_UsersExistDb.clear();
             ArrayList<User> teamMembers = parser.parseSignOutChangeStatusResponse(output, methodName);
             if(teamMembers!=null && teamMembers.size()>0) {
                 TimeEmDbHandler dbHandler = new TimeEmDbHandler(BarcodeScanActivity.this);
@@ -550,30 +353,39 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                     }
 
                     if(user==null) {
-                      //  Toast.makeText(getApplicationContext(),"User not found "+scanCode,Toast.LENGTH_LONG).show();
-                        refresh=true;
-                        getUserDetails(scanCode);
+                      if(aL_UsersNotExistDb!=null && aL_UsersNotExistDb.size()>0)
+                        {
+                            for(int j=0;j<aL_UsersNotExistDb.size();j++){
+                               User getUser=aL_UsersNotExistDb.get(j);
+                                getUser.setSignedIn(true);
+                            }
+                        }
 
                     }
                     else {
-                        refreshArrayListUsers.add(user);
+                        aL_UsersExistDb.add(user);
 
                     }
 
                 }
-                arrayListUsers.clear();
-                arrayListUsers.addAll(refreshArrayListUsers);
-                refreshArrayListUsers.clear();
-                setAdapter(arrayListUsers);
+               setAdapter(aL_UsersExistDb,aL_UsersNotExistDb);
 
             }
                   else{
                      // Utils.alertMessage(BarcodeScanActivity.this, " User already Signed Out.");
 
                     }
+                goToCameraView();
 
-                }
 
+            }
+
+        }
+    private void goToCameraView()
+    {
+         Intent mIntent=new Intent(BarcodeScanActivity.this,CameraOpenActivity.class);
+         startActivity(mIntent);
+         finish();
         }
 
 }
