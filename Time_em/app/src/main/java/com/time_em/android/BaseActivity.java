@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.time_em.authentication.LoginActivity;
 import com.time_em.barcode.BarcodeScanActivity;
+import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.notifications.SendNotification;
 import com.time_em.tasks.TaskListActivity;
@@ -102,8 +103,9 @@ public class BaseActivity extends Activity{
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
 				}
-				Intent intent = new Intent(BaseActivity.this, BarcodeScanActivity.class);
-				startActivity(intent);
+				Intent mIntent = new Intent(BaseActivity.this, CameraOpenActivity.class);
+				mIntent.putExtra("trigger","yes");
+				startActivity(mIntent);
 			}else if(v == nfcTapping){
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
