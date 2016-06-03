@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.time_em.android.R;
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
+
 import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
@@ -34,7 +35,9 @@ public class CameraOpenActivity extends Activity {
     private FrameLayout preview;
     private TextView headerText;
     private ImageView back, AddButton;
-
+    static {
+        System.loadLibrary("iconv");
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +61,7 @@ public class CameraOpenActivity extends Activity {
         preview = (FrameLayout) findViewById(R.id.cameraPreview);
         preview.setVisibility(View.VISIBLE);
 
-        if(getIntent().getStringExtra("trigger")!=null)
+        if(getIntent().getStringExtra("data")!=null)
         {
             BarcodeScanActivity.arrayList_scanCode.clear();
             }
@@ -71,7 +74,7 @@ public class CameraOpenActivity extends Activity {
             public void onClick(View v) {
                 releaseCamera();
                 Intent mIntent=new Intent(CameraOpenActivity.this,BarcodeScanActivity.class);
-                mIntent.putExtra("data","data");
+                mIntent.putExtra("trigger","barcode");
                 startActivity(mIntent);
                 finish();;
             }
@@ -218,7 +221,7 @@ public class CameraOpenActivity extends Activity {
                       //  preview.setVisibility(View.GONE);
                         releaseCamera();
                         Intent mIntent=new Intent(CameraOpenActivity.this,BarcodeScanActivity.class);
-                        mIntent.putExtra("data",code);
+                        mIntent.putExtra("trigger","barcode");
                         startActivity(mIntent);
                         finish();
                     }

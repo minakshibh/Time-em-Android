@@ -11,6 +11,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true"/>
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
@@ -66,7 +70,15 @@
         <activity
             android:name="com.time_em.barcode.CameraOpenActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.time_em.barcode.NFCReadActivity">
 
+            <intent-filter >
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <data android:mimeType="vnd.secret/agent.man"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
     </application>
     <supports-screens
         android:anyDensity="true"
