@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.android.internal.http.multipart.MultipartEntity;
 import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -49,6 +50,7 @@ import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.NotificationType;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.CustomMultipartRequest;
 import com.time_em.utils.MultipartRequest;
 import com.time_em.utils.MultipartUtility;
 import com.time_em.utils.Utils;
@@ -73,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Exchanger;
 
 import com.time_em.android.R;
@@ -82,6 +85,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
 
 public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
@@ -399,7 +403,8 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     }
 
     private void sendNotification(){
-        File file = new File(attachmentPath);
+        String url = "http://timeemapi.azurewebsites.net/api/Notification/AddNotification";
+       File file = new File(attachmentPath);
         int size = (int) file.length();
 
         byte[] bytes = new byte[size];
@@ -415,19 +420,19 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             e.printStackTrace();
         }
 //
-//        byte[] fileData1 = getFileDataFromDrawable(context, R.drawable.ic_action_android);
+        byte[] fileData1 = getFileDataFromDrawable(SendNotification.this, R.drawable.ic_launcher);
 //        byte[] fileData2 = getFileDataFromDrawable(context, R.drawable.ic_action_book);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);
         try {
             // the first file
-//            buildPart(dos, bytes, "temp.png");
             buildTextPart(dos, "UserId", String.valueOf(HomeActivity.user.getId()));
             buildTextPart(dos, "Subject", subject.getText().toString());
             buildTextPart(dos, "Message", message.getText().toString());
             buildTextPart(dos, "NotificationTypeId", selectedNotificationTypeId);
             buildTextPart(dos, "notifyto", selectedIds);
+            buildPart(dos, bytes, "temp.png");
 
             // send multipart form data necesssary after file data
             dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
@@ -437,8 +442,8 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             e.printStackTrace();
         }
 
-        String url = "http://timeemapi.azurewebsites.net/api/Notification/AddNotification";
-        MultipartRequest multipartRequest = new MultipartRequest(url, null, mimeType, multipartBody, new Response.Listener<NetworkResponse>() {
+
+        MultipartRequest mCustomRequest = new MultipartRequest(url, null, mimeType, multipartBody, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
                 Toast.makeText(SendNotification.this, "Upload successfully!", Toast.LENGTH_SHORT).show();
@@ -448,6 +453,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
                 }catch (Exception e){
                     e.printStackTrace();
+                    Log.e("volley response", ":::"+e.getMessage());
                 }
             }
         }, new Response.ErrorListener() {
@@ -457,7 +463,38 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             }
         });
 
-        VolleySingleton.getInstance(SendNotification.this).addToRequestQueue(multipartRequest);
+       /* //Auth header
+        Map<String, String> mHeaderPart= new HashMap<>();
+        mHeaderPart.put("Content-type", "multipart/form-data;");
+
+////File part
+        Map<String, File> mFilePartData= new HashMap<>();
+//        mFilePartData.put("file", new File(attachmentPath));
+
+//String part
+        Map<String, String> mStringPart= new HashMap<>();
+        mStringPart.put("UserId", String.valueOf(HomeActivity.user.getId()));
+        mStringPart.put("Subject", subject.getText().toString());
+        mStringPart.put("Message", message.getText().toString());
+        mStringPart.put("NotificationTypeId", selectedNotificationTypeId);
+        mStringPart.put("notifyto", selectedIds);
+
+        CustomMultipartRequest mCustomRequest = new CustomMultipartRequest(Request.Method.POST, SendNotification.this, url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+//                listener.onResponse(jsonObject);
+                Toast.makeText(SendNotification.this, "Upload successfully! ", Toast.LENGTH_SHORT).show();
+                Log.e("volley json response","::: "+jsonObject.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(SendNotification.this, "Upload failed!\r\n" + volleyError.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }, mFilePartData, mStringPart, mHeaderPart);
+*/
+        mCustomRequest.setShouldCache(false);
+        VolleySingleton.getInstance(SendNotification.this).addToRequestQueue(mCustomRequest);
 
        /* String res="";
 
