@@ -19,6 +19,7 @@ import com.time_em.authentication.LoginActivity;
 import com.time_em.barcode.BarcodeScanActivity;
 import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.notifications.NotificationListActivity;
 import com.time_em.notifications.SendNotification;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
@@ -141,7 +142,7 @@ public class BaseActivity extends Activity{
 				startActivity(intent);
 			} else if (v == notifications) {
 				setSelection(false, false, true, false);
-				Intent intent = new Intent(BaseActivity.this, SendNotification.class);
+				Intent intent = new Intent(BaseActivity.this, NotificationListActivity.class);
 				startActivity(intent);
 			} else if (v == settings) {
 				setSelection(false, false, false, true);
@@ -174,8 +175,6 @@ public class BaseActivity extends Activity{
 
 			/** Called when a drawer has settled in a completely open state. */
 			public void onDrawerOpened(View drawerView) {
-
-
 				super.onDrawerOpened(drawerView);
 			}
 		};

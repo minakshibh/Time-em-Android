@@ -30,7 +30,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.view.ViewGroup;
@@ -38,6 +40,7 @@ import android.graphics.Color;
 import android.widget.Toast;
 
 import com.android.internal.http.multipart.MultipartEntity;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -91,7 +94,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
     private Spinner spnNotificationType;
     private EditText subject, message;
-    private TextView recipients, upload;
+    private RelativeLayout recipients;
     private ArrayList<User> userList;
     private ArrayList<NotificationType> notificationTypes;
     private Time_emJsonParser parser;
@@ -105,6 +108,9 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     private final String boundary = "apiclient-" + System.currentTimeMillis();
     private final String mimeType = "multipart/form-data;boundary=" + boundary;
     private byte[] multipartBody;
+    private ProgressDialog pDialog;
+    private LinearLayout upload;
+    private TextView txtSpnUsers, headerInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,11 +126,14 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         spnNotificationType = (Spinner) findViewById(R.id.spnNotificationType);
         subject = (EditText) findViewById(R.id.subject);
         message = (EditText) findViewById(R.id.message);
-        recipients = (TextView) findViewById(R.id.spnUsers);
-        upload = (TextView) findViewById(R.id.upload);
+        recipients = (RelativeLayout) findViewById(R.id.spnUsers);
+        upload = (LinearLayout) findViewById(R.id.upload);
         uploadedImage = (ImageView) findViewById(R.id.uploadedImage);
         sendNotification = (Button) findViewById(R.id.send);
+        txtSpnUsers = (TextView)findViewById(R.id.txtSpnUsers);
+        headerInfo = (TextView)findViewById(R.id.info);
 
+        headerInfo.setText("Send Notification");
         parser = new Time_emJsonParser(SendNotification.this);
 
         Utils.saveInSharedPrefs(SendNotification.this, "SelectedIds", "");
@@ -163,7 +172,13 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             @Override
             public void onClick(View v) {
 //                new AsyncTaskNotification().execute();
-                sendNotification();
+
+                if(subject.getText().toString().trim().equals("") || message.getText().toString().trim().equals("")
+                        || selectedNotificationTypeId.equals("") || selectedIds.equals("")){
+                    Utils.showToast(SendNotification.this, "Please specify required information");
+                }else {
+                    sendNotification();
+                }
             }
         });
     }
@@ -346,7 +361,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             notificationTypes = parser.parseNotificationType(output);
 
             adapter = new NotificationTypeAdapter(SendNotification.this,
-                    android.R.layout.simple_spinner_item);
+                    R.layout.spinner_row_layout);
             spnNotificationType.setAdapter(adapter); // Set the custom adapter to the spinner
 
         }
@@ -360,173 +375,52 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
         startActivity(intent);
     }
-    private void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException {
-        dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + lineEnd);
-        dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + lineEnd);
-        dataOutputStream.writeBytes(lineEnd);
-        dataOutputStream.writeBytes(parameterValue + lineEnd);
-    }
-
-    private void buildPart(DataOutputStream dataOutputStream, byte[] fileData, String fileName) throws IOException {
-        dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\"; filename=\""
-                + fileName + "\"" + lineEnd);
-        dataOutputStream.writeBytes(lineEnd);
-
-        ByteArrayInputStream fileInputStream = new ByteArrayInputStream(fileData);
-        int bytesAvailable = fileInputStream.available();
-
-        int maxBufferSize = 1024 * 1024;
-        int bufferSize = Math.min(bytesAvailable, maxBufferSize);
-        byte[] buffer = new byte[bufferSize];
-
-        // read file and write it into form...
-        int bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-        while (bytesRead > 0) {
-            dataOutputStream.write(buffer, 0, bufferSize);
-            bytesAvailable = fileInputStream.available();
-            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-        }
-
-        dataOutputStream.writeBytes(lineEnd);
-    }
-
-    private byte[] getFileDataFromDrawable(Context context, int id) {
-        Drawable drawable = ContextCompat.getDrawable(context, id);
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream);
-        return byteArrayOutputStream.toByteArray();
-    }
 
     private void sendNotification(){
-        String url = "http://timeemapi.azurewebsites.net/api/Notification/AddNotification";
-       File file = new File(attachmentPath);
-        int size = (int) file.length();
 
-        byte[] bytes = new byte[size];
-        try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(bytes, 0, bytes.length);
-            buf.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-//
-        byte[] fileData1 = getFileDataFromDrawable(SendNotification.this, R.drawable.ic_launcher);
-//        byte[] fileData2 = getFileDataFromDrawable(context, R.drawable.ic_action_book);
+        Log.e("Notification","Send notification called");
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(bos);
-        try {
-            // the first file
-            buildTextPart(dos, "UserId", String.valueOf(HomeActivity.user.getId()));
-            buildTextPart(dos, "Subject", subject.getText().toString());
-            buildTextPart(dos, "Message", message.getText().toString());
-            buildTextPart(dos, "NotificationTypeId", selectedNotificationTypeId);
-            buildTextPart(dos, "notifyto", selectedIds);
-            buildPart(dos, bytes, "temp.png");
+        pDialog = new ProgressDialog(SendNotification.this);
+        pDialog.setTitle("Time'em");
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();
 
-            // send multipart form data necesssary after file data
-            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-            // pass to multipart body
-            multipartBody = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String url = SendNotification.this.getResources().getString(R.string.baseUrl)+Utils.SendNotificationAPI;
 
-
-        MultipartRequest mCustomRequest = new MultipartRequest(url, null, mimeType, multipartBody, new Response.Listener<NetworkResponse>() {
+        MultipartRequest mCustomRequest = new MultipartRequest(url, String.valueOf(HomeActivity.user.getId()),
+                subject.getText().toString(), message.getText().toString(), selectedNotificationTypeId, selectedIds, attachmentPath, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pDialog.dismiss();
+                Log.e("volley error", "::: error , "+error.getMessage());
+                Utils.showToast(SendNotification.this, "Something went wrong, "+error.getMessage());
+            }
+        }, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
-                Toast.makeText(SendNotification.this, "Upload successfully!", Toast.LENGTH_SHORT).show();
+                Log.e("volley","uploaded successfully");
+
                 try {
-                    String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                    Log.e("volley response", ":::"+jsonString);
+                    String responseString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                    Log.e("volley response", ":::"+responseString);
+
+                    pDialog.dismiss();
+                    Utils.alertMessage(SendNotification.this, "::::: " + responseString);
 
                 }catch (Exception e){
                     e.printStackTrace();
-                    Log.e("volley response", ":::"+e.getMessage());
+                    pDialog.dismiss();
+                    Utils.showToast(SendNotification.this, "Something went wrong, "+e.getMessage());
+                    Log.e("volley response", "::: error , "+e.getMessage());
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(SendNotification.this, "Upload failed!\r\n" + error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
-       /* //Auth header
-        Map<String, String> mHeaderPart= new HashMap<>();
-        mHeaderPart.put("Content-type", "multipart/form-data;");
-
-////File part
-        Map<String, File> mFilePartData= new HashMap<>();
-//        mFilePartData.put("file", new File(attachmentPath));
-
-//String part
-        Map<String, String> mStringPart= new HashMap<>();
-        mStringPart.put("UserId", String.valueOf(HomeActivity.user.getId()));
-        mStringPart.put("Subject", subject.getText().toString());
-        mStringPart.put("Message", message.getText().toString());
-        mStringPart.put("NotificationTypeId", selectedNotificationTypeId);
-        mStringPart.put("notifyto", selectedIds);
-
-        CustomMultipartRequest mCustomRequest = new CustomMultipartRequest(Request.Method.POST, SendNotification.this, url, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-//                listener.onResponse(jsonObject);
-                Toast.makeText(SendNotification.this, "Upload successfully! ", Toast.LENGTH_SHORT).show();
-                Log.e("volley json response","::: "+jsonObject.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(SendNotification.this, "Upload failed!\r\n" + volleyError.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }, mFilePartData, mStringPart, mHeaderPart);
-*/
         mCustomRequest.setShouldCache(false);
+        mCustomRequest.setRetryPolicy(new DefaultRetryPolicy(30 * 1000, 0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleySingleton.getInstance(SendNotification.this).addToRequestQueue(mCustomRequest);
-
-       /* String res="";
-
-        String charset = "UTF-8";
-        String requestURL = "http://timeemapi.azurewebsites.net/api/Notification/AddNotification";
-
-
-        try {
-            MultipartUtility multipart = new MultipartUtility(requestURL, charset);
-
-//            multipart.addHeaderField("User-Agent", "CodeJava");
-//            multipart.addHeaderField("Test-Header", "Header-Value");
-
-            multipart.addFormField("LoginId", String.valueOf(HomeActivity.user.getId()));
-            multipart.addFormField("Subject", subject.getText().toString());
-            multipart.addFormField("Message", message.getText().toString());
-            multipart.addFormField("NotificationTypeId", selectedNotificationTypeId);
-            multipart.addFormField("notifyto", selectedIds);
-            multipart.addFilePart("fileUpload", new File(attachmentPath));
-
-            List<String> response = multipart.finish();
-
-            for (String line : response) {
-               res = res + "," +line;
-            }
-
-        } catch (IOException ex) {
-            res = ex.getMessage();
-            ex.printStackTrace();
-        }
-
-        return res;*/
     }
 
     @Override
@@ -534,7 +428,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         super.onResume();
         selectedIds = Utils.getSharedPrefs(SendNotification.this, "SelectedIds");
         selectedUsers = Utils.getSharedPrefs(SendNotification.this, "SelectedUsers");
-        recipients.setText(selectedUsers);
+        txtSpnUsers.setText(selectedUsers);
     }
 
     @Override
@@ -555,14 +449,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
     @SuppressWarnings("deprecation")
     private void onSelectFromGalleryResult(Intent data) {
-        /*Bitmap bm=null;
-        if (data != null) {
-            try {
-                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
+
         Uri selectedImage = data.getData();
         String[] filePathColumn = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
@@ -611,31 +498,10 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     }
     private void onCaptureImageResult(Intent data) {
         try {
-//            Bitmap mImageBitmap = MediaStore.Images.Media.getBitmap(SendNotification.this.getContentResolver(), Uri.parse(attachmentPath));
             uploadedImage.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-       /* Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.PNG, 90, bytes);
-
-        File destination = new File(Environment.getExternalStorageDirectory(),
-                System.currentTimeMillis() + ".png");
-        attachmentPath = destination.getAbsolutePath();
-        FileOutputStream fo;
-        try {
-            destination.createNewFile();
-            fo = new FileOutputStream(destination);
-            fo.write(bytes.toByteArray());
-            fo.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        uploadedImage.setImageBitmap(thumbnail);*/
     }
 
     @Override
@@ -647,109 +513,5 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             else if (requestCode == REQUEST_CAMERA)
                 onCaptureImageResult(data);
         }
-    }
-
-   /* public class AsyncTaskNotification extends AsyncTask<String, Void, String> {
-
-
-        private ProgressDialog pDialog;
-        private String response;
-
-        public AsyncTaskNotification(){
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-            // TODO Auto-generated method stub
-            super.onPreExecute();
-
-                pDialog = new ProgressDialog(SendNotification.this);
-                pDialog.setTitle("Time'em");
-                pDialog.setMessage("Please wait...");
-                pDialog.setCancelable(false);
-                pDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... urls) {
-           ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-            ContentBody contentPart = new ByteArrayBody(bos.toByteArray(), filename);
-
-            MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-            reqEntity.addPart("picture", contentPart);
-            String response = multipost("http://server.com", reqEntity);
-            return "success";
-        }
-
-
-        @Override
-        protected void onPostExecute(String result) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(result);
-            int resultcode=0;
-            try{
-                pDialog.dismiss();
-
-                Utils.alertMessage(SendNotification.this, response);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-*/
-    private static String multipost(String urlString, MultipartEntity reqEntity) {
-        try {
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setReadTimeout(10000);
-//            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("POST");
-            conn.setUseCaches(false);
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-
-            conn.setRequestProperty("Connection", "Keep-Alive");
-            conn.addRequestProperty("Content-length", reqEntity.getContentLength()+"");
-            conn.addRequestProperty(reqEntity.getContentType().getName(), reqEntity.getContentType().getValue());
-
-            OutputStream os = conn.getOutputStream();
-            reqEntity.writeTo(conn.getOutputStream());
-            os.close();
-            conn.connect();
-
-            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                return readStream(conn.getInputStream());
-            }
-
-        } catch (Exception e) {
-            Log.e("Time'em", "multipart post error " + e + "(" + urlString + ")");
-        }
-        return null;
-    }
-
-    private static String readStream(InputStream in) {
-        BufferedReader reader = null;
-        StringBuilder builder = new StringBuilder();
-        try {
-            reader = new BufferedReader(new InputStreamReader(in));
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return builder.toString();
     }
 }

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 public class UserSelectionActivity extends Activity {
 
     private ListView userListView;
-    private Button done, cancel;
+    private Button done;
     private UserAdapter adapter;
     private ArrayList<User> userList;
     private ArrayList<String> selectedUserIds;
@@ -55,7 +55,6 @@ public class UserSelectionActivity extends Activity {
     private void initScreen() {
         userListView = (ListView)findViewById(R.id.userList);
         done = (Button)findViewById(R.id.done);
-        cancel = (Button)findViewById(R.id.cancel);
         back = (ImageView)findViewById(R.id.back);
         close = (ImageView)findViewById(R.id.close);
         headerInfo = (TextView)findViewById(R.id.info);
@@ -94,7 +93,7 @@ public class UserSelectionActivity extends Activity {
                             _users = _users + userList.get(i).getId();
                             selectedUsers = selectedUsers + userList.get(i).getFullName();
                         }else {
-                            _users = "," + _users + userList.get(i).getId();
+                            _users = _users + "," +  userList.get(i).getId();
                             selectedUsers = "," + selectedUsers + userList.get(i).getFullName();
                         }
                     }
@@ -105,12 +104,6 @@ public class UserSelectionActivity extends Activity {
             }
         });
 
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -12,6 +12,7 @@ import android.content.res.Resources;
 
 import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.Notification;
 import com.time_em.model.NotificationType;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
@@ -170,6 +171,49 @@ public class Time_emJsonParser {
 		Utils.showToast(context, message);
 		return isError;
 	}
+
+	public ArrayList<Notification> parseNotificationList(String webResponse){
+
+		String timeStamp="";
+		ArrayList<Notification> notificationList = new ArrayList<Notification>();
+		Resources res = context.getResources();
+		try{
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("IsError");
+			message = jObject.getString("Message");
+			timeStamp = jObject.getString("TimeStamp");
+
+			JSONArray jArray = jObject.getJSONArray("notificationslist");
+			for(int i = 0; i<jArray.length(); i++){
+				JSONObject taskObject = jArray.getJSONObject(i);
+				Notification notification = new Notification();
+				notification.setNotificationId(taskObject.getInt("NotificationId"));
+				notification.setSenderId(taskObject.getInt("Senderid"));
+				notification.setNotificationType(taskObject.getString("NotificationTypeName"));
+				notification.setAttachmentPath(taskObject.getString("AttachmentFullPath"));
+				notification.setSubject(taskObject.getString("Subject"));
+				notification.setMessage(taskObject.getString("Message"));
+				notification.setCreatedDate(taskObject.getString("createdDate"));
+				notification.setSenderFullName(taskObject.getString("SenderFullName"));
+
+				notificationList.add(notification);
+			}
+
+			Utils.saveInSharedPrefs(context, HomeActivity.user.getId()+res.getString(R.string.notificationTimeStampStr), timeStamp);
+
+		}catch (JSONException e) {
+			// TODO Auto-generated catch block
+			notificationList = new ArrayList<Notification>();
+			e.printStackTrace();
+			Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return notificationList;
+	}
+
 	public ArrayList<TaskEntry> parseTaskList(String webResponse, int userId, String selectedDate){
 
 		String timeStamp="";

@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.time_em.model.Notification;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.team.UserListActivity.TeamAdapter;
@@ -29,6 +30,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_TASK = "Task";
 	private String TABLE_TEAM = "Team";
 	private String TABLE_ACTIVE_USERS = "ActiveUsers";
+	private String TABLE_NOTIFICATIONS = "Notifications";
 
 	// fields for task table
 	private String Id = "Id";
@@ -78,6 +80,16 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String IsNightShift = "IsNightShift";
 	private String SignedHours = "SignedHours";
 
+	//fields for notification table
+	private String NotificationId = "NotificationId";
+	private String SenderId = "SenderId";
+	private String NotificationType = "NotificationType";
+	private String AttachmentPath = "AttachmentPath";
+	private String Subject = "Subject";
+	private String Message = "Message";
+//	private String CreatedDate = "CreatedDate";
+	private String SenderFullName = "SenderFullName";
+
 	SQLiteCursor cursor;
 
 	/**
@@ -125,9 +137,15 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		String CREATE_ACTIVE_USERS_TABLE = "CREATE TABLE if NOT Exists " + TABLE_ACTIVE_USERS
 				+ "(" + Id + " TEXT," + FullName + " TEXT)";
 
+		String CREATE_NOTIFICATION_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS
+				+ "(" + NotificationId + " TEXT," + SenderId + " TEXT," + NotificationType + " TEXT,"
+				+ AttachmentPath + " TEXT," + Subject + " TEXT," + Message + " TEXT," + CreatedDate + " TEXT,"
+				+ SenderFullName + " TEXT)";
+
 		db.execSQL(CREATE_TASK_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
 		db.execSQL(CREATE_ACTIVE_USERS_TABLE);
+		db.execSQL(CREATE_NOTIFICATION_TABLE);
 	}
 
 	@Override
@@ -215,6 +233,102 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				e.printStackTrace();
 			}
 		}
+		db.close();
+	}
+
+	public void updateNotifications(ArrayList<Notification> notificationList) {
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < notificationList.size(); i++) {
+			Notification notification = notificationList.get(i);
+			try {
+
+				ContentValues values = new ContentValues();
+				values.put(NotificationId, String.valueOf(notification.getNotificationId()));
+				values.put(SenderId, String.valueOf(notification.getSenderId()));
+				values.put(NotificationType, notification.getNotificationType());
+				values.put(AttachmentPath, notification.getAttachmentPath());
+				values.put(Subject, notification.getSubject());
+				values.put(Message, notification.getMessage());
+				values.put(CreatedDate, notification.getCreatedDate());
+				values.put(SenderFullName, notification.getSenderFullName());
+
+				db.insert(TABLE_NOTIFICATIONS, null, values);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
+
+	public ArrayList<Notification> getNotificationsByType(String notificationType) {
+		ArrayList<Notification> notifications = new ArrayList<Notification>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS
+				+ " where "
+				+ NotificationType + "=\"" + notificationType+"\"";
+
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+
+					Notification notification = new Notification();
+					notification.setNotificationId(Integer.valueOf(cursor.getString(cursor
+							.getColumnIndex(NotificationId))));
+					notification.setSenderId(Integer.valueOf(cursor
+							.getString(cursor.getColumnIndex(SenderId))));
+					notification.setNotificationType(cursor.getString(cursor
+							.getColumnIndex(NotificationType)));
+					notification.setAttachmentPath(cursor.getString(cursor
+							.getColumnIndex(AttachmentPath)));
+					notification.setSubject(cursor.getString(cursor
+							.getColumnIndex(Subject)));
+					notification.setMessage(cursor.getString(cursor
+							.getColumnIndex(Message)));
+					notification.setCreatedDate(cursor.getString(cursor
+							.getColumnIndex(CreatedDate)));
+					notification.setSenderFullName(cursor.getString(cursor
+							.getColumnIndex(SenderFullName)));
+
+					notifications.add(notification);
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return notifications;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return notifications;
+		}
+	}
+
+	public void deleteNotification(int notificationId) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+
+			String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS + " where "
+					+ NotificationId + "=" + notificationId;
+			try {
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+						db.delete(TABLE_NOTIFICATIONS, NotificationId + " = ?", new String[] { String.valueOf(notificationId) });
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		db.close();
 	}
 

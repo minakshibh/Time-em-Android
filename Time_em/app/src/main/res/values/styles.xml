@@ -97,6 +97,11 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="DescTextStyle">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

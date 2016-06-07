@@ -79,6 +79,9 @@
         <activity
             android:name="com.time_em.barcode.CameraOpenActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.time_em.notifications.NotificationListActivity"
+            android:screenOrientation="portrait"></activity>
 
     </application>
     <supports-screens

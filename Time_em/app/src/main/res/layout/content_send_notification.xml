@@ -2,86 +2,239 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:orientation="vertical">
-    <include layout="@layout/header_view" android:id="@+id/headerLayout"></include>
+    <include layout="@layout/header_view" android:id="@+id/headerLayout"
+        ></include>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/headerLayout"
+        android:padding="10dp"
         android:layout_above="@+id/send">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Select Notification Type"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"/>
+                style="@style/TextStyle"/>
 
-            <Spinner
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
-                android:id="@+id/spnNotificationType"></Spinner>
+                android:id="@+id/notTypeLayout">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/notTypeIcon"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/envelope_outline"
+                    android:layout_alignParentLeft="true"/>
 
-            <EditText
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/notTypeIcon"
+                    android:layout_toLeftOf="@+id/dropdownIcon"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/spnNotificationType"
+                    style="@style/DescTextStyle"
+                    android:hint="Subject goes here"
+                    android:background="@null"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/dropdownIcon"
+                    android:src="@drawable/down_arrowspn"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                style="@style/separator"/>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
-                android:id="@+id/subject"
-                android:hint="Specify Subject"/>
+                android:layout_marginTop="20dp"
+                android:id="@+id/subjectLayout">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/messageIcon1"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/envelope_outline"
+                    android:layout_alignParentLeft="true"/>
 
-            <EditText
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/messageIcon1"
+                    android:layout_toLeftOf="@+id/dropdown2"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/subject"
+                    style="@style/TextStyle"
+                    android:hint="Subject goes here"
+                    android:background="@null"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/dropdown2"
+                    android:src="@drawable/textarea"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                style="@style/separator"/>
+
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/message"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
-                android:hint="Your message goes here"/>
+                android:layout_marginTop="20dp"
+                android:id="@+id/messageLayout">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/messageIcon"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/envelope_outline"
+                    android:layout_alignParentLeft="true"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/messageIcon"
+                    android:layout_toLeftOf="@+id/dropdown1"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:id="@+id/message"
+                    android:layout_centerInParent="true"
+                    style="@style/TextStyle"
+                    android:background="@null"
+                    android:hint="Your message goes here"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/dropdown1"
+                    android:src="@drawable/textarea"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                style="@style/separator"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
+                style="@style/TextStyle"
                 android:text="Select Recipients"/>
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/spnUsers"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"
-                android:text="Select Here..."></TextView>
+                android:id="@+id/spnUsers">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/userIcon"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/user_outline"
+                    android:layout_alignParentLeft="true"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/userIcon"
+                    android:layout_toLeftOf="@+id/dropdown"
+                    android:id="@+id/txtSpnUsers"
+                    style="@style/TextStyle"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:hint="Select Recipients"></TextView>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/dropdown"
+                    android:src="@drawable/down_arrowspn"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        style="@style/separator"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:paddingTop="15dp"
+                style="@style/TextStyle"
+                android:text="Attachment"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/grey_bg"
+                android:gravity="center"
                 android:id="@+id/upload"
-                android:text="Upload Image"/>
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/uploadedImage"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:src="@drawable/upload"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/alphabeticalTextColor"
+                    android:textSize="14sp"
+                    android:text="Upload Image"/>
+            </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/ic_launcher"/>
+                android:id="@+id/uploadedImage"/>
+
         </LinearLayout>
     </ScrollView>
 

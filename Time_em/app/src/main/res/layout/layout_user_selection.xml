@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@color/white"
     android:layout_height="match_parent">
     <include layout="@layout/header_view" android:id="@+id/header"
     ></include>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/textBg"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:gravity="right"
         android:id="@+id/options"
         android:padding="10dp">
         <Button
@@ -21,17 +23,8 @@
             android:gravity="center"
             android:text="DONE"
             android:textColor="@color/textColor"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-        <Button
-            android:id="@+id/cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/cancel_bg"
-            android:gravity="center"
-            android:text="CANCEL"
-            android:textColor="@color/textColor"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
             android:textSize="14sp"
             android:textStyle="bold" />
 

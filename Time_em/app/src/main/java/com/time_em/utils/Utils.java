@@ -64,6 +64,8 @@ public class Utils {
     static public String GetUsersListByLoginCode = "/User/GetUsersListByLoginCode";
     static public String SignInByUserId =  "/UserActivity/SignInByUserId";
     static public String SignOutByUserId =  "/UserActivity/SignOutByUserId";
+    static public String SendNotificationAPI = "/Notification/AddNotification";
+    static public String GetNotificationAPI = "/notification/NotificationByUserId";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/grey"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <include android:id="@+id/headerLayout" layout="@layout/include_toolbar"></include>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/headerLayout"
+        android:id="@+id/tabBar"
+        android:layout_marginTop="1dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:layout_height="wrap_content"
+            android:background="@color/gradientBgStart"
+            android:id="@+id/notices"
+            android:src="@drawable/notices"/>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:layout_height="wrap_content"
+            android:background="@color/gradientBgEnd"
+            android:id="@+id/messages"
+            android:src="@drawable/messages"/>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/files"
+            android:background="@color/gradientBgEnd"
+            android:src="@drawable/globe"/>
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/swipeInfo"
+        android:layout_below="@+id/tabBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/textBg"
+        android:padding="5dp"
+        android:text="Swipe left to delete"
+        android:textColor="@color/alphabeticalTextColor"
+        android:textSize="11sp"
+        />
+
+    <ListView
+        android:id="@+id/notificationList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/swipeInfo"
+        ></ListView>
+
+</RelativeLayout>
