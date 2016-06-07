@@ -44,7 +44,8 @@ public class Utils {
     static public String network_error = "Please check your internet connection, try again";
     static int statusCode;
     private static SharedPreferences preferences;
-
+    public static String PROJECT_ID = "554809123006";
+    public static String API_KEY = "AIzaSyBGO_uGOOR6YyW0qvENCw_vGX6BHQY--RA";
     public static String sharedPrefs = "Time'emPrefs";
 
     static public String loginAPI = "/User/GetValidateUser";
@@ -66,6 +67,7 @@ public class Utils {
     static public String SignOutByUserId =  "/UserActivity/SignOutByUserId";
     static public String SendNotificationAPI = "/Notification/AddNotification";
     static public String GetNotificationAPI = "/notification/NotificationByUserId";
+    static public String RegisterUserDevice = "/User/RegisterUserDevice";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
