@@ -36,50 +36,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="SendNotification.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/notifications/SendNotification.java">
+      <file leaf-file-name="TaskListActivity.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskListActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-185.0">
-              <caret line="431" column="5" selection-start-line="431" selection-start-column="5" selection-end-line="431" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BaseActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/android/BaseActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.333333">
-              <caret line="165" column="61" selection-start-line="165" selection-start-column="61" selection-end-line="165" selection-end-column="61" />
+            <state vertical-scroll-proportion="0.5610236">
+              <caret line="277" column="42" selection-start-line="277" selection-start-column="42" selection-end-line="278" selection-end-column="17" />
               <folding>
-                <element signature="e#3252#5475#0" expanded="true" />
-                <element signature="e#5474#5475#0" expanded="true" />
+                <element signature="e#10410#10817#0" expanded="true" />
+                <element signature="e#10816#10817#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AndroidManifest.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.1960783">
-              <caret line="107" column="0" selection-start-line="107" selection-start-column="0" selection-end-line="107" selection-end-column="0" />
-              <folding>
-                <element signature="e#913#931#0" expanded="true" />
-                <element signature="e#1079#1097#0" expanded="true" />
-                <element signature="e#3139#3181#0" expanded="true" />
-                <element signature="e#3418#3457#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TaskDetailActivity.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskDetailActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.34303534">
-              <caret line="69" column="9" selection-start-line="69" selection-start-column="9" selection-end-line="69" selection-end-column="9" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -1753,7 +1718,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskListActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/color.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/date_slider_row.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/time_em/model/NotificationType.java" />
@@ -1787,6 +1751,9 @@
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskDetailActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_add_task.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_task_detail.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskListActivity.java" />
       </list>
     </option>
   </component>
@@ -2215,16 +2182,16 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32869565" sideWeight="0.4973262" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.067826085" sideWeight="0.68907565" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.067826085" sideWeight="0.68525594" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.57391304" sideWeight="0.6325439" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.067826085" sideWeight="0.31092438" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.067826085" sideWeight="0.31474409" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32869565" sideWeight="0.49427044" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25362873" sideWeight="0.26492536" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.006956522" sideWeight="0.4973262" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.006956522" sideWeight="0.49121466" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32869565" sideWeight="0.4973262" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -2304,21 +2271,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/asynctasks/AsyncTaskTimeEm.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41864717">
-          <caret line="56" column="40" selection-start-line="56" selection-start-column="40" selection-end-line="56" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mcxiaoke.volley/library-aar/1.0.0/a06dc87d645fa920c025d4bdb42cab1c7d4cdd73/library-aar-1.0.0-sources.jar!/com/android/volley/NetworkDispatcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="79" column="0" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/utils/VolleySingleton.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.42156863">
@@ -2582,8 +2534,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="71" column="46" selection-start-line="71" selection-start-column="46" selection-end-line="71" selection-end-column="46" />
           <folding>
-            <element signature="e#5975#6214#0" expanded="true" />
-            <element signature="e#6213#6214#0" expanded="true" />
+            <element signature="e#5975#6214#0" expanded="false" />
+            <element signature="e#6213#6214#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -2654,17 +2606,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="7.703911">
-          <caret line="238" column="63" selection-start-line="238" selection-start-column="63" selection-end-line="238" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/notifications/SendNotification.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-185.0">
+        <state vertical-scroll-proportion="0.0">
           <caret line="431" column="5" selection-start-line="431" selection-start-column="5" selection-end-line="431" selection-end-column="5" />
           <folding />
         </state>
@@ -2702,8 +2646,8 @@
         <state vertical-scroll-proportion="-8.333333">
           <caret line="165" column="61" selection-start-line="165" selection-start-column="61" selection-end-line="165" selection-end-column="61" />
           <folding>
-            <element signature="e#3252#5475#0" expanded="true" />
-            <element signature="e#5474#5475#0" expanded="true" />
+            <element signature="e#3252#5475#0" expanded="false" />
+            <element signature="e#5474#5475#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -2716,10 +2660,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1627907">
+          <caret line="12" column="54" selection-start-line="12" selection-start-column="54" selection-end-line="12" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_add_task.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3489796">
+          <caret line="68" column="45" selection-start-line="68" selection-start-column="45" selection-end-line="68" selection-end-column="45" />
+          <folding>
+            <element signature="e#2609#2629#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.1960783">
-          <caret line="107" column="0" selection-start-line="107" selection-start-column="0" selection-end-line="107" selection-end-column="0" />
+        <state vertical-scroll-proportion="2.6878612">
+          <caret line="93" column="28" selection-start-line="93" selection-start-column="28" selection-end-line="93" selection-end-column="28" />
           <folding>
             <element signature="e#913#931#0" expanded="true" />
             <element signature="e#1079#1097#0" expanded="true" />
@@ -2729,19 +2694,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_task_detail.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1627907">
-          <caret line="12" column="54" selection-start-line="12" selection-start-column="54" selection-end-line="12" selection-end-column="54" />
-          <folding />
+        <state vertical-scroll-proportion="0.35714287">
+          <caret line="93" column="52" selection-start-line="93" selection-start-column="52" selection-end-line="93" selection-end-column="52" />
+          <folding>
+            <element signature="e#3450#3470#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskDetailActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34303534">
-          <caret line="69" column="9" selection-start-line="69" selection-start-column="9" selection-end-line="69" selection-end-column="9" />
-          <folding />
+        <state vertical-scroll-proportion="0.9116022">
+          <caret line="33" column="36" selection-start-line="33" selection-start-column="36" selection-end-line="33" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/time_em/tasks/TaskListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5610236">
+          <caret line="277" column="42" selection-start-line="277" selection-start-column="42" selection-end-line="278" selection-end-column="17" />
+          <folding>
+            <element signature="e#10410#10817#0" expanded="true" />
+            <element signature="e#10816#10817#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

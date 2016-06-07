@@ -119,6 +119,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             @Override
             public void onClick(View v) {
                 intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                intent.putExtra("selectedDate", selectedDate);
+                intent.putExtra("AddNewtask", "0");
                 startActivity(intent);
             }
         });
@@ -270,7 +272,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                    intent.putExtra("taskEntry", tasks.get(position));
+                    intent.putExtra("selectedDate", selectedDate);
+                    startActivity(intent);
                 }
             });
         }
