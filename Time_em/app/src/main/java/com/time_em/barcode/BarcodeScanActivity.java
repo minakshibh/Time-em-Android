@@ -50,6 +50,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
     private TextView headerText;
     private TextView btn_signIn,btn_signOut;
     private ImageView back, AddButton;
+    private String trigger="";
 
 
     @Override
@@ -60,8 +61,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
 
         initUI();
         setOnClickListener();
-        if (getIntent().getStringExtra("data") != null)
+        if (getIntent().getStringExtra("trigger") != null)
         {
+            trigger=getIntent().getStringExtra("trigger");
              fetchUserByBarCode();
              setAdapter(aL_UsersExistDb,aL_UsersNotExistDb);
             }
@@ -375,7 +377,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                      // Utils.alertMessage(BarcodeScanActivity.this, " User already Signed Out.");
 
                     }
+
                 goToCameraView();
+
 
 
             }
@@ -383,10 +387,13 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         }
     private void goToCameraView()
     {
-         Intent mIntent=new Intent(BarcodeScanActivity.this,CameraOpenActivity.class);
-         startActivity(mIntent);
-         finish();
+            if(trigger.equalsIgnoreCase("barcode")) {
+            Intent mIntent = new Intent(BarcodeScanActivity.this, CameraOpenActivity.class);
+            startActivity(mIntent);
+            finish();
+            }
         }
+
 
 }
 
