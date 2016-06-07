@@ -32,6 +32,7 @@ import com.time_em.tasks.AddTaskActivity;
 import com.time_em.tasks.TaskDetailActivity;
 import com.time_em.utils.Utils;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,19 +86,17 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     private void setUpClickListeners() {
         sendNotification.setOnClickListener(listener);
         back.setOnClickListener(listener);
-        notificationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-//                Intent intent = new Intent(NotificationListActivity.this, TaskDetailActivity.class);
-//                intent.putExtra("taskEntry", tasks.get(position));
-//                startActivity(intent);
-            }
-        });
         notices.setOnClickListener(listener);
         messages.setOnClickListener(listener);
         files.setOnClickListener(listener);
+        notificationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(NotificationListActivity.this, NotificationDetailsActivity.class);
+                intent.putExtra("notification", notifications.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     private View.OnClickListener listener = new View.OnClickListener() {
@@ -176,9 +175,9 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     }*/
 
     public class NotificationAdapter extends BaseSwipeAdapter {
-        private TextView subject, message, senderName;
+        private TextView subject, message, senderName,date;
         private LinearLayout delete;
-
+        private String part1,part2;
         public NotificationAdapter() {
         }
 
@@ -210,10 +209,38 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             subject = (TextView) convertView.findViewById(R.id.subject);
             message = (TextView) convertView.findViewById(R.id.message);
             senderName = (TextView) convertView.findViewById(R.id.senderName);
+            date = (TextView) convertView.findViewById(R.id.date);
 
             subject.setText(notification.getSubject());
             message.setText(notification.getMessage());
             senderName.setText(notification.getSenderFullName());
+          //  date.setText(notification.getSenderFullName());
+            String getDate=notification.getCreatedDate();
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Calendar cal = Calendar.getInstance();
+
+            //System.out.println(dateFormat.format(cal.getTime()));
+            String getcuurentdate=dateFormat.format(cal.getTime());
+            try {
+                String[] parts = getDate.split(" ");
+                part1 = parts[0]; // date
+                part2 = parts[1]; //time
+
+                System.out.println(part1);
+                System.out.println(part2);
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+            }
+
+            if (getcuurentdate.equalsIgnoreCase(part1)) {
+
+                date.setText(part2);
+            }else{
+
+                date.setText(part1);
+            }
+
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -262,7 +289,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     public void processFinish(String output, String methodName) {
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
-        Utils.alertMessage(NotificationListActivity.this, output);
+     //   Utils.alertMessage(NotificationListActivity.this, output);
         notifications = parser.parseNotificationList(output);
         dbHandler.updateNotifications(notifications);
 

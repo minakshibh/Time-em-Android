@@ -205,11 +205,11 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			notificationList = new ArrayList<Notification>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
-		if(isError)
-			Utils.showToast(context, message);
+		//if(isError)
+			//Utils.showToast(context, message);
 
 		return notificationList;
 	}

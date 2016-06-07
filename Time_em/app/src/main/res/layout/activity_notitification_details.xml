@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent">
+    <include android:id="@+id/headerLayout" layout="@layout/include_toolbar"></include>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_weight="0.15"
+        android:layout_height="0dp"
+        >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:layout_marginTop="5dp"
+        android:textSize="17sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:id="@+id/textViewDate" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textStyle="bold"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="@color/sendTextColor"
+        android:id="@+id/textViewName" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"
+       />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_weight="0.15"
+        android:layout_height="0dp"
+        >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subject:"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:layout_marginLeft="10dp"
+        android:textColor="@color/black"
+        android:id="@+id/lbl_Subject" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subject:"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="12dp"
+            android:textColor="@color/black"
+            android:id="@+id/textViewSubject" />
+</LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"
+         />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_weight="0.2"
+        android:layout_height="0dp"
+       >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Message:"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black"
+            android:id="@+id/lbl_Massage" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Massage:"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="12dp"
+            android:textColor="@color/black"
+            android:id="@+id/textViewMassage" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"
+         />
+    <LinearLayout
+        android:id="@+id/lay_Attachment"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_weight="0.4"
+        android:layout_height="0dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Attachment:"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black"
+            android:id="@+id/lbl_Attachment" />
+        <ImageView
+            android:id="@+id/Image_Attachment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:visibility="visible"
+            android:src="@drawable/add"/>
+        </LinearLayout>
+
+</LinearLayout>
