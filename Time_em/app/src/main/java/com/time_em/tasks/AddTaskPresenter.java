@@ -24,6 +24,7 @@ public class AddTaskPresenter {
 
     private User user;
     private Time_emJsonParser parser;
+    private TaskEntryPre taskEntryPre;
     int userId;
 
     public AddTaskPresenter(IAddTaskView view, Activity act) {
@@ -31,10 +32,11 @@ public class AddTaskPresenter {
         this.act = act;
     }
 
-    public void Init(int userId) {
+    public void Init(int userId, TaskEntry taskEntry) {
         this.userId = userId;
         user = new User();
         parser = new Time_emJsonParser(act);
+        taskEntryPre = new TaskEntryPre();
 
         String timeStamp = Utils.getSharedPrefs(act, userId + act.getResources().getString(R.string.taskTimeStampStr));
         if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
@@ -48,6 +50,25 @@ public class AddTaskPresenter {
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) act;
         mWebPageTask.execute();
+
+        if (taskEntry != null) {
+            taskEntryPre.CreatedDate = taskEntry.getCreatedDate();
+            taskEntryPre.CommentStr = taskEntry.getComments();
+            taskEntryPre.TimeSpent = taskEntry.getTimeSpent();
+            taskEntryPre.TaskName = taskEntry.getTaskName();
+
+            view.LoadCreateDate(taskEntryPre.CreatedDate);
+
+            if (taskEntryPre.CommentStr != null)
+                view.LoadComment(taskEntryPre.CommentStr);
+
+            if (taskEntryPre.TimeSpent != null)
+                view.LoadTimeSpent(taskEntryPre.TimeSpent);
+
+            if (taskEntryPre.TaskName != null)
+                view.LoadTaskName(taskEntryPre.TaskName);
+        }
+
     }
 
     public void SpinnerApiData(ArrayList<TaskEntry> taskEntries) {
@@ -56,7 +77,7 @@ public class AddTaskPresenter {
         for (int i = 0; i < taskEntries.size(); i++) {
             SpinnerTaskList.add(taskEntries.get(i).getTaskName());
         }
-        view.LoadSpinnerData(SpinnerTaskList ,taskEntries);
+        view.LoadSpinnerData(SpinnerTaskList, taskEntries);
     }
 
     public void Init(int activityId, int userId, String numberOfHoursStr, String commentStr, int taskId, String taskName, String CreatedDate, String id) {
@@ -85,5 +106,21 @@ public class AddTaskPresenter {
 
     public interface IAddTaskView {
         public void LoadSpinnerData(ArrayList<String> taskEntries, ArrayList<TaskEntry> entries);
+
+        void LoadCreateDate(String createdDate);
+
+        void LoadComment(String commentStr);
+
+        void LoadTimeSpent(Double signinHours);
+
+        void LoadTaskName(String taskName);
+    }
+
+    private class TaskEntryPre {
+        public String CreatedDate;
+        public String TaskName;
+        public String CommentStr;
+        public Double TimeSpent;
+
     }
 }

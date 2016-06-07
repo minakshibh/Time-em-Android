@@ -1,6 +1,7 @@
 package com.time_em.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,12 +13,17 @@ import com.time_em.utils.Utils;
 
 
 public class SplashActivity extends Activity {
+	public DependencyResolver resolver;
 
+	Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+		mContext = getApplicationContext();
+
+		resolver = new DependencyResolver(mContext);
         new Handler().postDelayed(new Runnable() {
 
 			/*

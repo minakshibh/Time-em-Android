@@ -309,7 +309,7 @@
     <string name="add">Add</string>
     <string name="app_name">Time_em</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
-    <string name="attachement">Attachement </string>
+    <string name="attachment">Attachment</string>
     <string name="baseUrl">http://timeemapi.azurewebsites.net/api</string>
     <string name="bottom_sheet_behavior" translatable="false">android.support.design.widget.BottomSheetBehavior</string>
     <string name="character_counter_pattern" translatable="false">%1$d / %2$d</string>
@@ -325,7 +325,7 @@
     <string name="specify_numbers_of_hours">Specify Number of Hours</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <string name="taskTimeStampStr">_taskTimeStamp</string>
-    <string name="task_description">Task Description :</string>
+    <string name="task_description">Task Description</string>
     <string name="teamTimeStampStr">_teamTimeStamp</string>
     <string name="title_activity_send_notification">SendNotification</string>
     <string name="title_activity_user_selection">UserSelectionActivity</string>
@@ -1613,7 +1613,7 @@
     </style>
     <style name="TextStyle">
         <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
     <style name="TextSub">
         <item name="android:textColor">@color/white</item>

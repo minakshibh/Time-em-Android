@@ -71,7 +71,6 @@ public class TaskDetailActivity extends Activity {
 
         taskDesc.setText(taskEntry.getTaskName());
         taskComments.setText(taskEntry.getComments());
-        hoursWorked.setText(String.valueOf(taskEntry.getSignedInHours()));
 
         String image_url = taskEntry.GetAttachementImageFile();
         int loader = R.drawable.add;
@@ -82,6 +81,7 @@ public class TaskDetailActivity extends Activity {
             ImageLoader imgLoader = new ImageLoader(getApplicationContext());
             imgLoader.DisplayImage(image_url, loader, attachment);
         }
+        hoursWorked.setText(String.valueOf(taskEntry.getTimeSpent()));
     }
 
     private void setClickListeners() {

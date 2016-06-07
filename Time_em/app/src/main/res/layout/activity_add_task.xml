@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/include_toolbar"></include>
+    <include
+        android:id="@+id/Includelayout"
+        layout="@layout/include_toolbar"></include>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/Includelayout"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
@@ -19,39 +22,42 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="18dp"
-            android:text="@string/selected_notification" />
+            android:text="@string/task_description" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
+            android:layout_marginBottom="15dp"
             android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="0dp"
+                android:id="@+id/Email_icon_spn"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_weight=".2"
-                android:padding="5dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/email_icon" />
 
             <Spinner
                 android:id="@+id/SpnTaskName"
                 style="?android:attr/spinnerDropDownItemStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/Email_icon_spn"
                 android:background="@android:color/transparent"
                 android:text="" />
 
             <ImageView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight=".05"
                 android:paddingRight="10dp"
                 android:src="@drawable/down_arrowspn" />
-        </LinearLayout>
+        </RelativeLayout>
 
         <View style="@style/sectionDivider" />
 
@@ -121,30 +127,32 @@
             android:layout_marginTop="10dp"
             android:text="@string/enter_your_comments" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="0dp"
+                android:id="@+id/Email_icon"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight=".2"
-                android:padding="15dp"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/email_icon" />
 
             <EditText
                 android:id="@+id/CommentEdit"
                 style="@style/TextStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".8"
-                android:inputType="text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/Email_icon"
                 android:background="@null"
                 android:hint="you are comment goes here"
+                android:inputType="text"
                 android:text="" />
-        </LinearLayout>
+        </RelativeLayout>
 
         <View style="@style/sectionDivider" />
 
@@ -156,30 +164,32 @@
             android:layout_marginTop="10dp"
             android:text="@string/specify_numbers_of_hours" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="0dp"
+                android:id="@+id/user_icon"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight=".2"
-                android:padding="15dp"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/user_icon" />
 
             <EditText
                 android:id="@+id/NumberHoursEdit"
                 style="?android:attr/spinnerDropDownItemStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".8"
-                android:inputType="phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/user_icon"
                 android:background="@null"
                 android:hint="@string/number_of_hours"
+                android:inputType="phone"
                 android:text="" />
-        </LinearLayout>
+        </RelativeLayout>
+
         <View style="@style/sectionDivider" />
 
         <com.time_em.controls.RoundedCornerView
@@ -204,4 +214,4 @@
         </com.time_em.controls.RoundedCornerView>
 
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>
