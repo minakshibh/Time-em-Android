@@ -22,6 +22,7 @@ import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.notifications.NotificationListActivity;
 import com.time_em.notifications.SendNotification;
+import com.time_em.profile.MyProfileActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
@@ -95,8 +96,8 @@ public class BaseActivity extends Activity{
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
 				}
-//				Intent intent = new Intent(BaseActivity.this, StateList.class);
-//				startActivity(intent);
+				Intent mIntent = new Intent(BaseActivity.this, MyProfileActivity.class);
+				startActivity(mIntent);
 			}else if(v == sync){
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();

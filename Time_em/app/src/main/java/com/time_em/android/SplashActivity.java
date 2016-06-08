@@ -51,7 +51,7 @@ public class SplashActivity extends Activity {
 				if(Utils.isNetworkAvailable(getApplicationContext())) {
 					getRegisterId();
 				}else{
-					Utils.alertMessage(getApplicationContext(),Utils.network_error);
+					Utils.alertMessage(SplashActivity.this,Utils.network_error);
 				}
 				// close this activity
 

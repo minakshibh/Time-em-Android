@@ -103,6 +103,9 @@
             android:name="com.time_em.notifications.NotificationDetailsActivity"
             android:screenOrientation="portrait"></activity>
         <activity
+            android:name="com.time_em.profile.MyProfileActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
             android:name="com.time_em.barcode.NFCReadActivity"
             android:screenOrientation="portrait"
             >
