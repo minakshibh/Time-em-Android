@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 //	private HorizontalScrollView sView;
 	private TextView swipeInfo, headerText;
 	private ImageView back, addTask;
+	private RecyclerView recyclerView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,14 +60,15 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	
 	private void initScreen(){
 		taskListview = (ListView)findViewById(R.id.taskList);
+		recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 		parser = new Time_emJsonParser(UserListActivity.this);
 //		sView = (HorizontalScrollView)findViewById(R.id.dateSlider);
 		swipeInfo = (TextView)findViewById(R.id.swipeInfo);
 		back = (ImageView)findViewById(R.id.back);
 		addTask = (ImageView) findViewById(R.id.AddButton);
 		headerText = (TextView)findViewById(R.id.headerText);
-//		sView.setVisibility(View.GONE);
-		swipeInfo.setVisibility(View.GONE);
+		recyclerView.setVisibility(View.GONE);
+		swipeInfo.setText("Swipe left to Sign In/ Out some user");
 		addTask.setVisibility(View.GONE);
 		headerText.setText("My Team");
 		back.setOnClickListener(new View.OnClickListener() {

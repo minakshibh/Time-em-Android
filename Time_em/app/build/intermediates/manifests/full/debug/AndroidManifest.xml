@@ -96,7 +96,12 @@
         <activity
             android:name="com.time_em.notifications.NotificationListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="com.time_em.barcode.NFCReadActivity" >
+        <activity
+            android:name="com.time_em.notifications.NotificationDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.time_em.barcode.NFCReadActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 

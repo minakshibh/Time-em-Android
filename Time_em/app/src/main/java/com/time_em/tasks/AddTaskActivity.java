@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.time_em.android.R;
@@ -77,9 +78,10 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
 
     private LinearLayout AddTaskBtn;
     private LinearLayout uploadLayout;
-    private ImageView UploadImage, back;
+    private ImageView UploadImage, back, add;
     private EditText CommentEdit;
     private EditText NumberHoursEdit;
+    private TextView headerText;
 
     private Uri fileUri;
     private byte[] byteArray;
@@ -134,9 +136,14 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
     private void InitView() {
         back = (ImageView) findViewById(R.id.back);
         back.setOnClickListener(this);
+        add = (ImageView)findViewById(R.id.AddButton);
+        add.setVisibility(View.GONE);
+
         NumberHoursEdit = (EditText) findViewById(R.id.NumberHoursEdit);
         CommentEdit = (EditText) findViewById(R.id.CommentEdit);
         AddTaskBtn = (LinearLayout) findViewById(R.id.AddTaskBtn);
+        headerText = (TextView)findViewById(R.id.headerText);
+
         AddTaskBtn.setOnClickListener(this);
 
         UploadImage = (ImageView) findViewById(R.id.UploadImage);

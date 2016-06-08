@@ -64,7 +64,6 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
     private void initScreen() {
         sendNotification = (ImageView) findViewById(R.id.AddButton);
-        sendNotification.setVisibility(View.GONE);
         back = (ImageView)findViewById(R.id.back);
         notificationListView = (ListView) findViewById(R.id.notificationList);
         parser = new Time_emJsonParser(NotificationListActivity.this);

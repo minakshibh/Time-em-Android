@@ -86,7 +86,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String NotificationType = "NotificationType";
 	private String AttachmentPath = "AttachmentPath";
 	private String Subject = "Subject";
-	private String Message = "Message";
+	private String Msg = "Msg";
 //	private String CreatedDate = "CreatedDate";
 	private String SenderFullName = "SenderFullName";
 
@@ -139,7 +139,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 		String CREATE_NOTIFICATION_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS
 				+ "(" + NotificationId + " TEXT," + SenderId + " TEXT," + NotificationType + " TEXT,"
-				+ AttachmentPath + " TEXT," + Subject + " TEXT," + Message + " TEXT," + CreatedDate + " TEXT,"
+				+ AttachmentPath + " TEXT," + Subject + " TEXT," + Msg + " TEXT," + CreatedDate + " TEXT,"
 				+ SenderFullName + " TEXT)";
 
 		db.execSQL(CREATE_TASK_TABLE);
@@ -162,6 +162,17 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	public void deleteTeamTable() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_TASK, null, null);
+		db.close();
+	}
+	public void deleteNotificationsTable() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_NOTIFICATIONS, null, null);
+		db.close();
+	}
+
+	public void deleteActiveUsers() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_ACTIVE_USERS, null, null);
 		db.close();
 	}
 
@@ -249,7 +260,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(NotificationType, notification.getNotificationType());
 				values.put(AttachmentPath, notification.getAttachmentPath());
 				values.put(Subject, notification.getSubject());
-				values.put(Message, notification.getMessage());
+				values.put(Msg, notification.getMessage());
 				values.put(CreatedDate, notification.getCreatedDate());
 				values.put(SenderFullName, notification.getSenderFullName());
 
@@ -264,6 +275,54 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	public ArrayList<Notification> getNotificationsByType(String notificationType) {
 		ArrayList<Notification> notifications = new ArrayList<Notification>();
 		// Select All Query
+		/*{"notificationslist":[
+			{"NotificationId":135,
+					"NotificationTypeName":"Notice",
+					"AttachmentFullPath":"http://timeemapi.azurewebsites.net/Attachment/image/Image_886c7f4c-4552-43fb-9bff-4129d8f4b989.png",
+					"Subject":"Testing Parv",
+					"Message":"Bzjzhsndnd ksjdndkd dkdkdkdndkd",
+					"createdDate":"06/06/2016 10:31:43",
+					"Senderid":8049,
+					"SenderFullName":"Rahul Bhatnagar"
+			},
+			{"NotificationId":73,
+					"NotificationTypeName":"File",
+					"AttachmentFullPath":null,
+					"Subject":"Testing 6st June for asking 3",
+					"Message":"Testing 6st June for asking 3Testing 6st June for asking 3",
+					"createdDate":"06/06/2016 05:51:45",
+					"Senderid":8049,
+					"SenderFullName":"Rahul Bhatnagar"
+			},
+			{"NotificationId":72,
+					"NotificationTypeName":"Notice",
+					"AttachmentFullPath":null,
+					"Subject":"Testing 6st June for asking 2",
+					"Message":"Testing 6st June for asking 2Testing 6st June for asking 2Testing 6st June for asking 2",
+					"createdDate":"06/06/2016 05:50:53",
+					"Senderid":8049,
+					"SenderFullName":"Rahul Bhatnagar"
+			},
+			{"NotificationId":71,
+					"NotificationTypeName":"Message",
+					"AttachmentFullPath":null,
+					"Subject":"Testing 6st June for asking 1",
+					"Message":"Testing 6st June for asking 1Testing 6st June for asking 1Testing 6st June for asking 1",
+					"createdDate":"06/06/2016 05:50:22",
+					"Senderid":8049,
+					"SenderFullName":"Rahul Bhatnagar"
+			},
+			{"NotificationId":3,
+					"NotificationTypeName":"Message",
+					"AttachmentFullPath":null,
+					"Subject":"test subject",
+					"Message":"received notice message",
+					"createdDate":"25/05/2016 09:45:12",
+					"Senderid":8049,
+					"SenderFullName":"Rahul Bhatnagar"
+			}
+			],"TimeStamp":"06-06-2016 10:31:44.153","IsError":false,"Message":"Success"}*/
+
 		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS
 				+ " where "
 				+ NotificationType + "=\"" + notificationType+"\"";
@@ -287,7 +346,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 					notification.setSubject(cursor.getString(cursor
 							.getColumnIndex(Subject)));
 					notification.setMessage(cursor.getString(cursor
-							.getColumnIndex(Message)));
+							.getColumnIndex(Msg)));
 					notification.setCreatedDate(cursor.getString(cursor
 							.getColumnIndex(CreatedDate)));
 					notification.setSenderFullName(cursor.getString(cursor

@@ -19,6 +19,7 @@ import com.time_em.authentication.LoginActivity;
 import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.barcode.NFCReadActivity;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.db.TimeEmDbHandler;
 import com.time_em.notifications.NotificationListActivity;
 import com.time_em.notifications.SendNotification;
 import com.time_em.tasks.TaskListActivity;
@@ -119,7 +120,14 @@ public class BaseActivity extends Activity{
 					mDrawerLayout.closeDrawers();
 				}
 				Utils.clearPreferences(BaseActivity.this);
-				
+
+				TimeEmDbHandler dbHandler = new TimeEmDbHandler(BaseActivity.this);
+
+				dbHandler.deleteNotificationsTable();
+				dbHandler.deleteActiveUsers();
+				dbHandler.deleteTaskTable();
+				dbHandler.deleteTeamTable();
+
 				Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);

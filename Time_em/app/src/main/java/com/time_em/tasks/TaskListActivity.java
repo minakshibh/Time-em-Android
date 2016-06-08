@@ -69,7 +69,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         addTaskButton = (ImageView) findViewById(R.id.AddButton);
-        addTaskButton.setVisibility(View.GONE);
         back = (ImageView)findViewById(R.id.back);
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
@@ -248,7 +247,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
 
             taskName.setText(selectedtask.getTaskName());
             taskComments.setText(selectedtask.getComments());
-            hours.setText("(" + String.valueOf(selectedtask.getSignedInHours()) + ") Hours");
+            hours.setText("(" + String.valueOf(selectedtask.getTimeSpent()) + ") Hours");
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
