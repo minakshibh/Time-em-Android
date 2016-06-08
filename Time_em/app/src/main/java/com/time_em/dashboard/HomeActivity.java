@@ -1,11 +1,13 @@
 package com.time_em.dashboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,11 +22,15 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.time_em.android.BaseActivity;
 import com.time_em.android.DependencyResolver;
 import com.time_em.android.R;
+import com.time_em.asynctasks.AsyncResponseTimeEm;
+import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
 import com.time_em.model.User;
 import com.time_em.tasks.TaskListActivity;
+import com.time_em.utils.GcmUtils;
+import com.time_em.utils.Utils;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
 
     private LinearLayout graphLayout;
     ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
@@ -52,7 +58,7 @@ public class HomeActivity extends BaseActivity {
         contentFrame.addView(contentView, 0);
 
 //		addGraph();
-
+        registerDevice();
         initScreen();
         setClickListeners();
 
@@ -177,5 +183,31 @@ public class HomeActivity extends BaseActivity {
             imgStatus.setImageResource(R.drawable.scan_signin);
             txtUserStatus.setText("Sign In");
         }
+    }
+
+    private void registerDevice(){
+        if (Utils.isNetworkAvailable(HomeActivity.this)) {
+
+            String regId = GcmUtils.getRegistrationId(this);
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("UserID", ""+user.getId());
+            postDataParameters.put("DeviceUId", regId);
+            postDataParameters.put("DeviceOS", "android");
+
+            Log.e(Utils.RegisterUserDevice,postDataParameters.toString());
+            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                    HomeActivity.this, "post", Utils.RegisterUserDevice,
+                    postDataParameters, true, "Please wait...");
+            mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
+            mWebPageTask.execute();
+
+        } else {
+            Utils.alertMessage(HomeActivity.this, Utils.network_error);
+        }
+    }
+
+    @Override
+    public void processFinish(String output, String methodName) {
+        Log.e(output,output);
     }
 }

@@ -15,6 +15,22 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.NFC" />
+    <!--notification permission-->
+
+    <permission
+        android:name="com.time_em.android.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <!-- Note: the above 2 permissions is not required on 4.1 or above. -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.time_em.android.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name= "android.permission.GET_TASKS" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
+
+
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
@@ -97,6 +113,16 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <receiver
+            android:name="com.time_em.utils.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.time_em.android.gcm" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.time_em.utils.GcmIntentService" />
     </application>
     <supports-screens
         android:anyDensity="true"
