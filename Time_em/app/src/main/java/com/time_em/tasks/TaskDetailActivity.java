@@ -72,7 +72,7 @@ public class TaskDetailActivity extends Activity {
         taskDesc.setText(taskEntry.getTaskName());
         taskComments.setText(taskEntry.getComments());
 
-        String image_url = taskEntry.GetAttachementImageFile();
+        String image_url = taskEntry.getAttachmentImageFile();
         int loader = R.drawable.add;
         // ImageLoader class instance
         if (image_url != null) {

@@ -117,9 +117,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         addTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
                 intent.putExtra("selectedDate", selectedDate);
-                intent.putExtra("AddNewtask", "0");
                 startActivity(intent);
             }
         });
@@ -237,7 +236,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         public void fillValues(final int position, View convertView) {
             // TODO Auto-generated method stub
 
-            final TaskEntry selectedtask = tasks.get(position);
+            final TaskEntry selectedTask = tasks.get(position);
 
             taskName = (TextView) convertView.findViewById(R.id.taskName);
             hours = (TextView) convertView.findViewById(R.id.hours);
@@ -245,9 +244,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             edit = (LinearLayout) convertView.findViewById(R.id.edit);
             taskComments = (TextView) convertView.findViewById(R.id.taskComments);
 
-            taskName.setText(selectedtask.getTaskName());
-            taskComments.setText(selectedtask.getComments());
-            hours.setText("(" + String.valueOf(selectedtask.getTimeSpent()) + ") Hours");
+            taskName.setText(selectedTask.getTaskName());
+            taskComments.setText(selectedTask.getComments());
+            hours.setText("(" + String.valueOf(selectedTask.getTimeSpent()) + ") Hours");
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -271,9 +270,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
-                    intent.putExtra("taskEntry", tasks.get(position));
+                    intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
                     intent.putExtra("selectedDate", selectedDate);
+                    intent.putExtra("taskEntry", selectedTask);
                     startActivity(intent);
                 }
             });

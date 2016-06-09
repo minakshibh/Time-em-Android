@@ -11,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.MultipartDataModel;
 
 
 import org.apache.http.entity.ContentType;
@@ -22,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,16 +43,17 @@ public class MultipartRequest extends Request<NetworkResponse> {
     private HashMap<String, String> mParams;
 
 
-    public MultipartRequest(String url,String userId, String subject, String message, String notTypeId, String notifyTo,String attachmentPath, Response.ErrorListener errorListener, Response.Listener<NetworkResponse> listener)
+//    public MultipartRequest(String url,String userId, String subject, String message, String notTypeId, String notifyTo,String attachmentPath, Response.ErrorListener errorListener, Response.Listener<NetworkResponse> listener)
+    public MultipartRequest(String url, ArrayList<MultipartDataModel> dataModels, Response.ErrorListener errorListener, Response.Listener<NetworkResponse> listener)
     {
         super(Method.POST, url, errorListener);
         Log.e("MultipartRequest","Constructor called");
         mListener = listener;
 
-        buildMultipartEntity(userId, subject, message, notTypeId, notifyTo,attachmentPath);
+        buildMultipartEntity(dataModels);
     }
 
-    private void buildMultipartEntity(String userId, String subject, String message, String notTypeId, String notifyTo, String attachmentPath)
+    private void buildMultipartEntity(ArrayList<MultipartDataModel> dataModels)
     {
 //        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 //
@@ -59,12 +62,20 @@ public class MultipartRequest extends Request<NetworkResponse> {
 
         try
         {
-            entity.addPart("profile_picture", new FileBody(new File(attachmentPath)));
-            entity.addPart("UserId", new StringBody(userId, ContentType.TEXT_PLAIN));
-            entity.addPart("Subject", new StringBody(subject, ContentType.TEXT_PLAIN));
-            entity.addPart("Message", new StringBody(message, ContentType.TEXT_PLAIN));
-            entity.addPart("NotificationTypeId", new StringBody(notTypeId, ContentType.TEXT_PLAIN));
-            entity.addPart("notifyto", new StringBody(notifyTo, ContentType.TEXT_PLAIN));
+            for(int i = 0; i<dataModels.size(); i++){
+            MultipartDataModel data = dataModels.get(i);
+            if(data.dataType == MultipartDataModel.FILE_TYPE){
+                entity.addPart(data.key, new FileBody(new File(data.value)));
+            }else if(data.dataType == MultipartDataModel.STRING_TYPE){
+                entity.addPart(data.key, new StringBody(data.value, ContentType.TEXT_PLAIN));
+            }
+        }
+//            entity.addPart("profile_picture", new FileBody(new File(attachmentPath)));
+//            entity.addPart("UserId", new StringBody(userId, ContentType.TEXT_PLAIN));
+//            entity.addPart("Subject", new StringBody(subject, ContentType.TEXT_PLAIN));
+//            entity.addPart("Message", new StringBody(message, ContentType.TEXT_PLAIN));
+//            entity.addPart("NotificationTypeId", new StringBody(notTypeId, ContentType.TEXT_PLAIN));
+//            entity.addPart("notifyto", new StringBody(notifyTo, ContentType.TEXT_PLAIN));
         }
         catch (Exception e)
         {

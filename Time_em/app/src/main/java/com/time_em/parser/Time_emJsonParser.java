@@ -13,7 +13,7 @@ import android.content.res.Resources;
 import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.Notification;
-import com.time_em.model.NotificationType;
+import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.utils.Utils;
@@ -243,7 +243,7 @@ public class Time_emJsonParser {
 			task.setSelectedDate(taskObject.getString("SelectedDate"));
 			task.setToken(taskObject.getString("Token"));
 			task.setIsActive(taskObject.getBoolean("isActive"));
-			task.SetAttachementImageFile(taskObject.getString("AttachmentImageFile"));
+			task.setAttachmentImageFile(taskObject.getString("AttachmentImageFile"));
 			
 			taskList.add(task);
 		}
@@ -262,11 +262,11 @@ public class Time_emJsonParser {
 
 		return taskList;
 	}
-	public ArrayList<NotificationType> parseNotificationType(String webResponse){
+	public ArrayList<SpinnerData> parseNotificationType(String webResponse){
 
-		ArrayList<NotificationType> notificationTypeList = new ArrayList<NotificationType>();
+		ArrayList<SpinnerData> notificationTypeList = new ArrayList<SpinnerData>();
 
-		NotificationType notificationTypeHeader = new NotificationType();
+		SpinnerData notificationTypeHeader = new SpinnerData();
 		notificationTypeHeader.setId(0);
 		notificationTypeHeader.setName("Select Notification Type");
 		notificationTypeList.add(notificationTypeHeader);
@@ -276,7 +276,7 @@ public class Time_emJsonParser {
 			for(int i = 0; i<jArray.length(); i++){
 				JSONObject notificationObject = jArray.getJSONObject(i);
 
-				NotificationType notificationType = new NotificationType();
+				SpinnerData notificationType = new SpinnerData();
 				notificationType.setId(notificationObject.getInt("id"));
 				notificationType.setName(notificationObject.getString("Name"));
 
@@ -285,7 +285,7 @@ public class Time_emJsonParser {
 
 		}catch (JSONException e) {
 			// TODO Auto-generated catch block
-			notificationTypeList = new ArrayList<NotificationType>();
+			notificationTypeList = new ArrayList<SpinnerData>();
 			e.printStackTrace();
 			Utils.showToast(context, e.getMessage());
 		}
@@ -467,23 +467,32 @@ public class Time_emJsonParser {
 
 		return array_user;
 	}
-	public ArrayList<TaskEntry> parseSpinnneData(String webResponse, int id) {
-		ArrayList<TaskEntry> taskList = new ArrayList<TaskEntry>();
+	public ArrayList<SpinnerData> parseAssignedProjects(String webResponse) {
+		ArrayList<SpinnerData> taskList = new ArrayList<SpinnerData>();
 		try {
 			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("IsError");
+			message = jObject.getString("Message");
 
-			JSONArray jArray = jObject.getJSONArray("ReturnKeyValueViewModel");
-			for(int i = 0; i<jArray.length(); i++) {
-				JSONObject taskObject = jArray.getJSONObject(i);
-				TaskEntry task = new TaskEntry();
-				task.setTaskId(taskObject.getInt("TaskId"));
-				task.setTaskName(taskObject.getString("TaskName"));
-				taskList.add(task);
+			if(!isError) {
+				JSONArray jArray = jObject.getJSONArray("ReturnKeyValueViewModel");
+				for (int i = 0; i < jArray.length(); i++) {
+					JSONObject taskObject = jArray.getJSONObject(i);
+					SpinnerData task = new SpinnerData();
+					task.setId(taskObject.getInt("TaskId"));
+					task.setName(taskObject.getString("TaskName"));
+					taskList.add(task);
+				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			Utils.showToast(context, e.getMessage());
 		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
 		return taskList;
 	}
 }

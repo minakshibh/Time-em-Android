@@ -4,9 +4,7 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical">
-    <include layout="@layout/header_view" android:id="@+id/headerLayout"
-        ></include>
-
+    <include android:id="@+id/headerLayout" layout="@layout/include_toolbar"></include>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,12 +21,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Select Notification Type"
+                android:id="@+id/notificationTxt"
                 style="@style/TextStyle"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:id="@+id/notTypeLayout">
                 <ImageView
                     android:layout_width="wrap_content"
@@ -67,11 +66,18 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="5dp"
                 style="@style/separator"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Enter Subject"
+                android:id="@+id/SubjectTxt"
+                style="@style/TextStyle"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:id="@+id/subjectLayout">
                 <ImageView
                     android:layout_width="wrap_content"
@@ -109,12 +115,18 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="5dp"
                 style="@style/separator"/>
-
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:id="@+id/MessageTxt"
+                android:text="Enter Message"
+                style="@style/TextStyle"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:id="@+id/messageLayout">
                 <ImageView
                     android:layout_width="wrap_content"
@@ -153,6 +165,11 @@
                 android:layout_marginTop="5dp"
                 style="@style/separator"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipientSection"
+                android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -163,6 +180,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:id="@+id/spnUsers">
                 <ImageView
                     android:layout_width="wrap_content"
@@ -201,6 +219,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="5dp"
         style="@style/separator"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -214,6 +233,7 @@
                 android:background="@drawable/grey_bg"
                 android:gravity="center"
                 android:id="@+id/upload"
+                android:clickable="true"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 

@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 public class AddTaskPresenter {
 
-    private final IAddTaskView view;
+   /* private final IAddTaskView view;
     private final Activity act;
 
     private User user;
@@ -122,5 +122,5 @@ public class AddTaskPresenter {
         public String CommentStr;
         public Double TimeSpent;
 
-    }
+    }*/
 }

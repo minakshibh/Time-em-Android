@@ -3,7 +3,7 @@ package com.time_em.model;
 /**
  * Created by minakshi on 30/05/16.
  */
-public class NotificationType {
+public class SpinnerData {
     private int id;
     private String name;
 

@@ -70,9 +70,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-public class AddTaskActivity extends Activity implements View.OnClickListener, AsyncResponseTimeEm, AddTaskPresenter.IAddTaskView, SurfaceHolder.Callback {
-    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
+public class AddTaskActivity{
+//public class AddTaskActivity extends Activity implements View.OnClickListener, AsyncResponseTimeEm, AddTaskPresenter.IAddTaskView, SurfaceHolder.Callback {
+   /* private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
@@ -194,9 +194,9 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         }
     }
 
-//    /**
+//    *//**
 //     * Receiving activity result method will be called after closing the camera
-//     */
+//     *//*
 //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        // if the result is capturing Image
@@ -274,7 +274,7 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
                 } else if (options[item].equals("Choose from Gallery")) {
                     // check=1;
                     Intent intent = new Intent();
-                    intent.setType("image/*");
+                    intent.setType("image*//*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     startActivityForResult(
                             Intent.createChooser(intent, "Select Picture"), 2);
@@ -413,7 +413,7 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
         if (methodName.equalsIgnoreCase(Utils.GetAddUpdateUserTaskAPI)) {
             Utils.alertMessage(AddTaskActivity.this, output);
         } else {
-            taskEntries = parser.parseSpinnneData(output, UserId);
+            taskEntries = parser.parseAssignedProjects(output);
             presenter.SpinnerApiData(taskEntries);
         }
     }
@@ -685,6 +685,6 @@ public class AddTaskActivity extends Activity implements View.OnClickListener, A
             content += body + "\n";
         }
         return content.trim();
-    }
+    }*/
 
 }

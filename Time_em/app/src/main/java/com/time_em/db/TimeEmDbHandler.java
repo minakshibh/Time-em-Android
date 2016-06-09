@@ -44,7 +44,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String EndTime = "EndTime";
 	private String SelectedDate = "SelectedDate";
 	private String Token = "Token";
-	private String AttachementImageFile = "AttachementImageFile";
+	private String AttachmentImageFile = "AttachmentImageFile";
 	private String TimeSpent = "TimeSpent";
 	private String SignedInHours = "SignedInHours";
 	private String TaskDate = "TaskDate";
@@ -117,7 +117,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ " TEXT," + UserId + " TEXT," + TaskName + " TEXT," + Comments
 				+ " TEXT," + StartTime + " TEXT," + CreatedDate + " TEXT,"
 				+ EndTime + " TEXT," + SelectedDate + " TEXT," + Token
-				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachementImageFile + " TEXT," + TaskDate + " TEXT)";
+				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachmentImageFile + " TEXT," + TaskDate + " TEXT)";
 
 
 		String CREATE_USER_TABLE = "CREATE TABLE if NOT Exists " + TABLE_TEAM
@@ -223,7 +223,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(EndTime, taskEntry.getEndTime());
 				values.put(SelectedDate, taskEntry.getSelectedDate());
 				values.put(Token, taskEntry.getToken());
-				values.put(AttachementImageFile, taskEntry.GetAttachementImageFile());
+				values.put(AttachmentImageFile, taskEntry.getAttachmentImageFile());
 				values.put(TimeSpent, String.valueOf(taskEntry.getTimeSpent()));
 				values.put(SignedInHours,
 						String.valueOf(taskEntry.getSignedInHours()));
@@ -274,55 +274,6 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 	public ArrayList<Notification> getNotificationsByType(String notificationType) {
 		ArrayList<Notification> notifications = new ArrayList<Notification>();
-		// Select All Query
-		/*{"notificationslist":[
-			{"NotificationId":135,
-					"NotificationTypeName":"Notice",
-					"AttachmentFullPath":"http://timeemapi.azurewebsites.net/Attachment/image/Image_886c7f4c-4552-43fb-9bff-4129d8f4b989.png",
-					"Subject":"Testing Parv",
-					"Message":"Bzjzhsndnd ksjdndkd dkdkdkdndkd",
-					"createdDate":"06/06/2016 10:31:43",
-					"Senderid":8049,
-					"SenderFullName":"Rahul Bhatnagar"
-			},
-			{"NotificationId":73,
-					"NotificationTypeName":"File",
-					"AttachmentFullPath":null,
-					"Subject":"Testing 6st June for asking 3",
-					"Message":"Testing 6st June for asking 3Testing 6st June for asking 3",
-					"createdDate":"06/06/2016 05:51:45",
-					"Senderid":8049,
-					"SenderFullName":"Rahul Bhatnagar"
-			},
-			{"NotificationId":72,
-					"NotificationTypeName":"Notice",
-					"AttachmentFullPath":null,
-					"Subject":"Testing 6st June for asking 2",
-					"Message":"Testing 6st June for asking 2Testing 6st June for asking 2Testing 6st June for asking 2",
-					"createdDate":"06/06/2016 05:50:53",
-					"Senderid":8049,
-					"SenderFullName":"Rahul Bhatnagar"
-			},
-			{"NotificationId":71,
-					"NotificationTypeName":"Message",
-					"AttachmentFullPath":null,
-					"Subject":"Testing 6st June for asking 1",
-					"Message":"Testing 6st June for asking 1Testing 6st June for asking 1Testing 6st June for asking 1",
-					"createdDate":"06/06/2016 05:50:22",
-					"Senderid":8049,
-					"SenderFullName":"Rahul Bhatnagar"
-			},
-			{"NotificationId":3,
-					"NotificationTypeName":"Message",
-					"AttachmentFullPath":null,
-					"Subject":"test subject",
-					"Message":"received notice message",
-					"createdDate":"25/05/2016 09:45:12",
-					"Senderid":8049,
-					"SenderFullName":"Rahul Bhatnagar"
-			}
-			],"TimeStamp":"06-06-2016 10:31:44.153","IsError":false,"Message":"Success"}*/
-
 		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS
 				+ " where "
 				+ NotificationType + "=\"" + notificationType+"\"";
@@ -536,8 +487,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 							.getColumnIndex(SelectedDate)));
 					taskEntry.setToken(cursor.getString(cursor
 							.getColumnIndex(Token)));
-					taskEntry.setToken(cursor.getString(cursor
-							.getColumnIndex(AttachementImageFile)));
+					taskEntry.setAttachmentImageFile(cursor.getString(cursor
+							.getColumnIndex(AttachmentImageFile)));
 					taskEntry.setTimeSpent(Double.valueOf(cursor
 							.getString(cursor.getColumnIndex(TimeSpent))));
 					taskEntry.setSignedInHours(Double.valueOf(cursor

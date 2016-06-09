@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -18,26 +19,41 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.MultipartDataModel;
+import com.time_em.model.SpinnerData;
 import com.time_em.model.User;
+
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 public class Utils {
 
@@ -58,7 +74,7 @@ public class Utils {
     static public String forgotPasswordAPI = "/USER/ForgetPassword";
     static public String forgotPinAPI = "/USER/ForgetPin";
     static public String getSpinnerTypeAPI = "/Task/GetAssignedTaskIList";
-    static public String GetAddUpdateUserTaskAPI = "UserTask/AddUpdateUserTaskActivity";
+    static public String AddUpdateUserTaskAPI = "/UserTask/AddUpdateUserTaskActivity";
     static public String deleteTaskAPI = "/UserTask/DeleteTask";
     static public String getNotificationType = "/Notification/GetNotificationType";
     static public String getActiveUserList = "/User/GetActiveUserList";
@@ -68,6 +84,7 @@ public class Utils {
     static public String SendNotificationAPI = "/Notification/AddNotification";
     static public String GetNotificationAPI = "/notification/NotificationByUserId";
     static public String RegisterUserDevice = "/User/RegisterUserDevice";
+    static public String GetAssignedTaskList = "/Task/GetAssignedTaskIList";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -320,4 +337,6 @@ public class Utils {
         return statusCode;
 
     }
+
+
 }

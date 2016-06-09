@@ -6,12 +6,20 @@ import android.os.Parcelable;
 public class TaskEntry implements Parcelable {
 
     private int id, activityId, taskId, userId;
-    private String taskName, comments, startTime, createdDate, endTime, selectedDate, token, AttachmentImageFile;
+    private String taskName, comments, startTime, createdDate, endTime, selectedDate, token, attachmentImageFile;
     private Double timeSpent, signedInHours;
     private Boolean isActive = true;
 
     public int getId() {
         return id;
+    }
+
+    public String getAttachmentImageFile() {
+        return attachmentImageFile;
+    }
+
+    public void setAttachmentImageFile(String attachmentImageFile) {
+        this.attachmentImageFile = attachmentImageFile;
     }
 
     public void setId(int id) {
@@ -122,13 +130,6 @@ public class TaskEntry implements Parcelable {
         this.isActive = isActive;
     }
 
-    public void SetAttachementImageFile(String AttachmentImageFile) {
-        this.AttachmentImageFile = AttachmentImageFile;
-    }
-
-    public String GetAttachementImageFile() {
-        return AttachmentImageFile;
-    }
 
     public TaskEntry() {
 
@@ -145,10 +146,10 @@ public class TaskEntry implements Parcelable {
         createdDate = source.readString();
         endTime = source.readString();
         selectedDate = source.readString();
-        AttachmentImageFile = source.readString();
         token = source.readString();
         timeSpent = source.readDouble();
         signedInHours = source.readDouble();
+        attachmentImageFile = source.readString();
         isActive = source.readByte() != 0;
     }
 
@@ -171,6 +172,7 @@ public class TaskEntry implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+
         dest.writeInt(id);
         dest.writeInt(activityId);
         dest.writeInt(taskId);
@@ -181,10 +183,10 @@ public class TaskEntry implements Parcelable {
         dest.writeString(createdDate);
         dest.writeString(endTime);
         dest.writeString(selectedDate);
-        dest.writeString(AttachmentImageFile);
         dest.writeString(token);
         dest.writeDouble(timeSpent);
         dest.writeDouble(signedInHours);
+        dest.writeString(attachmentImageFile);
         dest.writeByte((byte) (isActive ? 1 : 0));
     }
 }
