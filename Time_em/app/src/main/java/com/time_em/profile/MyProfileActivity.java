@@ -6,12 +6,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
@@ -19,10 +21,14 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
 
     private Time_emJsonParser parser;
     private User mUser;
+
     private ImageView editButton, back;
+    private CircleImageView circularImageView;
     private TextView headerText,txt_Logout;
     private EditText edt_Name,edt_Email,edt_pass,edt_Phone;
     private TextView txtName;
+
+    private String Image_path=null;
 
 
 
@@ -43,7 +49,7 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
 
     private void initScreen() {
         editButton = (ImageView) findViewById(R.id.AddButton);
-        editButton.setVisibility(View.VISIBLE);
+        editButton.setVisibility(View.GONE);
         editButton.setImageDrawable(getResources().getDrawable(R.drawable.edit));
         back = (ImageView) findViewById(R.id.back);
         headerText=(TextView) findViewById(R.id.headerText);
@@ -53,8 +59,9 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
 
         edt_Name=(EditText)findViewById(R.id.edt_Name);
         edt_Email=(EditText)findViewById(R.id.edt_Email);
-        edt_pass=(EditText)findViewById(R.id.edt_pass);
+     //   edt_pass=(EditText)findViewById(R.id.edt_pass);
         edt_Phone=(EditText)findViewById(R.id.edt_Phone);
+        circularImageView=(CircleImageView)findViewById(R.id.profile_image);
 
     }
     private void setUpClickListeners() {
@@ -76,8 +83,13 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
         edt_Name.setText(mUser.getFullName());
         txtName.setText(mUser.getLastName());
         edt_Email.setText(mUser.getLastName());
-        edt_pass.setText(mUser.getLastName());
+      //  edt_pass.setText(mUser.getLastName());
         edt_Phone.setText(mUser.getLastName());
+        Image_path="";
+        int loader = R.drawable.user_profile;
+        ImageLoader imgLoader = new ImageLoader(getApplicationContext());
+        imgLoader.DisplayImage(Image_path, loader, circularImageView);
+
     }
     private void disableAll()
     {
@@ -87,8 +99,8 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
         edt_Email.setEnabled(false);
         changeColor(edt_Email,false);
 
-        edt_pass.setEnabled(false);
-        changeColor(edt_pass,false);
+       // edt_pass.setEnabled(false);
+       // changeColor(edt_pass,false);
 
         edt_Phone.setEnabled(false);
         changeColor(edt_Phone,false);
@@ -101,8 +113,8 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
         edt_Email.setEnabled(true);
         changeColor(edt_Email,true);
 
-        edt_pass.setEnabled(true);
-        changeColor(edt_pass,true);
+       // edt_pass.setEnabled(true);
+       // changeColor(edt_pass,true);
 
         edt_Phone.setEnabled(true);
         changeColor(edt_Phone,true);

@@ -35,8 +35,9 @@ public class GcmUtils {
 
                     storeRegistrationId(context, regId);
 	                return regId;
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
+
                 }
                 return null;
             }
