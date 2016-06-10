@@ -155,7 +155,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             }else if(v == recipients){
                 showUserSelectionDropdown();
             }else if(v == upload){
-                fileUtils.showChooserDialog();
+                fileUtils.showChooserDialog(false);
             }else if(v == back){
                 finish();
             }

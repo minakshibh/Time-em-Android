@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.VideoView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -33,9 +35,11 @@ import java.util.Date;
  * Created by minakshi on 08/06/16.
  */
 public class FileUtils {
-    private String userChoosenTask, attachmentPath;
+    private String userChoosenTask;
+    private String attachmentPath;
     private Context context;
-    public static int SELECT_FILE = 1, REQUEST_CAMERA = 2;
+    CharSequence[] items=null;
+    public static int SELECT_FILE = 1, REQUEST_CAMERA = 2, VIDEO_CAMERA = 3;
 
     public FileUtils(Context context){
         this.context = context;
@@ -49,11 +53,13 @@ public class FileUtils {
         return attachmentPath;
     }
 
-    public void showChooserDialog() {
+    public void showChooserDialog(boolean video) {
 
-
-        final CharSequence[] items = { "Take Photo", "Choose from Library",
-                "Cancel" };
+        if(video){
+            items= new CharSequence[]{"Take Photo", "Choose from Library","Make Video", "Cancel"};
+        }else {
+            items = new CharSequence[]{"Take Photo", "Choose from Library", "Cancel"};
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Add Photo!");
         builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -68,9 +74,15 @@ public class FileUtils {
                     userChoosenTask="Choose from Library";
                     if(result)
                         galleryIntent();
-                } else if (items[item].equals("Cancel")) {
+                 }
+                else if (items[item].equals("Make Video")) {
+                    userChoosenTask="Make Video";
+                    if(result)
+                    videoIntent();
+                }else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
                 }
+
             }
         });
         builder.show();
@@ -84,34 +96,63 @@ public class FileUtils {
             // Create the File where the photo should go
             File photoFile = null;
             try {
-                photoFile = createImageFile();
+                photoFile = createImageFile(false);
             } catch (IOException ex) {
                 // Error occurred while creating the File
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 ((Activity)context).startActivityForResult(takePictureIntent, REQUEST_CAMERA);
             }
         }
     }
-
-    private File createImageFile() throws IOException {
+    public void videoIntent()
+    {
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takeVideoIntent.resolveActivity(context.getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File videoFile = null;
+            try {
+                videoFile = createImageFile(true);
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (videoFile != null) {
+                takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile));
+                ((Activity)context).startActivityForResult(takeVideoIntent, VIDEO_CAMERA);
+            }
+        }
+    }
+    private File createImageFile(boolean video) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "PNG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".png",         /* suffix */
-                storageDir      /* directory */
-        );
+        File file;
+        if(video)
+        {
+            file = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".mp4",         /* suffix */
+                    storageDir      /* directory */
+            );
+        }else {
+            file = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".png",         /* suffix */
+                    storageDir      /* directory */
+            );
+        }
 
         // Save a file: path for use with ACTION_VIEW intents
-        attachmentPath = "file:" + image.getAbsolutePath();
-        return image;
+      //  attachmentPath = "file:" + file.getAbsolutePath();
+        attachmentPath = "" + file.getAbsolutePath();
+        return file;
     }
 
     public void galleryIntent()
@@ -217,8 +258,20 @@ public class FileUtils {
 
     public void onCaptureImageResult(Intent data, ImageView imageView) {
         try {
-            imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
+          Log.e("image path:",attachmentPath);
+          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void onCaptureVideoResult(Intent data, VideoView mVideoView) {
+        Log.e("video path:",attachmentPath);
+      // Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(attachmentPath), 800,800);
+        try {
+            mVideoView.setVideoURI(Uri.parse(attachmentPath));
+            mVideoView.seekTo(10);
+            mVideoView.start();
+            } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
@@ -45,6 +46,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
     private FileUtils fileUtils;
     private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0";
     private TaskEntry taskEntry;
+    private VideoView uploadedVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         spnProject = (Spinner) findViewById(R.id.spnNotificationType);
         hoursIcon = (ImageView) findViewById(R.id.messageIcon);
         uploadedImage = (ImageView) findViewById(R.id.uploadedImage);
+        uploadedVideo=(VideoView)findViewById(R.id.uploadedVideo);
         recipientSection =(LinearLayout)findViewById(R.id.recipientSection);
         uploadAttachment = (LinearLayout)findViewById(R.id.upload);
         addUpdateTask = (Button)findViewById(R.id.send);
@@ -137,7 +140,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
             if(v == back){
                 finish();
             }else if(v == uploadAttachment){
-                fileUtils.showChooserDialog();
+                fileUtils.showChooserDialog(true);
             }else if(v == addUpdateTask){
                 if(comments.getText().toString().trim().equals("") || hours.getText().toString().trim().equals("")
                         || selectedSpinnerData == null){
@@ -201,6 +204,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                         fileUtils.cameraIntent();
                     else if(fileUtils.getUserChoosenTask().equals("Choose from Library"))
                         fileUtils.galleryIntent();
+                    else if(fileUtils.getUserChoosenTask().equals("Make Video"))
+                        fileUtils.videoIntent();
                 } else {
                     //code for deny
                 }
@@ -212,10 +217,25 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == FileUtils.SELECT_FILE)
+            if (requestCode == FileUtils.SELECT_FILE) {
                 fileUtils.onSelectFromGalleryResult(data, uploadedImage);
-            else if (requestCode == FileUtils.REQUEST_CAMERA)
+                uploadedVideo.setVisibility(View.GONE);
+                uploadedImage.setVisibility(View.VISIBLE);
+            }
+            else if (requestCode == FileUtils.REQUEST_CAMERA) {
                 fileUtils.onCaptureImageResult(data, uploadedImage);
+                uploadedVideo.setVisibility(View.GONE);
+                uploadedImage.setVisibility(View.VISIBLE);
+            }
+            else if (requestCode == FileUtils.VIDEO_CAMERA) {
+
+                fileUtils.onCaptureVideoResult(data, uploadedVideo);
+                uploadedImage.setVisibility(View.GONE);
+                uploadedVideo.setVisibility(View.VISIBLE);
+
+
+
+            }
         }
     }
 }
