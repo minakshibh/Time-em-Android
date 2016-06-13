@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.time_em.android"
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 23
     }
 
@@ -39,4 +39,5 @@ dependencies {
     compile group: 'cz.msebera.android' , name: 'httpclient', version: '4.4.1.1'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
+    compile 'fm.jiecao:jiecaovideoplayer:3.4'
 }

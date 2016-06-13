@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -147,10 +148,15 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                     Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
                 }else {
                     ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
-
+                   /* ["ActivityId": "29644", "CreatedDate": "06-10-2016", "UserId": "8049", "TaskId": "16168", "ID": "0",
+                            "TaskName": "Test Task May 3", "TimeSpent": "10", "Comments": "Test Parv 10 June"]*/
                     if(fileUtils.getAttachmentPath() !=null)
-                        dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
-
+                        if(fileUtils.getAttachmentPath().contains(".3gp"))
+                        {
+                     dataModels.add(new MultipartDataModel("profile_video", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                        }else {
+                     dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                      }
                     dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
                     dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
                     dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
@@ -229,11 +235,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
             }
             else if (requestCode == FileUtils.VIDEO_CAMERA) {
 
-                fileUtils.onCaptureVideoResult(data, uploadedVideo);
+                fileUtils.onRecordVideoResult(AddEditTaskEntry.this,data, uploadedVideo);
                 uploadedImage.setVisibility(View.GONE);
                 uploadedVideo.setVisibility(View.VISIBLE);
-
-
 
             }
         }

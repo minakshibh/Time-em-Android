@@ -119,6 +119,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             public void onClick(View v) {
                 intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
                 intent.putExtra("selectedDate", selectedDate);
+                intent.putExtra("UserId", HomeActivity.user.getId());
                 startActivity(intent);
             }
         });

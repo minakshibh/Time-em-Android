@@ -3,15 +3,20 @@ package com.time_em.tasks;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
@@ -26,12 +31,17 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
+
 public class TaskDetailActivity extends Activity {
 
     private ImageView back, attachment;
     private TextView info, taskDesc, taskComments, hoursWorked, txtDate;
     private TaskEntry taskEntry;
     private TextView AttachementTxt;
+  //  private VideoView videoView;
+    private String image_url=null;
+    JCVideoPlayerStandard videoView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,8 +50,11 @@ public class TaskDetailActivity extends Activity {
         setContentView(R.layout.activity_task_detail);
 
         initScreen();
+        fetchImageData();
         setClickListeners();
     }
+
+
 
     private void initScreen() {
         txtDate = (TextView) findViewById(R.id.date);
@@ -54,6 +67,9 @@ public class TaskDetailActivity extends Activity {
         AttachementTxt = (TextView) findViewById(R.id.AttachementTxt);
         attachment.setVisibility(View.GONE);
         AttachementTxt.setVisibility(View.GONE);
+        videoView = (JCVideoPlayerStandard) findViewById(R.id.videoView);
+       // videoView=(VideoView)findViewById(R.id.videoView);
+        //mVideoPlayer_2 = (VideoView)root.findViewById(R.id.videoView);
         taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
         taskComments.setMovementMethod(new ScrollingMovementMethod());
         info.setText("Task Details");
@@ -71,17 +87,74 @@ public class TaskDetailActivity extends Activity {
 
         taskDesc.setText(taskEntry.getTaskName());
         taskComments.setText(taskEntry.getComments());
-
-        String image_url = taskEntry.getAttachmentImageFile();
-        int loader = R.drawable.add;
-        // ImageLoader class instance
-        if (image_url != null) {
-            attachment.setVisibility(View.VISIBLE);
-            AttachementTxt.setVisibility(View.VISIBLE);
-            ImageLoader imgLoader = new ImageLoader(getApplicationContext());
-            imgLoader.DisplayImage(image_url, loader, attachment);
-        }
         hoursWorked.setText(String.valueOf(taskEntry.getTimeSpent()));
+
+
+    }
+    private void fetchImageData() {
+        //image_url= "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        image_url= taskEntry.getAttachmentImageFile();
+        Log.e("image_url",""+image_url);
+        if(image_url!=null && !image_url.equalsIgnoreCase("null"))
+        {
+            AttachementTxt.setVisibility(View.VISIBLE);
+            if(image_url.contains(".png") | image_url.contains(".jpg"))
+            {
+                attachment.setVisibility(View.VISIBLE);
+                videoView.setVisibility(View.GONE);
+                int loader = R.drawable.add;
+                if (image_url != null) {
+
+                    ImageLoader imgLoader = new ImageLoader(getApplicationContext());
+                    imgLoader.DisplayImage(image_url, loader, attachment);
+                }
+            }
+            else {
+                videoView.setVisibility(View.VISIBLE);
+                attachment.setVisibility(View.GONE);
+
+            }/*MediaController mc = new MediaController(this);
+               *//* MediaController mediaController = new MediaController(this);
+                mediaController.setAnchorView(videoView);
+                Uri video = Uri.parse(image_url);
+                videoView.setMediaController(mediaController);
+                videoView.setVideoURI(video);
+                videoView.start();*//*
+
+                DisplayMetrics displaymetrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                int h = displaymetrics.heightPixels;
+                int w = displaymetrics.widthPixels;
+                int left = videoView.getLeft();
+                int top = videoView.getTop();
+                int right = left + (w / 2);
+                int botton = top + (h / 2);
+                videoView.layout(left, top, right, botton);
+                mc = new MediaController(this);
+                mc.setEnabled(true);
+                videoView.setVideoPath(image_url);
+                mc.setAnchorView(videoView);
+                videoView.setMediaController(mc);
+                videoView.start();
+                videoView.seekTo(1);*/
+
+
+            videoView.setUp(image_url,"Video");
+
+          //  videoView.startButton.performClick();
+
+        }
+        else{
+            attachment.setVisibility(View.GONE);
+            AttachementTxt.setVisibility(View.GONE);
+            videoView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        videoView.releaseAllVideos();
     }
 
     private void setClickListeners() {

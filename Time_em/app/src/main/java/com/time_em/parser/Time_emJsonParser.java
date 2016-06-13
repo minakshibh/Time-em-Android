@@ -215,7 +215,7 @@ public class Time_emJsonParser {
 	}
 
 	public ArrayList<TaskEntry> parseTaskList(String webResponse, int userId, String selectedDate){
-
+		String image=null,video=null;
 		String timeStamp="";
 		ArrayList<TaskEntry> taskList = new ArrayList<TaskEntry>();
 		Resources res = context.getResources();
@@ -243,8 +243,14 @@ public class Time_emJsonParser {
 			task.setSelectedDate(taskObject.getString("SelectedDate"));
 			task.setToken(taskObject.getString("Token"));
 			task.setIsActive(taskObject.getBoolean("isActive"));
-			task.setAttachmentImageFile(taskObject.getString("AttachmentImageFile"));
-			
+			image=taskObject.getString("AttachmentImageFile");
+			if(image!=null && !image.equalsIgnoreCase("null")) {
+				task.setAttachmentImageFile(image);
+			}
+			 video=taskObject.getString("AttachmentVideoFile");
+			if(video!=null && !video.equalsIgnoreCase("null")) {
+				task.setAttachmentImageFile(video);
+			}
 			taskList.add(task);
 		}
 		

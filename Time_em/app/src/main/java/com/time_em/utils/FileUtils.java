@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -131,14 +131,15 @@ public class FileUtils {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "PNG_" + timeStamp + "_";
+        String videoFileName = "VID_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
         File file;
         if(video)
         {
             file = File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".mp4",         /* suffix */
+                    videoFileName,  /* prefix */
+                    ".3gp",         /* suffix */
                     storageDir      /* directory */
             );
         }else {
@@ -258,19 +259,21 @@ public class FileUtils {
 
     public void onCaptureImageResult(Intent data, ImageView imageView) {
         try {
-          Log.e("image path:",attachmentPath);
+          Log.e("image path:",""+attachmentPath);
           imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void onCaptureVideoResult(Intent data, VideoView mVideoView) {
-        Log.e("video path:",attachmentPath);
+    public void onRecordVideoResult(Activity Activity,Intent data, VideoView mVideoView) {
+        Log.e("video path:",""+attachmentPath);
       // Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(attachmentPath), 800,800);
         try {
-            mVideoView.setVideoURI(Uri.parse(attachmentPath));
-            mVideoView.seekTo(10);
-            mVideoView.start();
+            mVideoView.setVideoPath(attachmentPath);
+            mVideoView.setMediaController(new MediaController(Activity));
+            mVideoView.requestFocus();
+            mVideoView.seekTo(15);
+
             } catch (Exception e) {
             e.printStackTrace();
         }
