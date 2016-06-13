@@ -1,18 +1,28 @@
 package com.time_em.dashboard;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -25,6 +35,7 @@ import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
+import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.utils.GcmUtils;
@@ -42,8 +53,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
     private String trigger;
     private ImageView userStatus, imgStatus;
     private TextView txtUserStatus;
-
+    private RecyclerView recyclerView;
     private Context context;
+    ArrayList<TaskEntry> arrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +70,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
         contentFrame.addView(contentView, 0);
 
 //		addGraph();
+        populatRecyclerView();
         registerDevice();
         initScreen();
         setClickListeners();
@@ -128,13 +141,41 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
 
         chart.setDescription("# of times Alice called Bob");
 
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT);
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+                RecyclerView.LayoutParams.MATCH_PARENT);
         chart.setLayoutParams(params);
         graphLayout.addView(chart);
     }
 
+    private void populatRecyclerView() {
+
+        arrayList = new ArrayList<>();
+        Date myDate = new Date();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
+
+        for (int i = 1; i <= 20; i++) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(myDate);
+            calendar.add(Calendar.DAY_OF_YEAR, i);
+
+            TaskEntry taskEntry = new TaskEntry();
+            taskEntry.setTimeSpent(Double.valueOf(i));
+            taskEntry.setCreatedDate(dateFormatter.format(calendar.getTime()));
+
+            arrayList.add(taskEntry);
+        }
+//        for (int i = 0; i <= selectedPos; i++) {
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTime(myDate);
+//            calendar.add(Calendar.DAY_OF_YEAR, i);
+//            arrayList.add(calendar);
+//        }
+    }
+
     private void initScreen() {
+        recyclerView = (RecyclerView) findViewById(R.id.task_graph);
+        recyclerView.setHasFixedSize(true);
+
         changeStatus = (LinearLayout) findViewById(R.id.changeStatus);
         userStatus = (ImageView) findViewById(R.id.userStatus);
         txtUserStatus = (TextView) findViewById(R.id.txtUserStatus);
@@ -143,6 +184,20 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
 
         if (user.getUserTypeId() == 4)
             myTeam.setVisibility(View.GONE);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        GraphAdapter  adapter = new GraphAdapter(arrayList, new OnItemClickListener() {
+            @Override
+            public void onItemClick(TaskEntry item, int position) {
+
+                Utils.showToast(HomeActivity.this, item.getCreatedDate() +" Clicked");
+
+            }
+        });
+        recyclerView.setAdapter(adapter);// set adapter on recyclerview
+        adapter.notifyDataSetChanged();
     }
 
     private void setClickListeners() {
@@ -204,6 +259,72 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
         } else {
             Utils.alertMessage(HomeActivity.this, Utils.network_error);
         }
+    }
+
+    public class GraphAdapter extends RecyclerView.Adapter<GraphAdapter.ViewHolder> {
+
+        private final ArrayList<TaskEntry> items;
+        private final OnItemClickListener listener;
+
+        public GraphAdapter(ArrayList<TaskEntry> items, OnItemClickListener listener) {
+            this.items = items;
+            this.listener = listener;
+        }
+
+        @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.graph_slider_row, parent, false);
+            return new ViewHolder(v);
+        }
+
+        @Override public void onBindViewHolder(ViewHolder holder, int position) {
+            holder.bind(items.get(position), listener, position);
+        }
+
+        @Override public int getItemCount() {
+            return items.size();
+        }
+
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+
+            private TextView graphBar, date;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                graphBar = (TextView) itemView.findViewById(R.id.graphBar);
+                date = (TextView) itemView.findViewById(R.id.date);
+            }
+
+            public void bind(final TaskEntry item, final OnItemClickListener listener, final int pos) {
+                /*if(selectedPos==pos) {
+                    date.setBackgroundResource(R.drawable.date_bg);
+                    date.setTextColor(Color.WHITE);
+                }else {
+                    date.setBackgroundResource(R.drawable.date_bg_grey);
+                    date.setTextColor(Color.BLACK);
+                }*/
+                Double val = (200/10) * item.getTimeSpent();
+                RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,val.intValue());
+                param.setMargins(10,10,10,0);
+                param.addRule(RelativeLayout.ABOVE,date.getId());
+                graphBar.setLayoutParams(param);
+                date.setText(item.getCreatedDate());
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        /*notifyItemChanged(pos);
+                        selectedPos = pos;
+                        notifyItemChanged(selectedPos);*/
+
+                        listener.onItemClick(item, pos);
+                    }
+                });
+            }
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(TaskEntry item, int position);
     }
 
     @Override
