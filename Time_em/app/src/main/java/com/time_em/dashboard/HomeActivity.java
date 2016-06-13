@@ -1,22 +1,19 @@
 package com.time_em.dashboard;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.StringTokenizer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TimerTask;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -37,11 +33,12 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
+import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.utils.GcmUtils;
 import com.time_em.utils.Utils;
 
-public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
+public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,TabLayout.OnTabSelectedListener {
 
     private LinearLayout graphLayout;
     ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
@@ -53,10 +50,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
     private String trigger;
     private ImageView userStatus, imgStatus;
     private TextView txtUserStatus;
+    private ViewPager viewPager;
     private RecyclerView recyclerView;
     private Context context;
-    ArrayList<TaskEntry> arrayList;
-
+    ArrayList<TaskEntry> arrayList=new ArrayList<>();
+    ArrayList<TaskEntry> arrayList_SignInOut=new ArrayList<>();
+    private Time_emJsonParser parser;
+    TabLayout  tabLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,13 +70,28 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
         contentFrame.addView(contentView, 0);
 
 //		addGraph();
-        populatRecyclerView();
+      //  populatRecyclerView();
         registerDevice();
+        fetchTaskGraphsData();
+        fetchGraphsSignInOut();
         initScreen();
         setClickListeners();
+        setTapBar();
 
         if (trigger.equals("login"))
             openChangeStatusDialog();
+    }
+
+    private void setTapBar() {
+        //Initializing the tablayout
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+       //Adding the tabs using addTab() method
+        tabLayout.addTab(tabLayout.newTab().setText("UserGraph"));
+        tabLayout.addTab(tabLayout.newTab().setText("UserLoginGraph"));
+       // tabLayout.addTab(tabLayout.newTab().setText("Tab3"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        //Adding onTabSelectedListener to swipe views
+        tabLayout.setOnTabSelectedListener(this);
     }
 
     private void addGraph() {
@@ -147,9 +162,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
         graphLayout.addView(chart);
     }
 
-    private void populatRecyclerView() {
+    /*private void populatRecyclerView(ArrayList<TaskEntry> arraylist) {
 
-        arrayList = new ArrayList<>();
+        arrayList.addAll(arraylist);
         Date myDate = new Date();
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
 
@@ -170,34 +185,21 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
 //            calendar.add(Calendar.DAY_OF_YEAR, i);
 //            arrayList.add(calendar);
 //        }
-    }
+    }*/
 
     private void initScreen() {
-        recyclerView = (RecyclerView) findViewById(R.id.task_graph);
-        recyclerView.setHasFixedSize(true);
 
+        viewPager=(ViewPager)findViewById(R.id.pager);
         changeStatus = (LinearLayout) findViewById(R.id.changeStatus);
         userStatus = (ImageView) findViewById(R.id.userStatus);
         txtUserStatus = (TextView) findViewById(R.id.txtUserStatus);
         imgStatus = (ImageView) findViewById(R.id.imgStatus);
         trigger = getIntent().getStringExtra("trigger");
-
+        parser = new Time_emJsonParser(HomeActivity.this);
         if (user.getUserTypeId() == 4)
             myTeam.setVisibility(View.GONE);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
 
-        GraphAdapter  adapter = new GraphAdapter(arrayList, new OnItemClickListener() {
-            @Override
-            public void onItemClick(TaskEntry item, int position) {
-
-                Utils.showToast(HomeActivity.this, item.getCreatedDate() +" Clicked");
-
-            }
-        });
-        recyclerView.setAdapter(adapter);// set adapter on recyclerview
-        adapter.notifyDataSetChanged();
     }
 
     private void setClickListeners() {
@@ -260,19 +262,122 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
             Utils.alertMessage(HomeActivity.this, Utils.network_error);
         }
     }
+    private void fetchTaskGraphsData(){
+        if (Utils.isNetworkAvailable(HomeActivity.this)) {
 
+
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("userid", ""+user.getId());
+
+            //http://timeemapi.azurewebsites.net/api/usertask/UserTaskGraph?userid=2
+            Log.e(Utils.UserTaskGraph,postDataParameters.toString());
+            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                    HomeActivity.this, "get", Utils.UserTaskGraph,
+                    postDataParameters, true, "Please wait...");
+            mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
+            mWebPageTask.execute();
+
+        } else {
+            Utils.alertMessage(HomeActivity.this, Utils.network_error);
+        }
+    }
+    private void fetchGraphsSignInOut(){
+        if (Utils.isNetworkAvailable(HomeActivity.this)) {
+
+
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("userid", ""+user.getId());
+
+           // http://timeemapi.azurewebsites.net/api/usertask/UsersGraph?userid=2
+            Log.e(Utils.UsersGraph,postDataParameters.toString());
+            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                    HomeActivity.this, "get", Utils.UsersGraph,
+                    postDataParameters, true, "Please wait...");
+            mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
+            mWebPageTask.execute();
+
+        } else {
+            Utils.alertMessage(HomeActivity.this, Utils.network_error);
+        }
+    }
+    private void firstGraphView()
+    {
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        GraphAdapter  adapter = new GraphAdapter(true,arrayList, new OnItemClickListener() {
+            @Override
+            public void onItemClick(TaskEntry item, int position) {
+
+                Utils.showToast(HomeActivity.this, item.getCreatedDate() +" Clicked");
+
+            }
+        });
+        recyclerView.setAdapter(adapter);// set adapter on recyclerview
+        adapter.notifyDataSetChanged();
+    }
+    private void secondGraphView()
+    {
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        GraphAdapter  adapter = new GraphAdapter(false,arrayList_SignInOut, new OnItemClickListener() {
+            @Override
+            public void onItemClick(TaskEntry item, int position) {
+
+                Utils.showToast(HomeActivity.this, item.getCreatedDate() +" Clicked");
+
+            }
+        });
+        recyclerView.setAdapter(adapter);// set adapter on recyclerview
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+
+        viewPager.setCurrentItem(tab.getPosition());
+        if(tab.getPosition()==0)
+        {
+            tab.setText("UserGraph");
+            }
+        else if(tab.getPosition()==1)
+        {
+            tab.setText("UserLoginGraph");
+        }
+        else if(tab.getPosition()==3)
+        {
+           // tab.setText("Tab3");
+        }
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+    }
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+    }
     public class GraphAdapter extends RecyclerView.Adapter<GraphAdapter.ViewHolder> {
 
         private final ArrayList<TaskEntry> items;
         private final OnItemClickListener listener;
+        private final boolean screen;
 
-        public GraphAdapter(ArrayList<TaskEntry> items, OnItemClickListener listener) {
+        public GraphAdapter(boolean screen ,ArrayList<TaskEntry> items, OnItemClickListener listener) {
             this.items = items;
-            this.listener = listener;
+            this.listener=listener;
+            this.screen = screen;
         }
 
         @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.graph_slider_row, parent, false);
+            View v=null;
+            if(screen) {
+                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.graph_slider_row, parent, false);
+            }else{
+                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.graph_slider_two_row, parent, false);
+            }
             return new ViewHolder(v);
         }
 
@@ -288,11 +393,18 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
         class ViewHolder extends RecyclerView.ViewHolder {
 
             private TextView graphBar, date;
-
+            private TextView graphBar_signIn, graphBar_signOut;
             public ViewHolder(View itemView) {
                 super(itemView);
-                graphBar = (TextView) itemView.findViewById(R.id.graphBar);
-                date = (TextView) itemView.findViewById(R.id.date);
+                if (screen) {
+                    graphBar = (TextView) itemView.findViewById(R.id.graphBar);
+                    date = (TextView) itemView.findViewById(R.id.date);
+                }else
+                {
+                    graphBar_signIn = (TextView) itemView.findViewById(R.id.graphBar_signIn);
+                    graphBar_signOut = (TextView) itemView.findViewById(R.id.graphBar_signOut);
+                    date = (TextView) itemView.findViewById(R.id.date);
+                }
             }
 
             public void bind(final TaskEntry item, final OnItemClickListener listener, final int pos) {
@@ -303,22 +415,55 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
                     date.setBackgroundResource(R.drawable.date_bg_grey);
                     date.setTextColor(Color.BLACK);
                 }*/
-                Double val = (200/10) * item.getTimeSpent();
-                RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT,val.intValue());
-                param.setMargins(10,10,10,0);
-                param.addRule(RelativeLayout.ABOVE,date.getId());
-                graphBar.setLayoutParams(param);
-                date.setText(item.getCreatedDate());
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override public void onClick(View v) {
+                if (screen) {
+                    Double val = (200 / 10) * item.getTimeSpent();
+                    RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.MATCH_PARENT, val.intValue());
+                    param.setMargins(10, 10, 10, 0);
+                    param.addRule(RelativeLayout.ABOVE, date.getId());
+                    graphBar.setLayoutParams(param);
+                    date.setText(item.getCreatedDate());
+                    itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
                         /*notifyItemChanged(pos);
                         selectedPos = pos;
                         notifyItemChanged(selectedPos);*/
 
-                        listener.onItemClick(item, pos);
-                    }
-                });
+                            listener.onItemClick(item, pos);
+                        }
+                    });
+                }
+
+            else{
+                    Double valIn = (200 / 90) * item.getSignedInHours();
+                    LinearLayout.LayoutParams paramIn = new LinearLayout.LayoutParams(
+                            0, valIn.intValue(),1);
+                    paramIn.setMargins(0, 0, 0, 0);
+                    paramIn.gravity = Gravity.BOTTOM;
+                    graphBar_signIn.setLayoutParams(paramIn);
+                    graphBar_signIn.setGravity(Gravity.BOTTOM);
+
+                    Double val_signout = (200 / 90) * item.getSignedOutHours();
+                    LinearLayout.LayoutParams paramOut = new LinearLayout.LayoutParams(
+                            0, val_signout.intValue(),1);
+                    paramOut.setMargins(2, 0, 0, 0);
+                    paramOut.gravity = Gravity.BOTTOM;
+                    graphBar_signOut.setLayoutParams(paramOut);
+                    graphBar_signOut.setGravity(Gravity.BOTTOM);
+
+                    date.setText(item.getCreatedDate());
+                   /* itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            *//*notifyItemChanged(pos);
+                            selectedPos = pos;
+                            notifyItemChanged(selectedPos);*//*
+
+                            listener.onItemClick(item, pos);
+                        }
+                    });*/
+                }
             }
         }
     }
@@ -326,9 +471,112 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm {
     public interface OnItemClickListener {
         void onItemClick(TaskEntry item, int position);
     }
+    private void setViewPager() {
+         // Pass results to ViewPagerAdapter Class
+        ViewPagerAdapter  adapter = new ViewPagerAdapter(HomeActivity.this,tabLayout.getTabCount());
+        // Binds the Adapter to the ViewPager
+        viewPager.setAdapter(adapter);
+        //We set this on the indicator, NOT the pager
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    firstGraphView();
 
+                }
+                if (position == 1) {
+                   secondGraphView();
+                }
+                if (position == 2) {
+
+                   // secondGraphView();
+
+                }
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+
+    }
+
+
+    public class ViewPagerAdapter extends PagerAdapter {
+
+        Context context;
+        ArrayList<TimerTask> arrayList;
+        LayoutInflater inflater;
+        int value;
+
+        public ViewPagerAdapter(Context context, int value) {
+            this.context = context;
+            this.arrayList = arrayList;
+            this.value=value;
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == ((LinearLayout) object);
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+
+            if(position==0) {
+                inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View itemView = inflater.inflate(R.layout.viewpager_graphs, container, false);
+                recyclerView = (RecyclerView)itemView.findViewById(R.id.task_graph);
+                recyclerView.setHasFixedSize(true);
+                firstGraphView();
+
+                ((ViewPager) container).addView(itemView);
+
+                return itemView;
+            }
+            if(position==1) {
+                inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View itemView = inflater.inflate(R.layout.viewpager_signinout, container, false);
+                recyclerView = (RecyclerView)itemView.findViewById(R.id.task_graph);
+                recyclerView.setHasFixedSize(true);
+
+                ((ViewPager) container).addView(itemView);
+
+                return itemView;
+            }
+
+            return null;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            // Remove viewpager_item.xml from ViewPager
+            ((ViewPager) container).removeView((LinearLayout) object);
+
+        }
+    }
     @Override
     public void processFinish(String output, String methodName) {
-        Log.e(output,output);
+        Log.e(""+methodName,""+output);
+        if(methodName.contains(Utils.UserTaskGraph))
+        {
+            arrayList.addAll(parser.parseGraphsData(output));
+            setViewPager();
+            }
+      else if(methodName.contains(Utils.UsersGraph))
+        {
+            arrayList_SignInOut.addAll(parser.parseGraphsSignInOut(output));
+            setViewPager();
+        }
     }
 }

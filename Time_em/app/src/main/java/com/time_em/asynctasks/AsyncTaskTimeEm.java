@@ -71,6 +71,7 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 				
 		pDialog.dismiss();
 		resultcode=Utils.resultCode();
+
 		if(resultcode==200)
 		{
 			delegate.processFinish(result, methodName);

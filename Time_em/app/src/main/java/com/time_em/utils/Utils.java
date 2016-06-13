@@ -85,6 +85,8 @@ public class Utils {
     static public String GetNotificationAPI = "/notification/NotificationByUserId";
     static public String RegisterUserDevice = "/User/RegisterUserDevice";
     static public String GetAssignedTaskList = "/Task/GetAssignedTaskIList";
+    static public String UserTaskGraph = "/usertask/UserTaskGraph";
+    static public String UsersGraph = "/usertask/UsersGraph";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 

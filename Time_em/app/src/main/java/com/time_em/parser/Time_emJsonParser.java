@@ -1,6 +1,10 @@
 package com.time_em.parser;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimerTask;
 import java.util.concurrent.Exchanger;
 
 import org.json.JSONArray;
@@ -501,4 +505,90 @@ public class Time_emJsonParser {
 
 		return taskList;
 	}
+	public ArrayList<TaskEntry> parseGraphsData(String webResponse){
+		ArrayList<TaskEntry> arrayTaskEntry = new ArrayList<TaskEntry>();
+
+		Resources res = context.getResources();
+
+		try{
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("IsError");
+			message = jObject.getString("Message");
+
+
+			JSONArray jArray = jObject.getJSONArray("TasksList");
+
+			for(int i = 0; i<jArray.length(); i++){
+				JSONObject userObject = jArray.getJSONObject(i);
+
+				TaskEntry timerTask = new TaskEntry();
+				timerTask.setTimeSpent(userObject.getDouble("timespent"));
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
+				String str_date=userObject.getString("date");
+				//String str_date="11-June-07";
+				DateFormat formatter = new SimpleDateFormat("mm-dd-yyyy");
+				Date date = formatter.parse(str_date);
+				timerTask.setCreatedDate(dateFormatter.format(date));
+				//timerTask.setCreatedDate();
+				arrayTaskEntry.add(timerTask);
+			}
+
+
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			arrayTaskEntry = new ArrayList<TaskEntry>();
+			e.printStackTrace();
+			Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return arrayTaskEntry;
+	}
+	public ArrayList<TaskEntry> parseGraphsSignInOut(String webResponse){
+		ArrayList<TaskEntry> arrayTaskEntry = new ArrayList<TaskEntry>();
+
+		Resources res = context.getResources();
+
+		try{
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("IsError");
+			message = jObject.getString("Message");
+
+
+			JSONArray jArray = jObject.getJSONArray("UsersList");
+
+			for(int i = 0; i<jArray.length(); i++){
+				JSONObject userObject = jArray.getJSONObject(i);
+
+				TaskEntry timerTask = new TaskEntry();
+				timerTask.setSignedInHours(userObject.getDouble("signedin"));
+				timerTask.setSignedOutHours(userObject.getDouble("signedout"));
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
+				String str_date=userObject.getString("date");
+				//String str_date="11-June-07";
+				DateFormat formatter = new SimpleDateFormat("mm-dd-yyyy");
+				Date date = formatter.parse(str_date);
+				timerTask.setCreatedDate(dateFormatter.format(date));
+				//timerTask.setCreatedDate();
+				arrayTaskEntry.add(timerTask);
+			}
+
+
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			arrayTaskEntry = new ArrayList<TaskEntry>();
+			e.printStackTrace();
+			Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return arrayTaskEntry;
+	}
+
 }

@@ -7,7 +7,7 @@ public class TaskEntry implements Parcelable {
 
     private int id, activityId, taskId, userId;
     private String taskName, comments, startTime, createdDate, endTime, selectedDate, token, attachmentImageFile;
-    private Double timeSpent, signedInHours;
+    private Double timeSpent, signedInHours,signedOutHours;
     private Boolean isActive = true;
 
     public int getId() {
@@ -90,6 +90,14 @@ public class TaskEntry implements Parcelable {
         this.endTime = endTime;
     }
 
+    public Double getSignedOutHours() {
+        return signedOutHours;
+    }
+
+    public void setSignedOutHours(Double signedOutHours) {
+        this.signedOutHours = signedOutHours;
+    }
+
     public String getSelectedDate() {
         return selectedDate;
     }
@@ -149,6 +157,7 @@ public class TaskEntry implements Parcelable {
         token = source.readString();
         timeSpent = source.readDouble();
         signedInHours = source.readDouble();
+        signedOutHours = source.readDouble();
         attachmentImageFile = source.readString();
         isActive = source.readByte() != 0;
     }
@@ -186,6 +195,7 @@ public class TaskEntry implements Parcelable {
         dest.writeString(token);
         dest.writeDouble(timeSpent);
         dest.writeDouble(signedInHours);
+        dest.writeDouble(signedOutHours);
         dest.writeString(attachmentImageFile);
         dest.writeByte((byte) (isActive ? 1 : 0));
     }

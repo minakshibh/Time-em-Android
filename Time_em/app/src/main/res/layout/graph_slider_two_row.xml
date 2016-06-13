@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg_graph"
+    android:layout_width="50dp"
+    android:gravity="bottom"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    >
+
+
+
+    <LinearLayout
+        android:id="@+id/lay_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+         android:layout_marginTop="10dp"
+        >
+    <TextView
+        android:id="@+id/graphBar_signIn"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:gravity="bottom"
+        android:background="@drawable/btn_bg"/>
+
+
+    <TextView
+        android:id="@+id/graphBar_signOut"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="2dp"
+        android:gravity="bottom"
+        android:layout_height="100dp"
+         android:background="@drawable/grey_bg"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:text="22"
+
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom|center"
+        android:textColor="@color/black"/>
+
+</LinearLayout>
