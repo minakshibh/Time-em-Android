@@ -1,9 +1,13 @@
 package com.time_em.dashboard;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TimerTask;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +16,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,7 +45,7 @@ import com.time_em.utils.Utils;
 
 public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,TabLayout.OnTabSelectedListener {
 
-    private LinearLayout graphLayout;
+    private LinearLayout graphLayout,lay_indicator;
     ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
     BarDataSet dataset;
     public DependencyResolver resolver;
@@ -56,7 +61,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     ArrayList<TaskEntry> arrayList=new ArrayList<>();
     ArrayList<TaskEntry> arrayList_SignInOut=new ArrayList<>();
     private Time_emJsonParser parser;
+    private Double  maxValueTask=0.0,maxValueSignIn=0.0,maxValueSignOut=0.0;
+    private TextView currentDate;
     TabLayout  tabLayout;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,22 +85,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         initScreen();
         setClickListeners();
         setTapBar();
+        getCurrentDate();
 
         if (trigger.equals("login"))
             openChangeStatusDialog();
     }
 
-    private void setTapBar() {
-        //Initializing the tablayout
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-       //Adding the tabs using addTab() method
-        tabLayout.addTab(tabLayout.newTab().setText("UserGraph"));
-        tabLayout.addTab(tabLayout.newTab().setText("UserLoginGraph"));
-       // tabLayout.addTab(tabLayout.newTab().setText("Tab3"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        //Adding onTabSelectedListener to swipe views
-        tabLayout.setOnTabSelectedListener(this);
-    }
+
 
     private void addGraph() {
         graphLayout = (LinearLayout) findViewById(R.id.graphLayout);
@@ -195,13 +194,35 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         txtUserStatus = (TextView) findViewById(R.id.txtUserStatus);
         imgStatus = (ImageView) findViewById(R.id.imgStatus);
         trigger = getIntent().getStringExtra("trigger");
-        parser = new Time_emJsonParser(HomeActivity.this);
+        lay_indicator=(LinearLayout)findViewById(R.id.lay_indicator);
+        currentDate=(TextView)findViewById(R.id.currentDate);
+         parser = new Time_emJsonParser(HomeActivity.this);
         if (user.getUserTypeId() == 4)
             myTeam.setVisibility(View.GONE);
 
 
     }
+private void getCurrentDate()
+{
+    long date = System.currentTimeMillis();
 
+    SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM, yyyy");
+    String dateString = sdf.format(date);
+    currentDate.setText(dateString);
+}
+
+    private void setTapBar() {
+        //Initializing the tablayout
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        //Adding the tabs using addTab() method
+        tabLayout.addTab(tabLayout.newTab().setText("UserGraph"));
+        tabLayout.addTab(tabLayout.newTab().setText("UserLoginGraph"));
+        // tabLayout.addTab(tabLayout.newTab().setText("Tab3"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        //Adding onTabSelectedListener to swipe views
+        tabLayout.setOnTabSelectedListener(this);
+
+    }
     private void setClickListeners() {
         changeStatus.setOnClickListener(listener);
     }
@@ -300,8 +321,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
             Utils.alertMessage(HomeActivity.this, Utils.network_error);
         }
     }
-    private void firstGraphView()
-    {
+    private void firstGraphView(){
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -317,9 +337,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
         adapter.notifyDataSetChanged();
     }
-    private void secondGraphView()
-    {
-
+    private void secondGraphView(){
         LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -342,15 +360,17 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         if(tab.getPosition()==0)
         {
             tab.setText("UserGraph");
+            lay_indicator.setVisibility(View.GONE);
             }
         else if(tab.getPosition()==1)
         {
             tab.setText("UserLoginGraph");
+            lay_indicator.setVisibility(View.VISIBLE);
         }
-        else if(tab.getPosition()==3)
+       /* else if(tab.getPosition()==3)
         {
            // tab.setText("Tab3");
-        }
+        }*/
     }
 
     @Override
@@ -416,7 +436,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
                     date.setTextColor(Color.BLACK);
                 }*/
                 if (screen) {
-                    Double val = (200 / 10) * item.getTimeSpent();
+                    Double val = (200 / maxValueTask) * item.getTimeSpent();
                     RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(
                             RelativeLayout.LayoutParams.MATCH_PARENT, val.intValue());
                     param.setMargins(10, 10, 10, 0);
@@ -436,7 +456,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
                 }
 
             else{
-                    Double valIn = (200 / 90) * item.getSignedInHours();
+                    Double valIn = (200 / maxValueSignIn) * item.getSignedInHours();
                     LinearLayout.LayoutParams paramIn = new LinearLayout.LayoutParams(
                             0, valIn.intValue(),1);
                     paramIn.setMargins(0, 0, 0, 0);
@@ -444,7 +464,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
                     graphBar_signIn.setLayoutParams(paramIn);
                     graphBar_signIn.setGravity(Gravity.BOTTOM);
 
-                    Double val_signout = (200 / 90) * item.getSignedOutHours();
+                    Double val_signout = (200 / maxValueSignOut) * item.getSignedOutHours();
                     LinearLayout.LayoutParams paramOut = new LinearLayout.LayoutParams(
                             0, val_signout.intValue(),1);
                     paramOut.setMargins(2, 0, 0, 0);
@@ -480,18 +500,22 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+
+               // tabLayout.getTabAt(position).select();
+
+                tabLayout.setScrollPosition(position,0f,true);
                 if (position == 0) {
                     firstGraphView();
+                    lay_indicator.setVisibility(View.GONE);
 
                 }
                 if (position == 1) {
                    secondGraphView();
-                }
-                if (position == 2) {
+                    lay_indicator.setVisibility(View.VISIBLE);
 
-                   // secondGraphView();
 
                 }
+
             }
 
             @Override
@@ -522,7 +546,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -539,7 +563,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
                 recyclerView = (RecyclerView)itemView.findViewById(R.id.task_graph);
                 recyclerView.setHasFixedSize(true);
                 firstGraphView();
-
+                lay_indicator.setVisibility(View.GONE);
+                //tabLayout.getTabAt(position).select();
+                tabLayout.setScrollPosition(position,0f,true);
                 ((ViewPager) container).addView(itemView);
 
                 return itemView;
@@ -549,7 +575,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
                 View itemView = inflater.inflate(R.layout.viewpager_signinout, container, false);
                 recyclerView = (RecyclerView)itemView.findViewById(R.id.task_graph);
                 recyclerView.setHasFixedSize(true);
-
+               // lay_indicator.setVisibility(View.VISIBLE);
                 ((ViewPager) container).addView(itemView);
 
                 return itemView;
@@ -565,6 +591,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
 
         }
     }
+
     @Override
     public void processFinish(String output, String methodName) {
         Log.e(""+methodName,""+output);
@@ -572,11 +599,51 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         {
             arrayList.addAll(parser.parseGraphsData(output));
             setViewPager();
+            ArrayList<TaskEntry> arrayList_sort=new ArrayList<>();
+            arrayList_sort.addAll(arrayList);
+              Comparator<TaskEntry> cmp = new Comparator<TaskEntry>() {
+                @Override
+                public int compare(TaskEntry v1, TaskEntry v2) {
+                    return v1.getTimeSpent().compareTo(v2.getTimeSpent());
+                }
+            };
+            TaskEntry taskEntry=Collections.max(arrayList_sort, cmp);
+            maxValueTask=taskEntry.getTimeSpent();
+            Log.e("max task: " ,""+ maxValueTask);
+
+
             }
       else if(methodName.contains(Utils.UsersGraph))
         {
             arrayList_SignInOut.addAll(parser.parseGraphsSignInOut(output));
             setViewPager();
+
+            ArrayList<TaskEntry> arrayList_SignIn_sort=new ArrayList<>();
+            arrayList_SignIn_sort.addAll(arrayList_SignInOut);
+
+            Comparator<TaskEntry> cmp = new Comparator<TaskEntry>() {
+                @Override
+                public int compare(TaskEntry v1, TaskEntry v2) {
+                    return v1.getSignedInHours().compareTo(v2.getSignedInHours());
+                }
+            };
+            TaskEntry taskEntry=Collections.max(arrayList_SignIn_sort, cmp);
+            maxValueSignIn=taskEntry.getSignedInHours();
+            Log.e("max sign In: " ,""+ maxValueSignIn);
+            ///sign out max
+
+            ArrayList<TaskEntry> arrayList_SignOut_sort=new ArrayList<>();
+            arrayList_SignOut_sort.addAll(arrayList_SignInOut);
+
+            Comparator<TaskEntry> cmp_out = new Comparator<TaskEntry>() {
+                @Override
+                public int compare(TaskEntry v1, TaskEntry v2) {
+                    return v1.getSignedOutHours().compareTo(v2.getSignedOutHours());
+                }
+            };
+            TaskEntry taskEntry2=Collections.max(arrayList_SignOut_sort, cmp);
+            maxValueSignIn=taskEntry2.getSignedOutHours();
+            Log.e("max sign out: " ,""+ maxValueSignIn);
         }
     }
 }

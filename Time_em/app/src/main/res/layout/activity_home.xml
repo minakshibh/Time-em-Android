@@ -39,26 +39,84 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/changeStatus"
-		app:tabTextColor="@color/white"
+		app:tabTextColor="@color/black"
+		app:tabSelectedTextColor="@color/white"
 		android:background="?attr/colorPrimary"
 		android:minHeight="?attr/actionBarSize"
 		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
+	<TextView
+		android:layout_below="@+id/tabLayout"
+		android:id="@+id/currentDate"
+		android:layout_width="match_parent"
+		android:padding="10dp"
+		android:text="df"
+		android:gravity="center_horizontal"
+		android:layout_height="wrap_content"
+		/>
 	<LinearLayout
         android:layout_width="match_parent"
         android:id="@+id/graphLayout"
-		android:layout_height="300dp"
-		android:layout_below="@+id/tabLayout"
+		android:layout_height="250dp"
+		android:layout_below="@+id/currentDate"
 		android:layout_above="@+id/footer"
         android:orientation="horizontal"
 		android:layout_gravity="center"
         >
+
 	<android.support.v4.view.ViewPager
 		android:id="@+id/pager"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_gravity="center"
 		/>
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/lay_indicator"
+		android:layout_below="@+id/graphLayout"
+		android:layout_width="match_parent"
+		android:gravity="center_vertical"
+		android:layout_height="50dp"
+		android:orientation="horizontal">
+		<TextView
+			android:layout_width="0dp"
+			android:layout_weight="5"
+			android:layout_height="10dp"
+			/>
+		<LinearLayout
+		android:layout_width="0dp"
+		android:layout_weight="5"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+
+		<TextView
+			android:layout_width="15dp"
+			android:layout_height="15dp"
+			android:layout_gravity="center_vertical"
+			android:background="@color/sendTextColor"/>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="@color/black"
+			android:layout_marginLeft="5dp"
+			android:text="Sign In"
+			/>
+
+		<TextView
+			android:layout_marginLeft="5dp"
+			android:layout_width="15dp"
+			android:layout_height="15dp"
+			android:layout_gravity="center_vertical"
+			android:background="@color/grey"/>
+		<TextView
+			android:layout_marginLeft="5dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textColor="@color/black"
+			android:text="Sign out"
+			/>
+
+		</LinearLayout>
 <!--	<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
