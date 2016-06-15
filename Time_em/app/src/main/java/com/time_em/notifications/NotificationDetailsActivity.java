@@ -1,7 +1,10 @@
 package com.time_em.notifications;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -14,6 +17,8 @@ import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.Notification;
 import com.time_em.model.TaskEntry;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.FileUtils;
+import com.time_em.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,17 +94,27 @@ public class NotificationDetailsActivity extends Activity {
         textViewMassage.setText(mNotification.getMessage());
 
         attachmentPath=mNotification.getAttachmentPath();
+        Log.e("attachmentPath",""+attachmentPath);
         if(attachmentPath==null | attachmentPath.equalsIgnoreCase("null"))
         {
             lay_Attachment.setVisibility(View.INVISIBLE);
         }else{
+
+            if(attachmentPath.contains("http")) {
                 lay_Attachment.setVisibility(View.VISIBLE);
                 int loader = R.drawable.add;
                 ImageLoader imgLoader = new ImageLoader(getApplicationContext());
                 imgLoader.DisplayImage(attachmentPath, loader, Image_Attachment);
+            }else
+            {
+                FileUtils fileUtils=new FileUtils(NotificationDetailsActivity.this);
+                Bitmap bitmap= fileUtils.getScaledBitmap(attachmentPath,800,800);
+                Image_Attachment.setImageBitmap(bitmap);
+                }
             }
 
     }
+
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {

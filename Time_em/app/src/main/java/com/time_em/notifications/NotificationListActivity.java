@@ -43,7 +43,7 @@ import java.util.Locale;
 public class NotificationListActivity extends Activity implements AsyncResponseTimeEm{
 
     private ListView notificationListView;
-    private ArrayList<Notification> notifications;
+    private ArrayList<Notification> notifications=new ArrayList<>();
     private Time_emJsonParser parser;
     private ImageView sendNotification, back;
     private TextView headerText;
@@ -133,7 +133,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
     private void getNotificationList() {
 
-        if (Utils.isNetworkAvailable(NotificationListActivity.this)) {
+       // if (Utils.isNetworkAvailable(NotificationListActivity.this)) {
 
             String timeStamp = Utils.getSharedPrefs(NotificationListActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.notificationTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
@@ -150,9 +150,9 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             mWebPageTask.delegate = (AsyncResponseTimeEm) NotificationListActivity.this;
             mWebPageTask.execute();
 
-        } else {
-            Utils.alertMessage(NotificationListActivity.this, Utils.network_error);
-        }
+        //} else {
+          //  Utils.alertMessage(NotificationListActivity.this, Utils.network_error);
+       // }
     }
 
    /* private void deleteTask(int taskEntryId) {

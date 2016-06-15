@@ -21,6 +21,7 @@ import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
@@ -48,7 +49,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
     private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0";
     private TaskEntry taskEntry;
     private VideoView uploadedVideo;
-
+    TimeEmDbHandler dbHandler ;
+    ArrayList<TaskEntry> taskEntries=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +64,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
     private void initScreen() {
         parser = new Time_emJsonParser(AddEditTaskEntry.this);
         fileUtils = new FileUtils(AddEditTaskEntry.this);
-
+        dbHandler = new TimeEmDbHandler(AddEditTaskEntry.this);
         selectedDate = getIntent().getStringExtra("selectedDate");
 
         txtProjectSelection = (TextView) findViewById(R.id.notificationTxt);
@@ -151,6 +153,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                    /* ["ActivityId": "29644", "CreatedDate": "06-10-2016", "UserId": "8049", "TaskId": "16168", "ID": "0",
                             "TaskName": "Test Task May 3", "TimeSpent": "10", "Comments": "Test Parv 10 June"]*/
                     if(fileUtils.getAttachmentPath() !=null)
+
                         if(fileUtils.getAttachmentPath().contains(".3gp"))
                         {
                      dataModels.add(new MultipartDataModel("profile_video", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
@@ -166,7 +169,32 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                     dataModels.add(new MultipartDataModel("CreatedDate", selectedDate, MultipartDataModel.STRING_TYPE));
                     dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));
 
-                    fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
+                    if(Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
+                        fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
+                    }else
+                    {
+                        TaskEntry task = new TaskEntry();
+                        task.setId(Integer.parseInt(taskEntryId));
+                        task.setActivityId(HomeActivity.user.getActivityId());
+                        task.setTaskId(selectedSpinnerData.getId());
+                        task.setUserId(HomeActivity.user.getId());
+                        task.setTaskName(selectedSpinnerData.getName());
+                        task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
+                        task.setComments(comments.getText().toString());
+                       // task.setSignedInHours(taskObject.getDouble("SignedInHours"));
+                       // task.setStartTime(taskObject.getString("StartTime"));
+                        task.setCreatedDate(selectedDate);
+                       // task.setEndTime(taskObject.getString("EndTime"));
+                        task.setSelectedDate(selectedDate);
+                        //task.setToken(taskObject.getString("Token"));
+                        task.setIsActive(false);
+                        task.setAttachmentImageFile(fileUtils.getAttachmentPath());
+                        task.setIsoffline("true");
+                        taskEntries.add(task);
+
+                        dbHandler.updateTask(taskEntries, selectedDate);
+                        Utils.alertMessage(AddEditTaskEntry.this,"Task Add Successfully.!");
+                        }
                 }
             }
         }

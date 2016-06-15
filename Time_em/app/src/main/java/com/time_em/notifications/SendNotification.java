@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -35,6 +36,7 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.MultipartDataModel;
+import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
@@ -44,8 +46,12 @@ import com.time_em.utils.SpinnerTypeAdapter;
 import com.time_em.utils.Utils;
 import com.time_em.utils.VolleySingleton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyRep;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,10 +63,11 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     private EditText subject, message;
     private RelativeLayout recipients;
     private ArrayList<User> userList;
+    private ArrayList<Notification> offline_notification=new ArrayList<>();
     private ArrayList<SpinnerData> notificationTypes;
     private Time_emJsonParser parser;
     private SpinnerTypeAdapter adapter;
-    private String selectedIds, selectedUsers, userChoosenTask, selectedNotificationTypeId, attachmentPath;
+    private String selectedIds, selectedUsers, userChoosenTask, selectedNotificationTypeId, attachmentPath,selectedNotificationTypeName;
     private ImageView uploadedImage, back, rightNavigation;
     private Button sendNotification;
     private final String twoHyphens = "--";
@@ -73,7 +80,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     private TextView txtSpnUsers, headerInfo;
     private FileUtils fileUtils;
     String sendNotificationAPI = Utils.SendNotificationAPI;
-
+    TimeEmDbHandler dbHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +94,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
     private void initScreen() {
         fileUtils = new FileUtils(SendNotification.this);
-
+        dbHandler = new TimeEmDbHandler(SendNotification.this);
         spnNotificationType = (Spinner) findViewById(R.id.spnNotificationType);
         subject = (EditText) findViewById(R.id.subject);
         message = (EditText) findViewById(R.id.message);
@@ -123,6 +130,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                 SpinnerData notType = adapter.getItem(position);
                 // Here you can do the action you want to...
                 selectedNotificationTypeId = String.valueOf(notType.getId());
+                selectedNotificationTypeName=String.valueOf(notType.getName());
             }
 
             @Override
@@ -142,17 +150,43 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                     ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
 
                     if(fileUtils.getAttachmentPath() !=null)
-                        dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                            dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                            dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("Subject", subject.getText().toString(), MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("Message", message.getText().toString(), MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("NotificationTypeId", selectedNotificationTypeId, MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("notifyto", selectedIds, MultipartDataModel.STRING_TYPE));
+                    if(Utils.isNetworkAvailable(SendNotification.this)) {
+                            fileUtils.sendMultipartRequest(sendNotificationAPI, dataModels);
+                        }
+                    else {
+                        // Insert the string into db.
 
-                    dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("Subject", subject.getText().toString(), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("Message", message.getText().toString(), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("NotificationTypeId", selectedNotificationTypeId, MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("notifyto", selectedIds, MultipartDataModel.STRING_TYPE));
+                        Notification notification = new Notification();
 
-                    fileUtils.sendMultipartRequest(sendNotificationAPI, dataModels);
+                        notification.setAttachmentPath(fileUtils.getAttachmentPath());
+                        notification.setUserId(HomeActivity.user.getId());
+                        notification.setSubject(subject.getText().toString());
+                        notification.setMessage(message.getText().toString());
+                        notification.setNotificationId(Integer.parseInt(selectedNotificationTypeId));
+                        notification.setSenderId(Integer.parseInt(selectedIds));
+
+                        notification.setNotificationType(selectedNotificationTypeName);
+                        notification.setCreatedDate(getCurrentDate());
+                        notification.setSenderFullName(selectedUsers);
+
+                        notification.setTimeZone(getCurrentDate());
+                        notification.setIsOffline("true");
+
+                        Log.e("",""+notification.toString());
+                        offline_notification.add(notification);
+                        dbHandler.updateNotifications(offline_notification);
+                        Utils.alertMessage(SendNotification.this,"Send Notification Successfully.!");
+                         }
+
                 }
-            }else if(v == recipients){
+            }
+            else if(v == recipients){
                 showUserSelectionDropdown();
             }else if(v == upload){
                 fileUtils.showChooserDialog(false);
@@ -163,7 +197,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     };
 
     private void loadNotificationTypes() {
-        if (Utils.isNetworkAvailable(SendNotification.this)) {
+       // if (Utils.isNetworkAvailable(SendNotification.this)) {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
@@ -173,13 +207,13 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
             mWebPageTask.execute();
 
-        } else {
-            Utils.alertMessage(SendNotification.this, Utils.network_error);
-        }
+        //} else {
+         //   Utils.alertMessage(SendNotification.this, Utils.network_error);
+       // }
     }
 
     private void loadRecipients() {
-        if (Utils.isNetworkAvailable(SendNotification.this)) {
+        //if (Utils.isNetworkAvailable(SendNotification.this)) {
 
             String timeStamp = Utils.getSharedPrefs(SendNotification.this, HomeActivity.user.getId() + getResources().getString(R.string.activeUsersTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
@@ -196,14 +230,14 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
             mWebPageTask.execute();
 
-        } else {
-            Utils.alertMessage(SendNotification.this, Utils.network_error);
-        }
+       // } else {
+           // Utils.alertMessage(SendNotification.this, Utils.network_error);
+        //}
     }
 
     @Override
     public void processFinish(String output, String methodName) {
-        TimeEmDbHandler dbHandler = new TimeEmDbHandler(SendNotification.this);
+
 
         if (methodName.equals(Utils.getActiveUserList)) {
             userList = parser.parseActiveUsers(output);
@@ -212,7 +246,9 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             userList = dbHandler.getActiveUsers();
         }else if (methodName.equals(Utils.getNotificationType)) {
             notificationTypes = parser.parseNotificationType(output);
+            dbHandler.updateNotificationType(notificationTypes);//update data for notification type
 
+            notificationTypes=dbHandler.getNotificationTypeData();
             adapter = new SpinnerTypeAdapter(SendNotification.this,
                     R.layout.spinner_row_layout, notificationTypes);
             spnNotificationType.setAdapter(adapter); // Set the custom adapter to the spinner
@@ -262,5 +298,14 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             else if (requestCode == FileUtils.REQUEST_CAMERA)
                 fileUtils.onCaptureImageResult(data, uploadedImage);
         }
+    }
+
+    private String getCurrentDate()
+    {
+        long date = System.currentTimeMillis();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        String dateString = sdf.format(date);
+        return dateString;
     }
 }

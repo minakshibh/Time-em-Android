@@ -163,7 +163,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
 
     private void getTaskList(String createdDate) {
 
-        if (Utils.isNetworkAvailable(TaskListActivity.this)) {
+       //if (Utils.isNetworkAvailable(TaskListActivity.this)) {
 
             String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId+"-"+selectedDate+"-" + getResources().getString(R.string.taskTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
@@ -183,9 +183,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
             mWebPageTask.execute();
 
-        } else {
-            Utils.alertMessage(TaskListActivity.this, Utils.network_error);
-        }
+       // } else {
+        //    Utils.alertMessage(TaskListActivity.this, Utils.network_error);
+    //    }
     }
 
     private void deleteTask(int taskEntryId) {

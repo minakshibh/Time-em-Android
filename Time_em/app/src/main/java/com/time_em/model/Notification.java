@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 public class Notification  implements Parcelable{
 
-    int notificationId, senderId;
-    String notificationType, attachmentPath, subject, message, createdDate, senderFullName;
+    int notificationId, senderId,UserId;
+    String notificationType, attachmentPath, subject, message, createdDate, senderFullName,TimeZone,IsOffline;
 
     public Notification(){
 
@@ -20,6 +20,9 @@ public class Notification  implements Parcelable{
         message = in.readString();
         createdDate = in.readString();
         senderFullName = in.readString();
+        TimeZone = in.readString();
+        IsOffline = in.readString();
+        UserId = in.readInt();;
     }
 
     @Override
@@ -32,6 +35,9 @@ public class Notification  implements Parcelable{
         dest.writeString(message);
         dest.writeString(createdDate);
         dest.writeString(senderFullName);
+        dest.writeString(TimeZone);
+        dest.writeString(IsOffline);
+        dest.writeInt(UserId);
     }
 
     @Override
@@ -50,6 +56,31 @@ public class Notification  implements Parcelable{
             return new Notification[size];
         }
     };
+
+    public String getTimeZone() {
+        return TimeZone;
+    }
+
+    public int getUserId() {
+        return UserId;
+    }
+
+    public void setUserId(int userId) {
+        UserId = userId;
+    }
+
+    public String getIsOffline() {
+        return IsOffline;
+
+    }
+
+    public void setIsOffline(String isOffline) {
+        IsOffline = isOffline;
+    }
+
+    public void setTimeZone(String timeZone) {
+        TimeZone = timeZone;
+    }
 
     public int getNotificationId() {
         return notificationId;

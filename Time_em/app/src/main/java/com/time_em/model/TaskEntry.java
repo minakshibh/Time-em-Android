@@ -6,7 +6,7 @@ import android.os.Parcelable;
 public class TaskEntry implements Parcelable {
 
     private int id, activityId, taskId, userId;
-    private String taskName, comments, startTime, createdDate, endTime, selectedDate, token, attachmentImageFile;
+    private String taskName, comments, startTime, createdDate, endTime, selectedDate, token, attachmentImageFile,Isoffline;
     private Double timeSpent, signedInHours,signedOutHours;
     private Boolean isActive = true;
 
@@ -138,6 +138,13 @@ public class TaskEntry implements Parcelable {
         this.isActive = isActive;
     }
 
+    public String getIsoffline() {
+        return Isoffline;
+    }
+
+    public void setIsoffline(String isoffline) {
+        Isoffline = isoffline;
+    }
 
     public TaskEntry() {
 
@@ -160,6 +167,7 @@ public class TaskEntry implements Parcelable {
         signedOutHours = source.readDouble();
         attachmentImageFile = source.readString();
         isActive = source.readByte() != 0;
+        Isoffline = source.readString();
     }
 
     public static final Parcelable.Creator<TaskEntry> CREATOR
@@ -194,9 +202,15 @@ public class TaskEntry implements Parcelable {
         dest.writeString(selectedDate);
         dest.writeString(token);
         dest.writeDouble(timeSpent);
-        dest.writeDouble(signedInHours);
-        dest.writeDouble(signedOutHours);
+        try {
+            dest.writeDouble(signedInHours);
+            dest.writeDouble(signedOutHours);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         dest.writeString(attachmentImageFile);
         dest.writeByte((byte) (isActive ? 1 : 0));
+        dest.writeString(Isoffline);
     }
 }

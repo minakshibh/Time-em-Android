@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -21,12 +22,15 @@ import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.barcode.NFCReadActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.model.Notification;
 import com.time_em.notifications.NotificationListActivity;
 import com.time_em.notifications.SendNotification;
 import com.time_em.profile.MyProfileActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
+
+import java.util.ArrayList;
 
 
 public class BaseActivity extends Activity{
@@ -38,10 +42,11 @@ public class BaseActivity extends Activity{
 	public AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.2F);
 	public RelativeLayout contentFrame, profile, sync, scanBarcode, nfcTapping, logout;
 	public RelativeLayout slider;
-	public LinearLayout myTasks, myTeam, notifications,settings;
+	public LinearLayout myTasks, myTeam, lay_notifications,settings;
 	private Resources resources;
 	public ImageView menuUserStatus;
-	
+	private String selectedNotificationType;
+	private ArrayList<Notification> notifications=new ArrayList<>();
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -69,7 +74,7 @@ public class BaseActivity extends Activity{
 		
 		myTasks = (LinearLayout) findViewById(R.id.myTasks);
 		myTeam = (LinearLayout) findViewById(R.id.myTeam);
-		notifications = (LinearLayout) findViewById(R.id.notifications);
+		lay_notifications = (LinearLayout) findViewById(R.id.notifications);
 		settings = (LinearLayout) findViewById(R.id.settings);
 		resources = BaseActivity.this.getResources();
 		menuUserStatus = (ImageView) findViewById(R.id.menuUserStatus);
@@ -84,7 +89,7 @@ public class BaseActivity extends Activity{
 		logout.setOnClickListener(drawerListener);
 		myTasks.setOnClickListener(drawerListener);
 		myTeam.setOnClickListener(drawerListener);
-		notifications.setOnClickListener(drawerListener);
+		lay_notifications.setOnClickListener(drawerListener);
 		settings.setOnClickListener(drawerListener);
 	}
 	
@@ -102,6 +107,7 @@ public class BaseActivity extends Activity{
 			}else if(v == sync){
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
+					syncUploadData();
 				}
 			}else if(v == scanBarcode){
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
@@ -153,7 +159,7 @@ public class BaseActivity extends Activity{
 				setSelection(false, true, false, false);
 				Intent intent = new Intent(BaseActivity.this, UserListActivity.class);
 				startActivity(intent);
-			} else if (v == notifications) {
+			} else if (v == lay_notifications) {
 				setSelection(false, false, true, false);
 				Intent intent = new Intent(BaseActivity.this, NotificationListActivity.class);
 				startActivity(intent);
@@ -163,11 +169,39 @@ public class BaseActivity extends Activity{
 
 		}
 	};
-	
+
+	private void syncUploadData() {
+		TimeEmDbHandler dbHandler = new TimeEmDbHandler(BaseActivity.this);
+		//selectedNotificationType = "Message";
+		//selectedNotificationType="Notice";
+		//selectedNotificationType = "File";
+		 ArrayList<Notification> All_notifications=new ArrayList<>();
+		All_notifications.clear();
+		All_notifications.addAll(dbHandler.getNotificationsByType("Message"));
+		All_notifications.addAll(dbHandler.getNotificationsByType("Notice"));
+		All_notifications.addAll(dbHandler.getNotificationsByType("File"));
+	if(All_notifications!=null && All_notifications.size()>0) {
+		for (int i = 0; i < All_notifications.size(); i++) {
+			String offline=null;
+			 offline=All_notifications.get(i).getIsOffline();
+			if(offline!=null && !offline.equalsIgnoreCase("null")){
+			if (All_notifications.get(i).getIsOffline().equalsIgnoreCase("true")) {
+				notifications.add(All_notifications.get(i));
+			}
+
+			}
+		}
+
+		//delete offline values
+		dbHandler.deleteNotificationOffline("true");
+	}
+		Log.e("noti size",""+notifications.size());
+	}
+
 	public void setSelection(Boolean isTaskSelected, Boolean isTeamSelected, Boolean isNotificationSelected, Boolean isSettingsSelected){
 		myTasks.setBackgroundColor(getColor(isTaskSelected));
 		myTeam.setBackgroundColor(getColor(isTeamSelected));
-		notifications.setBackgroundColor(getColor(isNotificationSelected));
+		lay_notifications.setBackgroundColor(getColor(isNotificationSelected));
 		settings.setBackgroundColor(getColor(isSettingsSelected));
 	}
 

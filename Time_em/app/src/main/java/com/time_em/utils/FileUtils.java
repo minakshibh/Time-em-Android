@@ -99,6 +99,7 @@ public class FileUtils {
                 photoFile = createImageFile(false);
             } catch (IOException ex) {
                 // Error occurred while creating the File
+                ex.printStackTrace();
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -129,11 +130,12 @@ public class FileUtils {
     }
     private File createImageFile(boolean video) throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "PNG_" + timeStamp + "_";
-        String videoFileName = "VID_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
+       // String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        long timeStamp=System.currentTimeMillis();
+
+        String imageFileName = "IMG_" + ""+timeStamp + "_";
+        String videoFileName = "VID_" + ""+timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File file;
         if(video)
         {

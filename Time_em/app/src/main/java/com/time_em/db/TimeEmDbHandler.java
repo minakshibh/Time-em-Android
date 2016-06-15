@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.time_em.model.Notification;
+import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.team.UserListActivity.TeamAdapter;
@@ -31,7 +32,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_TEAM = "Team";
 	private String TABLE_ACTIVE_USERS = "ActiveUsers";
 	private String TABLE_NOTIFICATIONS = "Notifications";
-
+	private String TABLE_NOTIFICATIONS_TYPE = "NotificationsType";
 	// fields for task table
 	private String Id = "Id";
 	private String ActivityId = "ActivityId";
@@ -89,7 +90,12 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String Msg = "Msg";
 //	private String CreatedDate = "CreatedDate";
 	private String SenderFullName = "SenderFullName";
+	private String TimeZone = "TimeZone";
+	private String IsOffline = "IsOffline";
 
+	// fields for message type table
+	private String MessageId = "MessageId";
+	private String MessageType = "MessageType";
 	SQLiteCursor cursor;
 
 	/**
@@ -117,7 +123,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ " TEXT," + UserId + " TEXT," + TaskName + " TEXT," + Comments
 				+ " TEXT," + StartTime + " TEXT," + CreatedDate + " TEXT,"
 				+ EndTime + " TEXT," + SelectedDate + " TEXT," + Token
-				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachmentImageFile + " TEXT," + TaskDate + " TEXT)";
+				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachmentImageFile + " TEXT," + TaskDate + " TEXT," + IsOffline + " TEXT)";
 
 
 		String CREATE_USER_TABLE = "CREATE TABLE if NOT Exists " + TABLE_TEAM
@@ -140,12 +146,17 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		String CREATE_NOTIFICATION_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS
 				+ "(" + NotificationId + " TEXT," + SenderId + " TEXT," + NotificationType + " TEXT,"
 				+ AttachmentPath + " TEXT," + Subject + " TEXT," + Msg + " TEXT," + CreatedDate + " TEXT,"
-				+ SenderFullName + " TEXT)";
+				+ SenderFullName + " TEXT,"+ TimeZone + " TEXT," + IsOffline + " TEXT," + UserId + " TEXT)";
+
+
+		String CREATE_NOTIFICATION_TYPE_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS_TYPE
+				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
 
 		db.execSQL(CREATE_TASK_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
 		db.execSQL(CREATE_ACTIVE_USERS_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TABLE);
+		db.execSQL(CREATE_NOTIFICATION_TYPE_TABLE);
 	}
 
 	@Override
@@ -176,6 +187,11 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	public void deleteSync() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_NOTIFICATIONS_TYPE, null, null);
+		db.close();
+	}
 	public void updateActiveUsers(ArrayList<User> activeUsers) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < activeUsers.size(); i++) {
@@ -212,8 +228,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			try {
 				ContentValues values = new ContentValues();
 				values.put(Id, String.valueOf(taskEntry.getId()));
-				values.put(ActivityId,
-						String.valueOf(taskEntry.getActivityId()));
+				values.put(ActivityId,String.valueOf(taskEntry.getActivityId()));
 				values.put(TaskId, String.valueOf(taskEntry.getTaskId()));
 				values.put(UserId, String.valueOf(taskEntry.getUserId()));
 				values.put(TaskName, taskEntry.getTaskName());
@@ -225,10 +240,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(Token, taskEntry.getToken());
 				values.put(AttachmentImageFile, taskEntry.getAttachmentImageFile());
 				values.put(TimeSpent, String.valueOf(taskEntry.getTimeSpent()));
-				values.put(SignedInHours,
-						String.valueOf(taskEntry.getSignedInHours()));
-				values.put(TaskDate,
-						taskDate);
+				values.put(SignedInHours,String.valueOf(taskEntry.getSignedInHours()));
+				values.put(TaskDate,taskDate);
+				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if (cursor.moveToFirst()) {
 					// updating row
@@ -263,6 +277,12 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(Msg, notification.getMessage());
 				values.put(CreatedDate, notification.getCreatedDate());
 				values.put(SenderFullName, notification.getSenderFullName());
+
+				values.put(TimeZone, notification.getTimeZone());
+				values.put(IsOffline, notification.getIsOffline());
+
+				values.put(UserId, notification.getUserId());
+
 
 				db.insert(TABLE_NOTIFICATIONS, null, values);
 			} catch (Exception e) {
@@ -303,6 +323,13 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 					notification.setSenderFullName(cursor.getString(cursor
 							.getColumnIndex(SenderFullName)));
 
+					notification.setTimeZone(cursor.getString(cursor
+							.getColumnIndex(TimeZone)));
+					notification.setIsOffline(cursor.getString(cursor
+							.getColumnIndex(IsOffline)));
+					notification.setUserId(cursor.getInt(cursor
+							.getColumnIndex(UserId)));
+
 					notifications.add(notification);
 				} while (cursor.moveToNext());
 			}
@@ -329,16 +356,32 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 
-			String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS + " where "
-					+ NotificationId + "=" + notificationId;
-			try {
-				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
-				if (cursor.moveToFirst()) {
-						db.delete(TABLE_NOTIFICATIONS, NotificationId + " = ?", new String[] { String.valueOf(notificationId) });
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS + " where "
+				+ NotificationId + "=" + notificationId;
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				db.delete(TABLE_NOTIFICATIONS, NotificationId + " = ?", new String[] { String.valueOf(notificationId) });
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		db.close();
+	}
+	public void deleteNotificationOffline(String offline) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+
+		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS + " where "
+				+ IsOffline + "= "+"'"+offline+"'";
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				db.delete(TABLE_NOTIFICATIONS, NotificationId + " = ?", new String[] { String.valueOf(offline) });
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		db.close();
 	}
 
@@ -718,4 +761,64 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	public void updateNotificationType(ArrayList<SpinnerData> messages) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < messages.size(); i++) {
+			SpinnerData message = messages.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS_TYPE + " where "
+					+ MessageId + "=" + message.getId();
+			try {
+				ContentValues values = new ContentValues();
+
+				values.put(MessageId, String.valueOf(message.getId()));
+				values.put(MessageType, message.getName());
+
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+					db.update(TABLE_NOTIFICATIONS_TYPE, values, MessageId + " = ?",new String[] { String.valueOf(message.getId()) });
+				} else {
+					db.insert(TABLE_NOTIFICATIONS_TYPE, null, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
+	public ArrayList<SpinnerData> getNotificationTypeData() {
+		ArrayList<SpinnerData> types = new ArrayList<SpinnerData>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS_TYPE;
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					SpinnerData type = new SpinnerData();
+
+					type.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(MessageId))));
+					type.setName(cursor.getString(cursor.getColumnIndex(MessageType)));
+					types.add(type);
+
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return types;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return types;
+		}
+	}
 }
