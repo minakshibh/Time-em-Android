@@ -118,7 +118,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             @Override
             public void onClick(View v) {
                 intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
-                intent.putExtra("selectedDate", selectedDate);
+                intent.putExtra("selectDate", selectedDate);
                 intent.putExtra("UserId", HomeActivity.user.getId());
                 startActivity(intent);
             }
@@ -272,7 +272,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
                 @Override
                 public void onClick(View v) {
                     intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
-                    intent.putExtra("selectedDate", selectedDate);
+                    intent.putExtra("selectDate", selectedDate);
                     intent.putExtra("taskEntry", selectedTask);
                     startActivity(intent);
                 }
@@ -300,7 +300,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         if(methodName.equals(Utils.getTaskListAPI)) {
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
-            dbHandler.updateTask(taskEntries, selectedDate);
+            dbHandler.updateTask(taskEntries, selectedDate,false);
 
             tasks = dbHandler.getTaskEnteries(UserId, selectedDate);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));

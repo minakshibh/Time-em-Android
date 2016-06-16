@@ -82,9 +82,9 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
         mUser= HomeActivity.user;
         edt_Name.setText(mUser.getFullName());
         txtName.setText(mUser.getLastName());
-        edt_Email.setText(mUser.getLastName());
+        edt_Email.setText(mUser.getEmail());
       //  edt_pass.setText(mUser.getLastName());
-        edt_Phone.setText(mUser.getLastName());
+        edt_Phone.setText(mUser.getPhoneNumber());
         Image_path="";
         int loader = R.drawable.user_profile;
         ImageLoader imgLoader = new ImageLoader(getApplicationContext());

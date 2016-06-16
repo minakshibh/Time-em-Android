@@ -33,6 +33,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_ACTIVE_USERS = "ActiveUsers";
 	private String TABLE_NOTIFICATIONS = "Notifications";
 	private String TABLE_NOTIFICATIONS_TYPE = "NotificationsType";
+	private String TABLE_PROJECT_TASK = "ProjectTask";
 	// fields for task table
 	private String Id = "Id";
 	private String ActivityId = "ActivityId";
@@ -152,11 +153,14 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		String CREATE_NOTIFICATION_TYPE_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS_TYPE
 				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
 
+		String CREATE_PROJECT_TASKS = "CREATE TABLE if NOT Exists " + TABLE_PROJECT_TASK
+				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
 		db.execSQL(CREATE_TASK_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
 		db.execSQL(CREATE_ACTIVE_USERS_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TYPE_TABLE);
+		db.execSQL(CREATE_PROJECT_TASKS);
 	}
 
 	@Override
@@ -217,7 +221,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public void updateTask(ArrayList<TaskEntry> taskList, String taskDate) {
+	public void updateTask(ArrayList<TaskEntry> taskList, String taskDate,boolean insert) {
 		// Fetch only records with selected Date
 
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -244,15 +248,21 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(TaskDate,taskDate);
 				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
-				if (cursor.moveToFirst()) {
-					// updating row
-					if(!taskEntry.getIsActive())
-						db.delete(TABLE_TASK, Id + " = ?",new String[] { String.valueOf(taskEntry.getId()) });
-					else
-						db.update(TABLE_TASK, values, Id + " = ?",new String[] { String.valueOf(taskEntry.getId()) });
-				} else {
-					if(taskEntry.getIsActive())
-						db.insert(TABLE_TASK, null, values);
+				if(insert)
+				{
+					db.insert(TABLE_TASK, null, values);
+					}
+				else {
+					if (cursor.moveToFirst()) {
+						// updating row
+						if (!taskEntry.getIsActive())
+							db.delete(TABLE_TASK, Id + " = ?", new String[]{String.valueOf(taskEntry.getId())});
+						else
+							db.update(TABLE_TASK, values, Id + " = ?", new String[]{String.valueOf(taskEntry.getId())});
+					} else {
+						if (taskEntry.getIsActive())
+							db.insert(TABLE_TASK, null, values);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -526,16 +536,17 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 							.getColumnIndex(CreatedDate)));
 					taskEntry.setEndTime(cursor.getString(cursor
 							.getColumnIndex(EndTime)));
-					taskEntry.setSelectedDate(cursor.getString(cursor
-							.getColumnIndex(SelectedDate)));
-					taskEntry.setToken(cursor.getString(cursor
-							.getColumnIndex(Token)));
-					taskEntry.setAttachmentImageFile(cursor.getString(cursor
-							.getColumnIndex(AttachmentImageFile)));
-					taskEntry.setTimeSpent(Double.valueOf(cursor
-							.getString(cursor.getColumnIndex(TimeSpent))));
-					taskEntry.setSignedInHours(Double.valueOf(cursor
-							.getString(cursor.getColumnIndex(SignedInHours))));
+					taskEntry.setSelectedDate(cursor.getString(cursor.getColumnIndex(SelectedDate)));
+					taskEntry.setToken(cursor.getString(cursor.getColumnIndex(Token)));
+					taskEntry.setAttachmentImageFile(cursor.getString(cursor.getColumnIndex(AttachmentImageFile)));
+					String str_TimeSpent=cursor.getString(cursor.getColumnIndex(TimeSpent));
+					if(str_TimeSpent!=null && !str_TimeSpent.equalsIgnoreCase("null")) {
+						taskEntry.setTimeSpent(Double.valueOf(str_TimeSpent));
+					}
+					String str_SignedIn=cursor.getString(cursor.getColumnIndex(SignedInHours));
+					if(str_SignedIn!=null && !str_SignedIn.equalsIgnoreCase("null")) {
+						taskEntry.setSignedInHours(Double.valueOf(str_SignedIn));
+					}
 
 					taskEntryList.add(taskEntry);
 				} while (cursor.moveToNext());
@@ -789,6 +800,68 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		ArrayList<SpinnerData> types = new ArrayList<SpinnerData>();
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS_TYPE;
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					SpinnerData type = new SpinnerData();
+
+					type.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(MessageId))));
+					type.setName(cursor.getString(cursor.getColumnIndex(MessageType)));
+					types.add(type);
+
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return types;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return types;
+		}
+	}
+
+
+	public void updateProjectTasks(ArrayList<SpinnerData> messages) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < messages.size(); i++) {
+			SpinnerData message = messages.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_PROJECT_TASK + " where "
+					+ MessageId + "=" + message.getId();
+			try {
+				ContentValues values = new ContentValues();
+
+				values.put(MessageId, String.valueOf(message.getId()));
+				values.put(MessageType, message.getName());
+
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+					db.update(TABLE_PROJECT_TASK, values, MessageId + " = ?",new String[] { String.valueOf(message.getId()) });
+				} else {
+					db.insert(TABLE_PROJECT_TASK, null, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
+	public ArrayList<SpinnerData> getProjectTasksData() {
+		ArrayList<SpinnerData> types = new ArrayList<SpinnerData>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_PROJECT_TASK;
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {

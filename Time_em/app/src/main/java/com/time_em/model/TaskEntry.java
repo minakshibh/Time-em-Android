@@ -183,8 +183,22 @@ public class TaskEntry implements Parcelable {
         }
     };
 
+    public static Creator<TaskEntry> getCREATOR() {
+        return CREATOR;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     @Override
     public int describeContents() {
+
         // TODO Auto-generated method stub
         return this.hashCode();
     }

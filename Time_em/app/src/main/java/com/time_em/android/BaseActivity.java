@@ -16,7 +16,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import com.time_em.authentication.LoginActivity;
 import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.barcode.NFCReadActivity;

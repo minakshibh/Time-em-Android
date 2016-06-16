@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -65,7 +66,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         parser = new Time_emJsonParser(AddEditTaskEntry.this);
         fileUtils = new FileUtils(AddEditTaskEntry.this);
         dbHandler = new TimeEmDbHandler(AddEditTaskEntry.this);
-        selectedDate = getIntent().getStringExtra("selectedDate");
 
         txtProjectSelection = (TextView) findViewById(R.id.notificationTxt);
         txtCommentsHeader = (TextView) findViewById(R.id.SubjectTxt);
@@ -84,7 +84,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         rightNavigation = (ImageView)findViewById(R.id.AddButton);
         rightNavigation.setVisibility(View.GONE);
         dateHeader = (TextView)findViewById(R.id.dateHeader);
-
+        try{
+        selectedDate = getIntent().getStringExtra("selectDate");
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
         taskEntry = getIntent().getParcelableExtra("taskEntry");
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
@@ -93,6 +98,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         comments.setHint("Your comments goes here");
         txtHoursHeader.setText("Specify no. of hours");
         hours.setHint("No. of hours");
+        hours.setInputType(InputType.TYPE_CLASS_NUMBER);
         hoursIcon.setImageResource(R.drawable.user_icon);
         recipientSection.setVisibility(View.GONE);
         addUpdateTask.setText("Add Task Entry");
@@ -140,68 +146,79 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             if(v == back){
                 finish();
             }else if(v == uploadAttachment){
                 fileUtils.showChooserDialog(true);
             }else if(v == addUpdateTask){
+
+
                 if(comments.getText().toString().trim().equals("") || hours.getText().toString().trim().equals("")
                         || selectedSpinnerData == null){
                     Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
-                }else {
-                    ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
+                }
+              else {
+
+                      int intHours=Integer.parseInt(hours.getText().toString().trim());
+                    if(intHours<=24) {
+                        ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
                    /* ["ActivityId": "29644", "CreatedDate": "06-10-2016", "UserId": "8049", "TaskId": "16168", "ID": "0",
                             "TaskName": "Test Task May 3", "TimeSpent": "10", "Comments": "Test Parv 10 June"]*/
-                    if(fileUtils.getAttachmentPath() !=null)
-
-                        if(fileUtils.getAttachmentPath().contains(".3gp"))
+                        if (fileUtils.getAttachmentPath() != null)
                         {
-                     dataModels.add(new MultipartDataModel("profile_video", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
-                        }else {
-                     dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
-                      }
-                    dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("Comments", comments.getText().toString(), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("TaskId", String.valueOf(selectedSpinnerData.getId()), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("TaskName", String.valueOf(selectedSpinnerData.getName()), MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("CreatedDate", selectedDate, MultipartDataModel.STRING_TYPE));
-                    dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));
-
-                    if(Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
-                        fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
-                    }else
-                    {
-                        TaskEntry task = new TaskEntry();
-                        task.setId(Integer.parseInt(taskEntryId));
-                        task.setActivityId(HomeActivity.user.getActivityId());
-                        task.setTaskId(selectedSpinnerData.getId());
-                        task.setUserId(HomeActivity.user.getId());
-                        task.setTaskName(selectedSpinnerData.getName());
-                        task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
-                        task.setComments(comments.getText().toString());
-                       // task.setSignedInHours(taskObject.getDouble("SignedInHours"));
-                       // task.setStartTime(taskObject.getString("StartTime"));
-                        task.setCreatedDate(selectedDate);
-                       // task.setEndTime(taskObject.getString("EndTime"));
-                        task.setSelectedDate(selectedDate);
-                        //task.setToken(taskObject.getString("Token"));
-                        task.setIsActive(false);
-                        task.setAttachmentImageFile(fileUtils.getAttachmentPath());
-                        task.setIsoffline("true");
-                        taskEntries.add(task);
-
-                        dbHandler.updateTask(taskEntries, selectedDate);
-                        Utils.alertMessage(AddEditTaskEntry.this,"Task Add Successfully.!");
+                            if (fileUtils.getAttachmentPath().contains(".3gp")) {
+                                dataModels.add(new MultipartDataModel("profile_video", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                            } else {
+                                dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                            }
                         }
+                        dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
+                        dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
+                        dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
+                        dataModels.add(new MultipartDataModel("Comments", comments.getText().toString(), MultipartDataModel.STRING_TYPE));
+                        dataModels.add(new MultipartDataModel("TaskId", String.valueOf(selectedSpinnerData.getId()), MultipartDataModel.STRING_TYPE));
+                        dataModels.add(new MultipartDataModel("TaskName", String.valueOf(selectedSpinnerData.getName()), MultipartDataModel.STRING_TYPE));
+                        dataModels.add(new MultipartDataModel("CreatedDate", selectedDate, MultipartDataModel.STRING_TYPE));
+                        dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));
+
+                        if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
+                            fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
+                        } else {
+                            TaskEntry task = new TaskEntry();
+                            if (fileUtils.getAttachmentPath() != null)
+                            task.setAttachmentImageFile(fileUtils.getAttachmentPath());
+                            task.setId(Integer.parseInt(taskEntryId));
+                            task.setActivityId(HomeActivity.user.getActivityId());
+                            task.setTaskId(selectedSpinnerData.getId());
+                            task.setUserId(HomeActivity.user.getId());
+                            task.setTaskName(selectedSpinnerData.getName());
+                            task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
+                            task.setComments(comments.getText().toString());
+                            // task.setSignedInHours(taskObject.getDouble("SignedInHours"));
+                            // task.setStartTime(taskObject.getString("StartTime"));
+                            task.setCreatedDate(selectedDate);
+                            // task.setEndTime(taskObject.getString("EndTime"));
+                            task.setSelectedDate(selectedDate);
+                            //task.setToken(taskObject.getString("Token"));
+                            task.setIsActive(true);
+                            task.setAttachmentImageFile(fileUtils.getAttachmentPath());
+                            task.setIsoffline("true");
+                            taskEntries.add(task);
+
+                            dbHandler.updateTask(taskEntries, selectedDate,true);
+                            Utils.alertMessage(AddEditTaskEntry.this, "Task Add Successfully.!");
+                        }
+                    }else{
+                        Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 24");
+                    }
                 }
             }
         }
     };
 
     private void loadProjects() {
-        if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
+       // if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
@@ -213,15 +230,19 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
             mWebPageTask.delegate = (AsyncResponseTimeEm) AddEditTaskEntry.this;
             mWebPageTask.execute();
 
-        } else {
-            Utils.alertMessage(AddEditTaskEntry.this, Utils.network_error);
-        }
+       // } else {
+     //       Utils.alertMessage(AddEditTaskEntry.this, Utils.network_error);
+      //  }
     }
 
     @Override
     public void processFinish(String output, String methodName) {
         if(methodName.equals(Utils.GetAssignedTaskList)){
             assignedTasks = parser.parseAssignedProjects(output);
+
+            dbHandler.updateProjectTasks(assignedTasks);//update data for notification type
+
+            assignedTasks=dbHandler.getProjectTasksData();
 
             adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this,
                     R.layout.spinner_row_layout, assignedTasks);
