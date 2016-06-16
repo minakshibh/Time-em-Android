@@ -163,11 +163,13 @@ public class TaskEntry implements Parcelable {
         selectedDate = source.readString();
         token = source.readString();
         timeSpent = source.readDouble();
-        signedInHours = source.readDouble();
-        signedOutHours = source.readDouble();
         attachmentImageFile = source.readString();
         isActive = source.readByte() != 0;
         Isoffline = source.readString();
+
+        signedInHours = source.readDouble();
+        signedOutHours = source.readDouble();
+
     }
 
     public static final Parcelable.Creator<TaskEntry> CREATOR
@@ -202,15 +204,16 @@ public class TaskEntry implements Parcelable {
         dest.writeString(selectedDate);
         dest.writeString(token);
         dest.writeDouble(timeSpent);
-        try {
+        dest.writeString(attachmentImageFile);
+        dest.writeByte((byte) (isActive ? 1 : 0));
+        dest.writeString(Isoffline);
+       try {
             dest.writeDouble(signedInHours);
             dest.writeDouble(signedOutHours);
         }catch (Exception e)
         {
             e.printStackTrace();
         }
-        dest.writeString(attachmentImageFile);
-        dest.writeByte((byte) (isActive ? 1 : 0));
-        dest.writeString(Isoffline);
+
     }
 }
