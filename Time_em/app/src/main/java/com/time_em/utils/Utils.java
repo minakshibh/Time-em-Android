@@ -87,6 +87,7 @@ public class Utils {
     static public String GetAssignedTaskList = "/Task/GetAssignedTaskIList";
     static public String UserTaskGraph = "/usertask/UserTaskGraph";
     static public String UsersGraph = "/usertask/UsersGraph";
+    static public String Sync = "/UserActivity/Sync";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 

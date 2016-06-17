@@ -116,10 +116,8 @@
             android:name="com.time_em.barcode.NFCReadActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <data android:mimeType="vnd.secret/agent.man" />
-
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+               <data android:mimeType="vnd.secret/agent.man" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

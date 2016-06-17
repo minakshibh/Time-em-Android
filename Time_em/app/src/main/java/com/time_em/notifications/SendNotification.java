@@ -143,10 +143,17 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         @Override
         public void onClick(View v) {
             if(v== sendNotification){
+               Log.e("selectedNotiId",""+selectedNotificationTypeId);
                 if(subject.getText().toString().trim().equals("") || message.getText().toString().trim().equals("")
                         || selectedNotificationTypeId.equals("") || selectedIds.equals("")){
                     Utils.showToast(SendNotification.this, "Please specify required information");
-                }else {
+                }
+                else if(selectedNotificationTypeId.equals("0"))
+                {
+                    Utils.showToast(SendNotification.this, "Please select specify notification type");
+                    }
+
+                else {
                     ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
 
                     if(fileUtils.getAttachmentPath() !=null)
@@ -195,6 +202,8 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             }
         }
     };
+
+
 
     private void loadNotificationTypes() {
        // if (Utils.isNetworkAvailable(SendNotification.this)) {

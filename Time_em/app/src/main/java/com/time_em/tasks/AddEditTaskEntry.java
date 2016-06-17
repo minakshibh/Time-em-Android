@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -86,11 +87,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         dateHeader = (TextView)findViewById(R.id.dateHeader);
         try{
         selectedDate = getIntent().getStringExtra("selectDate");
+        taskEntry = getIntent().getParcelableExtra("taskEntry");
         }catch(Exception e)
         {
             e.printStackTrace();
         }
-        taskEntry = getIntent().getParcelableExtra("taskEntry");
+
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
         txtProjectSelection.setText("Select Project or Task");
@@ -160,13 +162,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                 }
               else {
 
-                      int intHours=Integer.parseInt(hours.getText().toString().trim());
+                      Double intHours=Double.parseDouble(hours.getText().toString().trim());
                     if(intHours<=24) {
                         ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
                    /* ["ActivityId": "29644", "CreatedDate": "06-10-2016", "UserId": "8049", "TaskId": "16168", "ID": "0",
                             "TaskName": "Test Task May 3", "TimeSpent": "10", "Comments": "Test Parv 10 June"]*/
-                        if (fileUtils.getAttachmentPath() != null)
-                        {
+                        if (fileUtils.getAttachmentPath() != null) {
                             if (fileUtils.getAttachmentPath().contains(".3gp")) {
                                 dataModels.add(new MultipartDataModel("profile_video", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
                             } else {
@@ -185,29 +186,56 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                         if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
                             fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
                         } else {
-                            TaskEntry task = new TaskEntry();
-                            if (fileUtils.getAttachmentPath() != null)
-                            task.setAttachmentImageFile(fileUtils.getAttachmentPath());
-                            task.setId(Integer.parseInt(taskEntryId));
-                            task.setActivityId(HomeActivity.user.getActivityId());
-                            task.setTaskId(selectedSpinnerData.getId());
-                            task.setUserId(HomeActivity.user.getId());
-                            task.setTaskName(selectedSpinnerData.getName());
-                            task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
-                            task.setComments(comments.getText().toString());
-                            // task.setSignedInHours(taskObject.getDouble("SignedInHours"));
-                            // task.setStartTime(taskObject.getString("StartTime"));
-                            task.setCreatedDate(selectedDate);
-                            // task.setEndTime(taskObject.getString("EndTime"));
-                            task.setSelectedDate(selectedDate);
-                            //task.setToken(taskObject.getString("Token"));
-                            task.setIsActive(true);
-                            task.setAttachmentImageFile(fileUtils.getAttachmentPath());
-                            task.setIsoffline("true");
-                            taskEntries.add(task);
+                            if (HomeActivity.user.isSignedIn()) {
 
-                            dbHandler.updateTask(taskEntries, selectedDate,true);
-                            Utils.alertMessage(AddEditTaskEntry.this, "Task Add Successfully.!");
+                                long timeStamp = System.currentTimeMillis();
+                                TaskEntry task = new TaskEntry();
+                                if (fileUtils.getAttachmentPath() != null)
+                                    task.setAttachmentImageFile(fileUtils.getAttachmentPath());
+                                task.setId(Integer.parseInt(taskEntryId));
+                                task.setActivityId(HomeActivity.user.getActivityId());
+                                task.setTaskId(selectedSpinnerData.getId());
+                                task.setUserId(HomeActivity.user.getId());
+                                task.setTaskName(selectedSpinnerData.getName());
+                                task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
+                                task.setComments(comments.getText().toString());
+                                task.setSignedInHours(0.0);
+                                task.setSelectedDate(selectedDate);
+                                task.setIsActive(true);
+                                task.setAttachmentImageFile(fileUtils.getAttachmentPath());
+                                task.setIsoffline("true");
+                                // task.setEndTime(taskObject.getString("EndTime"));
+                                // task.setStartTime(taskObject.getString("StartTime"));
+
+                                if (taskEntry == null) {   //for add new offline
+
+                                    // task.setStartTime(taskObject.getString("StartTime"));
+                                    Log.e("milliSecond", "" + timeStamp);
+                                    task.setCreatedDate(HomeActivity.user.getId() + "" + timeStamp);
+                                    Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
+
+                                    task.setToken("00");
+                                    taskEntries.add(task);
+                                    dbHandler.updateTask(taskEntries, selectedDate, true);
+                                    Utils.alertMessage(AddEditTaskEntry.this, "Task Add Successfully.!");
+                                } //for edit delete old offline
+                                else {
+
+
+                                    Log.e("milliSecond", "" + timeStamp);
+                                    task.setCreatedDate(taskEntry.getCreatedDate());
+                                    Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
+
+                                    task.setToken(taskEntry.getCreatedDate());
+                                    taskEntries.add(task);
+                                    dbHandler.updateDeleteOffline(taskEntries, selectedDate);
+                                    Utils.alertMessage(AddEditTaskEntry.this, "Task Updated Successfully.!");
+                                }
+
+                            }
+                        else{
+                                Utils.alertMessage(AddEditTaskEntry.this, "User is sign out, Please sign in first");
+                        }
                         }
                     }else{
                         Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 24");

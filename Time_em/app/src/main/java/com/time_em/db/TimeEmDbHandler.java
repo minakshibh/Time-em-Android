@@ -270,7 +270,52 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
+	public void updateDeleteOffline(ArrayList<TaskEntry> taskList, String taskDate) {
+		// Fetch only records with selected Date
 
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < taskList.size(); i++) {
+			TaskEntry taskEntry = taskList.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
+					+ CreatedDate + "=\"" + taskEntry.getCreatedDate()+"\"";
+			try {
+				ContentValues values = new ContentValues();
+				values.put(Id, String.valueOf(taskEntry.getId()));
+				values.put(ActivityId,String.valueOf(taskEntry.getActivityId()));
+				values.put(TaskId, String.valueOf(taskEntry.getTaskId()));
+				values.put(UserId, String.valueOf(taskEntry.getUserId()));
+				values.put(TaskName, taskEntry.getTaskName());
+				values.put(Comments, taskEntry.getComments());
+				values.put(StartTime, taskEntry.getStartTime());
+				values.put(CreatedDate, taskEntry.getCreatedDate());
+				values.put(EndTime, taskEntry.getEndTime());
+				values.put(SelectedDate, taskEntry.getSelectedDate());
+				values.put(Token, taskEntry.getToken());
+				values.put(AttachmentImageFile, taskEntry.getAttachmentImageFile());
+				values.put(TimeSpent, String.valueOf(taskEntry.getTimeSpent()));
+				values.put(SignedInHours,String.valueOf(taskEntry.getSignedInHours()));
+				values.put(TaskDate,taskDate);
+				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+
+				if (cursor.moveToFirst()) {
+					// updating row
+					if (!taskEntry.getIsActive())
+						db.delete(TABLE_TASK, CreatedDate + " = ?", new String[]{taskEntry.getCreatedDate()});
+					else
+						db.update(TABLE_TASK, values, CreatedDate + " = ?", new String[]{taskEntry.getCreatedDate()});
+				}
+				/*else {
+					if (taskEntry.getIsActive())
+						db.insert(TABLE_TASK, null, values);
+				}*/
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
 	public void updateNotifications(ArrayList<Notification> notificationList) {
 
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -302,12 +347,18 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public ArrayList<Notification> getNotificationsByType(String notificationType) {
+	public ArrayList<Notification> getNotificationsByType(String notificationType,boolean all) {
 		ArrayList<Notification> notifications = new ArrayList<Notification>();
-		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS
-				+ " where "
-				+ NotificationType + "=\"" + notificationType+"\"";
-
+		String selectQuery=null;
+		if(all){
+			selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS+ " where "
+					+ IsOffline + "=\"" + notificationType + "\"";
+		}
+		else {
+			 selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS
+					+ " where "
+					+ NotificationType + "=\"" + notificationType + "\"";
+		}
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
@@ -505,12 +556,18 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 	}
 
-	public ArrayList<TaskEntry> getTaskEnteries(int userId, String date) {
+	public ArrayList<TaskEntry> getTaskEnteries(int userId, String date,boolean all) {
 		ArrayList<TaskEntry> taskEntryList = new ArrayList<TaskEntry>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
-				+ UserId + "=" + userId +" AND "+ TaskDate + "=\"" + date+"\"";
-
+		String selectQuery=null;
+		if(all){
+			selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
+					+ UserId + "=" + userId + " AND " + IsOffline + "=\"" + date + "\"";
+		}
+		else {
+			 selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
+					+ UserId + "=" + userId + " AND " + TaskDate + "=\"" + date + "\"";
+		}
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {

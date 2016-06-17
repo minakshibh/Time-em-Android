@@ -100,10 +100,20 @@
         android:layout_toRightOf="@+id/syncIcon"
         android:layout_centerInParent="true"
         android:paddingTop="3dp"
+        android:drawablePadding="5dp"
         android:paddingBottom="3dp"
         android:textSize="15sp"
         android:textStyle="bold"
+        android:id="@+id/txt_sync"
         />
+         <ImageView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:src="@drawable/offline"
+             android:layout_toRightOf="@+id/txt_sync"
+             android:padding="10dp"
+             android:layout_centerInParent="true"
+             android:id="@+id/imageSync"/>
     <ImageView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

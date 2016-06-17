@@ -258,6 +258,8 @@ public class Time_emJsonParser {
 			if(video!=null && !video.equalsIgnoreCase("null")) {
 				task.setAttachmentImageFile(video);
 			}
+			task.setIsoffline("false");
+			//task.setSignedOutHours(0.0);
 			taskList.add(task);
 		}
 		

@@ -132,9 +132,10 @@ public class FileUtils {
         // Create an image file name
        // String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         long timeStamp=System.currentTimeMillis();
-
+        Log.e("timeStamp",""+timeStamp);
         String imageFileName = "IMG_" + ""+timeStamp + "_";
         String videoFileName = "VID_" + ""+timeStamp + "_";
+        Log.e("imageFileName",""+imageFileName);
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File file;
         if(video)
@@ -146,15 +147,24 @@ public class FileUtils {
             );
         }else {
             file = File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".png",         /* suffix */
+                    imageFileName,  /*//* prefix */
+                    ".png",         //*//* suffix *
                     storageDir      /* directory */
+
+            /*file=new File(imageFileName, ".png");
+            if (!file.exists()) {
+                file.createNewFile();
+            }*/
+
             );
+
+            Log.e("file",""+file);
         }
 
         // Save a file: path for use with ACTION_VIEW intents
       //  attachmentPath = "file:" + file.getAbsolutePath();
         attachmentPath = "" + file.getAbsolutePath();
+        Log.e("attachmentPath",""+attachmentPath);
         return file;
     }
 

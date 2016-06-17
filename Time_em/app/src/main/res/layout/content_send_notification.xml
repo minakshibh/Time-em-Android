@@ -247,7 +247,7 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/alphabeticalTextColor"
                     android:textSize="14sp"
-                    android:text="Upload Image"/>
+                    android:text="Upload Image/Video"/>
             </LinearLayout>
             <ImageView
                 android:layout_width="wrap_content"

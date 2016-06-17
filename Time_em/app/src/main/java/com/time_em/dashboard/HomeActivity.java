@@ -36,6 +36,8 @@ import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
+import com.time_em.db.TimeEmDbHandler;
+import com.time_em.model.Notification;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
@@ -60,6 +62,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     private Context context;
     ArrayList<TaskEntry> arrayList=new ArrayList<>();
     ArrayList<TaskEntry> arrayList_SignInOut=new ArrayList<>();
+    private ArrayList<Notification> notifications=new ArrayList<>();
+    private ArrayList<TaskEntry> tasks=new ArrayList<>();
     private Time_emJsonParser parser;
     private Double  maxValueTask=0.0,maxValueSignIn=0.0,maxValueSignOut=0.0;
     private TextView currentDate;
@@ -247,6 +251,7 @@ private void getCurrentDate()
     @Override
     protected void onResume() {
         super.onResume();
+        syncDataCheck();
         if (HomeActivity.user.isSignedIn()) {
             resolver.pref().SetUserId(String.valueOf(HomeActivity.user.getId()));
             resolver.pref().SetActivityId(String.valueOf(HomeActivity.user.getActivityId()));
@@ -644,6 +649,25 @@ private void getCurrentDate()
             TaskEntry taskEntry2=Collections.max(arrayList_SignOut_sort, cmp);
             maxValueSignIn=taskEntry2.getSignedOutHours();
             Log.e("max sign out: " ,""+ maxValueSignIn);
+        }
+    }
+    private void syncDataCheck() {
+        imageSync.setImageDrawable(getResources().getDrawable(R.drawable.online));
+        TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
+        //for notification
+        notifications.clear();
+        notifications.addAll(dbHandler.getNotificationsByType("true", true));
+        Log.e("notification size", "" + notifications.size());
+        //for delete notification
+        if (notifications != null && notifications.size() > 0) {
+            imageSync.setImageDrawable(getResources().getDrawable(R.drawable.offline));
+        }
+        tasks.clear();
+        tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
+        Log.e("task size", "" + tasks.size());
+        // for delete task
+        if (notifications != null && notifications.size() > 0) {
+            imageSync.setImageDrawable(getResources().getDrawable(R.drawable.offline));
         }
     }
 }

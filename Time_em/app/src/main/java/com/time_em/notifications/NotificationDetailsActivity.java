@@ -95,11 +95,8 @@ public class NotificationDetailsActivity extends Activity {
 
         attachmentPath=mNotification.getAttachmentPath();
         Log.e("attachmentPath",""+attachmentPath);
-        if(attachmentPath==null | attachmentPath.equalsIgnoreCase("null"))
+        if(attachmentPath!=null && attachmentPath.equalsIgnoreCase("null"))
         {
-            lay_Attachment.setVisibility(View.INVISIBLE);
-        }else{
-
             if(attachmentPath.contains("http")) {
                 lay_Attachment.setVisibility(View.VISIBLE);
                 int loader = R.drawable.add;
@@ -112,6 +109,11 @@ public class NotificationDetailsActivity extends Activity {
                 Image_Attachment.setImageBitmap(bitmap);
                 }
             }
+        else
+        {
+            lay_Attachment.setVisibility(View.INVISIBLE);
+            }
+
 
     }
 

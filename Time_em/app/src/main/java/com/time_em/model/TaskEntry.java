@@ -167,8 +167,13 @@ public class TaskEntry implements Parcelable {
         isActive = source.readByte() != 0;
         Isoffline = source.readString();
 
-        signedInHours = source.readDouble();
-        signedOutHours = source.readDouble();
+        try {
+            signedInHours = source.readDouble();
+           // signedOutHours = source.readDouble();
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
@@ -223,7 +228,7 @@ public class TaskEntry implements Parcelable {
         dest.writeString(Isoffline);
        try {
             dest.writeDouble(signedInHours);
-            dest.writeDouble(signedOutHours);
+           // dest.writeDouble(signedOutHours);
         }catch (Exception e)
         {
             e.printStackTrace();

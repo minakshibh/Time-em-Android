@@ -59,7 +59,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
         initScreen();
         setUpClickListeners();
-        getNotificationList();
+       // getNotificationList();
     }
 
     private void initScreen() {
@@ -280,7 +280,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
     private void loadNotificationsByType(){
         notifications.clear();
-        notifications = dbHandler.getNotificationsByType(selectedNotificationType);
+        notifications = dbHandler.getNotificationsByType(selectedNotificationType,false);
         notificationListView.setAdapter(new NotificationAdapter());
     }
 
@@ -309,5 +309,9 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         }*/
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getNotificationList();
+    }
 }

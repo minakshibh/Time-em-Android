@@ -16,12 +16,16 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.time_em.asynctasks.AsyncResponseTimeEm;
+import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.LoginActivity;
 import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.barcode.NFCReadActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.Notification;
+import com.time_em.model.TaskEntry;
 import com.time_em.notifications.NotificationListActivity;
 import com.time_em.notifications.SendNotification;
 import com.time_em.profile.MyProfileActivity;
@@ -30,6 +34,7 @@ import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class BaseActivity extends Activity{
@@ -43,9 +48,10 @@ public class BaseActivity extends Activity{
 	public RelativeLayout slider;
 	public LinearLayout myTasks, myTeam, lay_notifications,settings;
 	private Resources resources;
-	public ImageView menuUserStatus;
-	private String selectedNotificationType;
+	public ImageView menuUserStatus,imageSync;
 	private ArrayList<Notification> notifications=new ArrayList<>();
+	private ArrayList<TaskEntry> tasks=new ArrayList<>();
+	public static ArrayList<String> deleteIds=new ArrayList<>();
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -65,7 +71,7 @@ public class BaseActivity extends Activity{
 		scanBarcode = (RelativeLayout)findViewById(R.id.scanBarcode);
 		nfcTapping = (RelativeLayout)findViewById(R.id.nfcTapping);
 		logout = (RelativeLayout)findViewById(R.id.signOut);
-		
+		imageSync=(ImageView)findViewById(R.id.imageSync);
 		flyoutDrawerRl=(RelativeLayout)findViewById(R.id.left_drawer);
 		
 		mDrawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
@@ -170,31 +176,91 @@ public class BaseActivity extends Activity{
 	};
 
 	private void syncUploadData() {
-		TimeEmDbHandler dbHandler = new TimeEmDbHandler(BaseActivity.this);
-		//selectedNotificationType = "Message";
-		//selectedNotificationType="Notice";
-		//selectedNotificationType = "File";
-		 ArrayList<Notification> All_notifications=new ArrayList<>();
-		All_notifications.clear();
-		All_notifications.addAll(dbHandler.getNotificationsByType("Message"));
-		All_notifications.addAll(dbHandler.getNotificationsByType("Notice"));
-		All_notifications.addAll(dbHandler.getNotificationsByType("File"));
-	if(All_notifications!=null && All_notifications.size()>0) {
-		for (int i = 0; i < All_notifications.size(); i++) {
-			String offline=null;
-			 offline=All_notifications.get(i).getIsOffline();
-			if(offline!=null && !offline.equalsIgnoreCase("null")){
-			if (All_notifications.get(i).getIsOffline().equalsIgnoreCase("true")) {
-				notifications.add(All_notifications.get(i));
-			}
 
-			}
+		TimeEmDbHandler dbHandler = new TimeEmDbHandler(BaseActivity.this);
+
+		//for notification
+		notifications.clear();
+		notifications.addAll(dbHandler.getNotificationsByType("true", true));
+		Log.e("notification size", "" + notifications.size());
+		//for delete notification
+		if (notifications != null && notifications.size() > 0) {
+
+			//delete offline values
+			//dbHandler.deleteNotificationOffline("true");
 		}
 
-		//delete offline values
-		dbHandler.deleteNotificationOffline("true");
+
+		//for task
+		tasks.clear();
+		tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
+		syncUploadAPI(tasks,deleteIds);
+		Log.e("task size", "" + tasks.size());
+		// for delete task
+		if (notifications != null && notifications.size() > 0) {
+
+			//delete offline values
+			//dbHandler.deleteNotificationOffline("true");
+		}
 	}
-		Log.e("noti size",""+notifications.size());
+
+	private void syncUploadAPI(ArrayList<TaskEntry> tasks,ArrayList<String> deleteIds) {
+
+
+		HashMap<String, String> parameters = new HashMap<String, String>();
+		ArrayList<HashMap<String, String>> arrayHashMap=new ArrayList<>();
+		/*"TaskActivityId": 0,
+				"CreatedDate": "06-17-2016",
+				"Comments": "Add by Sync 1",
+				"UserId": 2,
+				"TaskId": 7102,
+				"ActivityId": 28419,
+				"UniqueNumber":1,
+				"operation": "Add"*/
+		for(int i=0;i<tasks.size();i++) {
+			parameters.put("TaskActivityId", "" + tasks.get(i).getActivityId());
+			parameters.put("CreatedDate", "" + tasks.get(i).getCreatedDate());
+			parameters.put("Comments", "" + tasks.get(i).getComments());
+			parameters.put("UserId", "" + tasks.get(i).getUserId());
+			parameters.put("TaskId", "" + tasks.get(i).getTaskId());
+			parameters.put("ActivityId", "" + tasks.get(i).getActivityId());
+			parameters.put("UniqueNumber", "" + tasks.get(i).getAttachmentImageFile());
+			Log.e("getAttachmentImageFile", "" + tasks.get(i).getAttachmentImageFile());
+			if(tasks.get(i).getId()==0)
+			parameters.put("operation", "add" );
+			else
+			parameters.put("operation", "update" );
+			arrayHashMap.add(parameters);
+		}
+		for(int i=0;i<deleteIds.size();i++) {
+			parameters.put("Id", "" + deleteIds.get(i));
+			parameters.put("operation", "" + "delete");
+			arrayHashMap.add(parameters);
+		}
+
+
+
+
+
+		//Log.e("hash", "" + arrayHashMap.toString());
+
+		if (Utils.isNetworkAvailable(BaseActivity.this)) {
+			HashMap<String, String> postDataParameters = new HashMap<String, String>();
+
+			   postDataParameters.put("userTaskActivities", arrayHashMap.toString());
+				//timeemapi.azurewebsites.net/api/UserActivity/Sync
+				Log.e(Utils.Sync,postDataParameters.toString());
+				AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+						BaseActivity.this, "post", Utils.Sync,
+						postDataParameters, true, "Please wait...");
+				mWebPageTask.delegate = (AsyncResponseTimeEm) BaseActivity.this;
+				mWebPageTask.execute();
+
+			} else {
+				Utils.alertMessage(BaseActivity.this, Utils.network_error);
+			}
+
+
 	}
 
 	public void setSelection(Boolean isTaskSelected, Boolean isTeamSelected, Boolean isNotificationSelected, Boolean isSettingsSelected){

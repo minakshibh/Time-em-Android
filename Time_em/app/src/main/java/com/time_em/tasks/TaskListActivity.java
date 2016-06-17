@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.time_em.android.BaseActivity;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
@@ -52,6 +53,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
     ArrayList<Calendar> arrayList;
     private int selectedPos = 14;
     private String selectedDate;
+    TimeEmDbHandler dbHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
     }
 
     private void initScreen() {
+        dbHandler = new TimeEmDbHandler(TaskListActivity.this);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         addTaskButton = (ImageView) findViewById(R.id.AddButton);
@@ -188,27 +191,47 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
     //    }
     }
 
-    private void deleteTask(int taskEntryId) {
+    private void deleteTask(TaskEntry taskEntry) {
 
         if (Utils.isNetworkAvailable(TaskListActivity.this)) {
+
+            if(taskEntry.getId()==0) {
+              //  BaseActivity.deleteIds.add(""+taskEntry.getId());
+                taskEntry.setIsActive(false);
+                ArrayList<TaskEntry> taskEntries = new ArrayList<>();
+                taskEntries.add(taskEntry);
+                dbHandler.updateDeleteOffline(taskEntries, selectedDate);
+                getTaskList(selectedDate);
+            }
+            else{
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("Id", String.valueOf(taskEntry.getId()));
 
-            postDataParameters.put("Id", String.valueOf(taskEntryId));
-
+            Log.e(Utils.deleteTaskAPI,""+postDataParameters.toString());
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     TaskListActivity.this, "post", Utils.deleteTaskAPI,
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
             mWebPageTask.execute();
 
+            }
+
         } else {
-            Utils.alertMessage(TaskListActivity.this, Utils.network_error);
+            BaseActivity.deleteIds.add(""+taskEntry.getId());
+            taskEntry.setIsActive(false);
+            ArrayList<TaskEntry> taskEntries = new ArrayList<>();
+            taskEntries.add(taskEntry);
+            dbHandler.updateDeleteOffline(taskEntries, selectedDate);
+            getTaskList(selectedDate);
+           // Utils.alertMessage(TaskListActivity.this, "Task Updated Successfully.!");
+            //Utils.alertMessage(TaskListActivity.this, Utils.network_error);
         }
     }
 
     public class TaskAdapter extends BaseSwipeAdapter {
         private Context context;
         private TextView taskName, hours, taskComments;
+
         private LinearLayout edit, delete;
 
         public TaskAdapter(Context ctx) {
@@ -261,7 +284,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
                     alert.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            deleteTask(tasks.get(position).getId());
+                            deleteTask(tasks.get(position));
                         }
                     });
 
@@ -299,10 +322,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         Log.e("output", ":: " + output);
         if(methodName.equals(Utils.getTaskListAPI)) {
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
-            TimeEmDbHandler dbHandler = new TimeEmDbHandler(TaskListActivity.this);
+
             dbHandler.updateTask(taskEntries, selectedDate,false);
 
-            tasks = dbHandler.getTaskEnteries(UserId, selectedDate);
+            tasks = dbHandler.getTaskEnteries(UserId, selectedDate,false);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
         }else if(methodName.equals(Utils.deleteTaskAPI)) {
             boolean error = parser.parseDeleteTaskResponse(output);
