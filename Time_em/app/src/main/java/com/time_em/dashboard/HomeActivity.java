@@ -18,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,9 +66,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     private ArrayList<Notification> notifications=new ArrayList<>();
     private ArrayList<TaskEntry> tasks=new ArrayList<>();
     private Time_emJsonParser parser;
-    private Double  maxValueTask=0.0,maxValueSignIn=0.0,maxValueSignOut=0.0;
+    private Double  maxValueTask=0.0,maxValueSignInOut=0.0;
     private TextView currentDate;
     TabLayout  tabLayout;
+    int graphBarHeight = 140;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -441,11 +443,11 @@ private void getCurrentDate()
                     date.setTextColor(Color.BLACK);
                 }*/
                 if (screen) {
-                    Double val = (200 / maxValueTask) * item.getTimeSpent();
-                    RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(
-                            RelativeLayout.LayoutParams.MATCH_PARENT, val.intValue());
-                    param.setMargins(10, 10, 10, 0);
-                    param.addRule(RelativeLayout.ABOVE, date.getId());
+                    Double val = (graphBarHeight / maxValueTask) * item.getTimeSpent();
+                    int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, val.floatValue(), getResources().getDisplayMetrics());
+
+                    LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, height);
                     graphBar.setLayoutParams(param);
                     date.setText(item.getCreatedDate());
                     itemView.setOnClickListener(new View.OnClickListener() {
@@ -461,21 +463,19 @@ private void getCurrentDate()
                 }
 
             else{
-                    Double valIn = (200 / maxValueSignIn) * item.getSignedInHours();
-                    LinearLayout.LayoutParams paramIn = new LinearLayout.LayoutParams(
-                            0, valIn.intValue(),1);
-                    paramIn.setMargins(0, 0, 0, 0);
-                    paramIn.gravity = Gravity.BOTTOM;
-                    graphBar_signIn.setLayoutParams(paramIn);
-                    graphBar_signIn.setGravity(Gravity.BOTTOM);
+                    Double valIn = (graphBarHeight / maxValueSignInOut) * item.getSignedInHours();
+                    int heightIn = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valIn.floatValue(), getResources().getDisplayMetrics());
 
-                    Double val_signout = (200 / maxValueSignOut) * item.getSignedOutHours();
+                    LinearLayout.LayoutParams paramIn = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, heightIn);
+                    graphBar_signIn.setLayoutParams(paramIn);
+
+                    Double val_signout = (graphBarHeight / maxValueSignInOut) * item.getSignedOutHours();
+                    int heightOut = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, val_signout.floatValue(), getResources().getDisplayMetrics());
+
                     LinearLayout.LayoutParams paramOut = new LinearLayout.LayoutParams(
-                            0, val_signout.intValue(),1);
-                    paramOut.setMargins(2, 0, 0, 0);
-                    paramOut.gravity = Gravity.BOTTOM;
+                            LinearLayout.LayoutParams.MATCH_PARENT, heightOut);
                     graphBar_signOut.setLayoutParams(paramOut);
-                    graphBar_signOut.setGravity(Gravity.BOTTOM);
 
                     date.setText(item.getCreatedDate());
                    /* itemView.setOnClickListener(new View.OnClickListener() {
@@ -542,6 +542,9 @@ private void getCurrentDate()
         ArrayList<TimerTask> arrayList;
         LayoutInflater inflater;
         int value;
+        int maxValue = 0;
+
+        TextView scale0, scale1, scale2, scale3, scale4, scale5;
 
         public ViewPagerAdapter(Context context, int value) {
             this.context = context;
@@ -560,21 +563,50 @@ private void getCurrentDate()
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(ViewGroup container, int position)
+        {
+
+//            if(position==0) {
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View itemView = inflater.inflate(R.layout.viewpager_graphs, container, false);
+            recyclerView = (RecyclerView)itemView.findViewById(R.id.task_graph);
+            recyclerView.setHasFixedSize(true);
+
+            scale0 = (TextView)itemView.findViewById(R.id.scale0);
+            scale1 = (TextView)itemView.findViewById(R.id.scale1);
+            scale2 = (TextView)itemView.findViewById(R.id.scale2);
+            scale3 = (TextView)itemView.findViewById(R.id.scale3);
+            scale4 = (TextView)itemView.findViewById(R.id.scale4);
+            scale5 = (TextView)itemView.findViewById(R.id.scale5);
+
 
             if(position==0) {
-                inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View itemView = inflater.inflate(R.layout.viewpager_graphs, container, false);
-                recyclerView = (RecyclerView)itemView.findViewById(R.id.task_graph);
-                recyclerView.setHasFixedSize(true);
-                firstGraphView();
+                maxValue = maxValueTask.intValue();
                 lay_indicator.setVisibility(View.GONE);
                 //tabLayout.getTabAt(position).select();
-                tabLayout.setScrollPosition(position,0f,true);
-                ((ViewPager) container).addView(itemView);
+                tabLayout.setScrollPosition(position, 0f, true);
+                maxValue = maxValue/4;
+                maxValueTask = Double.valueOf(maxValue*6);
 
-                return itemView;
+                firstGraphView();
+            }else{
+                maxValue = maxValueSignInOut.intValue();
+                maxValue = maxValue/4;
+                maxValueSignInOut = Double.valueOf(maxValue*6);
             }
+
+
+            scale0.setText(String.valueOf(0));
+            scale1.setText(String.valueOf(1*maxValue));
+            scale2.setText(String.valueOf(2*maxValue));
+            scale3.setText(String.valueOf(3*maxValue));
+            scale4.setText(String.valueOf(4*maxValue));
+            scale5.setText(String.valueOf(5*maxValue));
+
+            ((ViewPager) container).addView(itemView);
+
+            return itemView;
+           /* }
             if(position==1) {
                 inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View itemView = inflater.inflate(R.layout.viewpager_signinout, container, false);
@@ -586,9 +618,8 @@ private void getCurrentDate()
                 return itemView;
             }
 
-            return null;
+            return null;*/
         }
-
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             // Remove viewpager_item.xml from ViewPager
@@ -603,7 +634,6 @@ private void getCurrentDate()
         if(methodName.contains(Utils.UserTaskGraph))
         {
             arrayList.addAll(parser.parseGraphsData(output));
-            setViewPager();
             ArrayList<TaskEntry> arrayList_sort=new ArrayList<>();
             arrayList_sort.addAll(arrayList);
               Comparator<TaskEntry> cmp = new Comparator<TaskEntry>() {
@@ -617,38 +647,31 @@ private void getCurrentDate()
             Log.e("max task: " ,""+ maxValueTask);
 
 
+//            setViewPager();
             }
       else if(methodName.contains(Utils.UsersGraph))
         {
             arrayList_SignInOut.addAll(parser.parseGraphsSignInOut(output));
+
+            ArrayList<Double> signedInOutArray = new ArrayList<>();
+
+            for(int i =0;i<arrayList_SignInOut.size(); i++){
+                signedInOutArray.add(arrayList_SignInOut.get(i).getSignedInHours());
+                signedInOutArray.add(arrayList_SignInOut.get(i).getSignedOutHours());
+            }
+
+            Comparator<Double> cmp = new Comparator<Double>() {
+                @Override
+                public int compare(Double v1, Double v2) {
+                    return v1.compareTo(v2);
+                }
+            };
+
+            maxValueSignInOut=Collections.max(signedInOutArray, cmp);
+
+            Log.e("max sign in-out: " ,""+ maxValueSignInOut);
+
             setViewPager();
-
-            ArrayList<TaskEntry> arrayList_SignIn_sort=new ArrayList<>();
-            arrayList_SignIn_sort.addAll(arrayList_SignInOut);
-
-            Comparator<TaskEntry> cmp = new Comparator<TaskEntry>() {
-                @Override
-                public int compare(TaskEntry v1, TaskEntry v2) {
-                    return v1.getSignedInHours().compareTo(v2.getSignedInHours());
-                }
-            };
-            TaskEntry taskEntry=Collections.max(arrayList_SignIn_sort, cmp);
-            maxValueSignIn=taskEntry.getSignedInHours();
-            Log.e("max sign In: " ,""+ maxValueSignIn);
-            ///sign out max
-
-            ArrayList<TaskEntry> arrayList_SignOut_sort=new ArrayList<>();
-            arrayList_SignOut_sort.addAll(arrayList_SignInOut);
-
-            Comparator<TaskEntry> cmp_out = new Comparator<TaskEntry>() {
-                @Override
-                public int compare(TaskEntry v1, TaskEntry v2) {
-                    return v1.getSignedOutHours().compareTo(v2.getSignedOutHours());
-                }
-            };
-            TaskEntry taskEntry2=Collections.max(arrayList_SignOut_sort, cmp);
-            maxValueSignIn=taskEntry2.getSignedOutHours();
-            Log.e("max sign out: " ,""+ maxValueSignIn);
         }
     }
     private void syncDataCheck() {

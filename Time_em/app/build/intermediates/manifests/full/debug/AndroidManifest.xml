@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="10"
+        android:minSdkVersion="14"
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -48,6 +48,7 @@
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.time_em.android.SplashActivity"
@@ -85,9 +86,6 @@
             android:name="com.time_em.team.UserListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.time_em.tasks.AddTaskActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.time_em.authentication.ForgotCredentials"
             android:screenOrientation="portrait" />
         <activity
@@ -122,7 +120,7 @@
             android:name="com.time_em.barcode.NFCReadActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
 
                 <data android:mimeType="vnd.secret/agent.man" />
 
@@ -167,6 +165,11 @@
             android:name="com.google.android.gms.measurement.AppMeasurementService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity
+            android:name="fm.jiecao.jcvideoplayer_lib.JCFullScreenActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>
