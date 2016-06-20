@@ -112,14 +112,34 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
             headerInfo.setText("Edit Task Details");
             taskEntryId = String.valueOf(taskEntry.getId());
             comments.setText(taskEntry.getComments());
+
             hours.setText(String.valueOf(taskEntry.getTimeSpent()));
             String image_url = taskEntry.getAttachmentImageFile();
             int loader = R.drawable.add;
             // ImageLoader class instance
-            if (image_url != null) {
-                ImageLoader imgLoader = new ImageLoader(getApplicationContext());
-                imgLoader.DisplayImage(image_url, loader, uploadedImage);
+            if (image_url != null &&!image_url.equalsIgnoreCase("null")) {
+                if(image_url.contains("http")) {
+                    ImageLoader imgLoader = new ImageLoader(getApplicationContext());
+                    imgLoader.DisplayImage(image_url, loader, uploadedImage);
+                }else{
+                    FileUtils fileUtils=new FileUtils(AddEditTaskEntry.this);
+                    uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 500, 500));
+                }
             }
+        }
+    }
+
+    private void selectedSpinnerValue(Spinner sp) {
+
+        if(assignedTasks!=null && assignedTasks.equals("null")){
+            for(int i=0;i<assignedTasks.size();i++)
+            {
+               String value=""+assignedTasks.get(i).getId();
+                    if(taskEntryId.equalsIgnoreCase(value)) {
+                        sp.setSelection(i);
+                       // return;
+                    }
+                }
         }
     }
 
@@ -159,6 +179,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                 if(comments.getText().toString().trim().equals("") || hours.getText().toString().trim().equals("")
                         || selectedSpinnerData == null){
                     Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
+                }
+                else if(selectedSpinnerData.getId()==0){
+                    Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
                 }
               else {
 
@@ -271,10 +294,13 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
             dbHandler.updateProjectTasks(assignedTasks);//update data for notification type
 
             assignedTasks=dbHandler.getProjectTasksData();
-
             adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this,
                     R.layout.spinner_row_layout, assignedTasks);
             spnProject.setAdapter(adapter);
+            if(taskEntry!=null)
+            {
+                selectedSpinnerValue(spnProject);
+                }
         }
     }
 
@@ -287,7 +313,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                         fileUtils.cameraIntent();
                     else if(fileUtils.getUserChoosenTask().equals("Choose from Library"))
                         fileUtils.galleryIntent();
-                    else if(fileUtils.getUserChoosenTask().equals("Make Video"))
+                    else if(fileUtils.getUserChoosenTask().equals("Record Video"))
                         fileUtils.videoIntent();
                 } else {
                     //code for deny

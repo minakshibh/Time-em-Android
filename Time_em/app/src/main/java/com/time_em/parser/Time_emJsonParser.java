@@ -18,6 +18,7 @@ import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
+import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.utils.Utils;
@@ -489,6 +490,10 @@ public class Time_emJsonParser {
 			isError = jObject.getBoolean("IsError");
 			message = jObject.getString("Message");
 
+			SpinnerData task_header = new SpinnerData();
+			task_header.setId(0);
+			task_header.setName("Select Project/Task");
+			taskList.add(task_header);
 			if(!isError) {
 				JSONArray jArray = jObject.getJSONArray("ReturnKeyValueViewModel");
 				for (int i = 0; i < jArray.length(); i++) {
@@ -594,6 +599,66 @@ public class Time_emJsonParser {
 			Utils.showToast(context, message);
 
 		return arrayTaskEntry;
+	}
+
+	public ArrayList<SyncData> getSynOfflineData(String webResponse){
+		ArrayList<SyncData> arraySyncData = new ArrayList<SyncData>();
+		ArrayList<TaskEntry> arrayTaskEntry = new ArrayList<TaskEntry>();
+		ArrayList<Notification> arrayNotification = new ArrayList<Notification>();
+
+		try{
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("IsError");
+			message = jObject.getString("Message");
+
+
+			JSONArray jArray = jObject.getJSONArray("UsersData");
+
+			for(int i = 0; i<jArray.length(); i++){
+				//JSONObject userObject = jArray.getJSONObject(i);
+
+				//TaskEntry timerTask = new TaskEntry();
+				//timerTask.setSignedInHours(userObject.getDouble("signedin"));
+				//timerTask.setSignedOutHours(userObject.getDouble("signedout"));
+				//SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
+				//String str_date=userObject.getString("date");
+				//String str_date="11-June-07";
+				//DateFormat formatter = new SimpleDateFormat("mm-dd-yyyy");
+				//Date date = formatter.parse(str_date);
+				//timerTask.setCreatedDate(dateFormatter.format(date));
+				//timerTask.setCreatedDate();
+				//arrayTaskEntry.add(timerTask);
+			}
+			JSONArray nArray = jObject.getJSONArray("NotificationData");
+			for(int j = 0; j<nArray.length(); j++){
+				//JSONObject userObject = jArray.getJSONObject(i);
+
+				//TaskEntry timerTask = new TaskEntry();
+				//timerTask.setSignedInHours(userObject.getDouble("signedin"));
+				//timerTask.setSignedOutHours(userObject.getDouble("signedout"));
+				//SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
+				//String str_date=userObject.getString("date");
+				//String str_date="11-June-07";
+				//DateFormat formatter = new SimpleDateFormat("mm-dd-yyyy");
+				//Date date = formatter.parse(str_date);
+				//timerTask.setCreatedDate(dateFormatter.format(date));
+				//timerTask.setCreatedDate();
+				//arrayTaskEntry.add(timerTask);
+			}
+
+
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			arrayTaskEntry = new ArrayList<TaskEntry>();
+			e.printStackTrace();
+			Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return arraySyncData;
 	}
 
 }

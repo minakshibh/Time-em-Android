@@ -16,7 +16,6 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.LoginActivity;
@@ -25,19 +24,25 @@ import com.time_em.barcode.NFCReadActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.Notification;
+import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.notifications.NotificationListActivity;
 import com.time_em.notifications.SendNotification;
+import com.time_em.parser.Time_emJsonParser;
 import com.time_em.profile.MyProfileActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.Utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class BaseActivity extends Activity{
+public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 
 	public ActionBarDrawerToggle mDrawerToggle;
 	public DrawerLayout mDrawerLayout;
@@ -49,8 +54,12 @@ public class BaseActivity extends Activity{
 	public LinearLayout myTasks, myTeam, lay_notifications,settings;
 	private Resources resources;
 	public ImageView menuUserStatus,imageSync;
+	private TimeEmDbHandler dbHandler;
+	private Time_emJsonParser parser;
+
 	private ArrayList<Notification> notifications=new ArrayList<>();
 	private ArrayList<TaskEntry> tasks=new ArrayList<>();
+	private ArrayList<TaskEntry> tasks_delete=new ArrayList<>();
 	public static ArrayList<String> deleteIds=new ArrayList<>();
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -64,6 +73,7 @@ public class BaseActivity extends Activity{
 	}
 	
 	private void initScreen(){
+		parser = new Time_emJsonParser(BaseActivity.this);
 		slider = (RelativeLayout)findViewById(R.id.btnSlider);
 		contentFrame = (RelativeLayout)findViewById(R.id.content_frame);
 		profile = (RelativeLayout)findViewById(R.id.profile);
@@ -206,26 +216,28 @@ public class BaseActivity extends Activity{
 
 	private void syncUploadAPI(ArrayList<TaskEntry> tasks,ArrayList<String> deleteIds) {
 
-
-		HashMap<String, String> parameters = new HashMap<String, String>();
 		ArrayList<HashMap<String, String>> arrayHashMap=new ArrayList<>();
-		/*"TaskActivityId": 0,
-				"CreatedDate": "06-17-2016",
-				"Comments": "Add by Sync 1",
-				"UserId": 2,
-				"TaskId": 7102,
-				"ActivityId": 28419,
-				"UniqueNumber":1,
-				"operation": "Add"*/
 		for(int i=0;i<tasks.size();i++) {
+			HashMap<String, String> parameters = new HashMap<String, String>();
 			parameters.put("TaskActivityId", "" + tasks.get(i).getActivityId());
 			parameters.put("CreatedDate", "" + tasks.get(i).getCreatedDate());
 			parameters.put("Comments", "" + tasks.get(i).getComments());
 			parameters.put("UserId", "" + tasks.get(i).getUserId());
 			parameters.put("TaskId", "" + tasks.get(i).getTaskId());
 			parameters.put("ActivityId", "" + tasks.get(i).getActivityId());
-			parameters.put("UniqueNumber", "" + tasks.get(i).getAttachmentImageFile());
+
 			Log.e("getAttachmentImageFile", "" + tasks.get(i).getAttachmentImageFile());
+
+			String string = tasks.get(i).getAttachmentImageFile();
+			if(string!=null && !string.equalsIgnoreCase("null") ) {
+				String[] parts = string.split("IMG_");
+				String part1 = parts[0];
+				String imageName = parts[1];
+				Log.e("imageName", "" + imageName);
+				parameters.put("UniqueNumber", "" + imageName);
+			}else{
+				parameters.put("UniqueNumber", "" + "123");
+			}
 			if(tasks.get(i).getId()==0)
 			parameters.put("operation", "add" );
 			else
@@ -233,21 +245,24 @@ public class BaseActivity extends Activity{
 			arrayHashMap.add(parameters);
 		}
 		for(int i=0;i<deleteIds.size();i++) {
+			HashMap<String, String> parameters = new HashMap<String, String>();
 			parameters.put("Id", "" + deleteIds.get(i));
 			parameters.put("operation", "" + "delete");
 			arrayHashMap.add(parameters);
 		}
 
 
-
-
-
 		//Log.e("hash", "" + arrayHashMap.toString());
 
 		if (Utils.isNetworkAvailable(BaseActivity.this)) {
 			HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
-			   postDataParameters.put("userTaskActivities", arrayHashMap.toString());
+			JSONArray jarray=null;
+			try {
+				 jarray = new JSONArray(arrayHashMap.toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			postDataParameters.put("userTaskActivities",""+ "userTaskActivities:"+jarray);
 				//timeemapi.azurewebsites.net/api/UserActivity/Sync
 				Log.e(Utils.Sync,postDataParameters.toString());
 				AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
@@ -259,8 +274,6 @@ public class BaseActivity extends Activity{
 			} else {
 				Utils.alertMessage(BaseActivity.this, Utils.network_error);
 			}
-
-
 	}
 
 	public void setSelection(Boolean isTaskSelected, Boolean isTeamSelected, Boolean isNotificationSelected, Boolean isSettingsSelected){
@@ -322,5 +335,28 @@ public class BaseActivity extends Activity{
 		// TODO Auto-generated method stub
 		super.onResume();
 		setSelection(false, false, false, false);
+	}
+
+	@Override
+	public void processFinish(String output, String methodName) {
+	if(methodName.contains(Utils.Sync)) {
+		Log.e("" + Utils.Sync, "" + output);
+		ArrayList<SyncData> arraySyncData = new ArrayList<SyncData>();
+		arraySyncData=parser.getSynOfflineData(output);
+
+		// for delete offline task value
+		tasks_delete.clear();
+		tasks_delete.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
+		if(tasks_delete.size()>=0)
+		{
+			for(int i=0;i<tasks_delete.size();i++) {
+				tasks_delete.get(i).setIsActive(false);
+			}
+			dbHandler = new TimeEmDbHandler(BaseActivity.this);
+			dbHandler.updateDeleteOffline(tasks_delete, "select date");
+
+
+			}
+		}
 	}
 }

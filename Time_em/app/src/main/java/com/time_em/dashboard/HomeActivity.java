@@ -689,7 +689,7 @@ private void getCurrentDate()
         tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
         Log.e("task size", "" + tasks.size());
         // for delete task
-        if (notifications != null && notifications.size() > 0) {
+        if (tasks != null && tasks.size() > 0) {
             imageSync.setImageDrawable(getResources().getDrawable(R.drawable.offline));
         }
     }

@@ -136,7 +136,7 @@ public class NFCReadActivity extends Activity  {
 
     private void handleIntent(Intent intent) {
         String action = intent.getAction();
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
 
             String type = intent.getType();
             if (MIME_TEXT_PLAIN.equals(type)) {

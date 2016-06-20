@@ -56,12 +56,12 @@ public class FileUtils {
     public void showChooserDialog(boolean video) {
 
         if(video){
-            items= new CharSequence[]{"Take Photo", "Choose from Library","Make Video", "Cancel"};
+            items= new CharSequence[]{"Take Photo", "Choose from Library","Record Video", "Cancel"};
         }else {
             items = new CharSequence[]{"Take Photo", "Choose from Library", "Cancel"};
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Add Photo!");
+        builder.setTitle("Add File!");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
@@ -75,8 +75,8 @@ public class FileUtils {
                     if(result)
                         galleryIntent();
                  }
-                else if (items[item].equals("Make Video")) {
-                    userChoosenTask="Make Video";
+                else if (items[item].equals("Record Video")) {
+                    userChoosenTask="Record Video";
                     if(result)
                     videoIntent();
                 }else if (items[item].equals("Cancel")) {
@@ -133,30 +133,32 @@ public class FileUtils {
        // String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         long timeStamp=System.currentTimeMillis();
         Log.e("timeStamp",""+timeStamp);
-        String imageFileName = "IMG_" + ""+timeStamp + "_";
-        String videoFileName = "VID_" + ""+timeStamp + "_";
+        String imageFileName = "IMG_" + ""+timeStamp;// + "_";
+        String videoFileName = "VID_" + ""+timeStamp;//+ "_";
         Log.e("imageFileName",""+imageFileName);
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File file;
         if(video)
         {
-            file = File.createTempFile(
-                    videoFileName,  /* prefix */
-                    ".3gp",         /* suffix */
-                    storageDir      /* directory */
-            );
-        }else {
-            file = File.createTempFile(
-                    imageFileName,  /*//* prefix */
-                    ".png",         //*//* suffix *
-                    storageDir      /* directory */
+          //  file = File.createTempFile(
+               //     videoFileName,  /* prefix */
+              //      ".3gp",         /* suffix */
+             //       storageDir      /* directory */
+          //  );
+            file= new File(storageDir
+                    + File.separator + imageFileName+".3gp");
+        }
+        else {
+         //   file = File.createTempFile(
+         //           imageFileName,  /*//* prefix */
+         //           ".png",         //*//* suffix *
+          //          storageDir      /* directory */
+            // );
 
-            /*file=new File(imageFileName, ".png");
-            if (!file.exists()) {
-                file.createNewFile();
-            }*/
+            file= new File(storageDir
+                    + File.separator + imageFileName+".png");
 
-            );
+
 
             Log.e("file",""+file);
         }
@@ -265,14 +267,28 @@ public class FileUtils {
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         attachmentPath = cursor.getString(columnIndex);
         cursor.close();
-        imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
+
+
+     //   File sdcard = Environment.getExternalStorageDirectory();
+        //File oldFile = new File(attachmentPath,".png");
+        //File newFile = new File(attachmentPath,"to.png");
+        long timeStamp=System.currentTimeMillis();
+        String imageFileName = "IMG_" + ""+timeStamp;
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File file = new File(attachmentPath);
+        File file2 = new File(storageDir+File.separator+imageFileName+".png");
+        boolean success = file.renameTo(file2);
+       // oldFile.renameTo(newFile);
+        if(success)
+        attachmentPath = "" + file2.getAbsolutePath();
+        imageView.setImageBitmap(getScaledBitmap(attachmentPath, 500, 500));
 
     }
 
     public void onCaptureImageResult(Intent data, ImageView imageView) {
         try {
           Log.e("image path:",""+attachmentPath);
-          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
+          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 500, 500));
         } catch (Exception e) {
             e.printStackTrace();
         }

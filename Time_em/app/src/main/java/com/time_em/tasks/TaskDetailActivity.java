@@ -21,6 +21,7 @@ import android.widget.VideoView;
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.model.TaskEntry;
+import com.time_em.utils.FileUtils;
 import com.time_em.utils.Utils;
 
 import java.io.IOException;
@@ -98,22 +99,22 @@ public class TaskDetailActivity extends Activity {
         if(image_url!=null && !image_url.equalsIgnoreCase("null"))
         {
             AttachementTxt.setVisibility(View.VISIBLE);
-            if(image_url.contains(".png") | image_url.contains(".jpg"))
-            {
-                attachment.setVisibility(View.VISIBLE);
-                videoView.setVisibility(View.GONE);
-                int loader = R.drawable.add;
-                if (image_url != null) {
 
-                    ImageLoader imgLoader = new ImageLoader(getApplicationContext());
-                    imgLoader.DisplayImage(image_url, loader, attachment);
-                }
-            }
-            else {
-                videoView.setVisibility(View.VISIBLE);
-                attachment.setVisibility(View.GONE);
+            if(image_url.contains("http")) {
+                if (image_url.contains(".png") | image_url.contains(".jpg")) {
+                    attachment.setVisibility(View.VISIBLE);
+                    videoView.setVisibility(View.GONE);
+                    int loader = R.drawable.add;
+                    if (image_url != null) {
 
-            }/*MediaController mc = new MediaController(this);
+                        ImageLoader imgLoader = new ImageLoader(getApplicationContext());
+                        imgLoader.DisplayImage(image_url, loader, attachment);
+                    }
+                } else {
+                    videoView.setVisibility(View.VISIBLE);
+                    attachment.setVisibility(View.GONE);
+
+                }/*MediaController mc = new MediaController(this);
                *//* MediaController mediaController = new MediaController(this);
                 mediaController.setAnchorView(videoView);
                 Uri video = Uri.parse(image_url);
@@ -139,8 +140,14 @@ public class TaskDetailActivity extends Activity {
                 videoView.seekTo(1);*/
 
 
-            videoView.setUp(image_url,"Video");
-
+                videoView.setUp(image_url, "Video");
+            }
+            else{
+                videoView.setVisibility(View.GONE);
+                attachment.setVisibility(View.VISIBLE);
+                FileUtils fileUtils=new FileUtils(TaskDetailActivity.this);
+                attachment.setImageBitmap(fileUtils.getScaledBitmap(image_url, 800, 800));
+            }
           //  videoView.startButton.performClick();
 
         }

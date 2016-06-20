@@ -111,6 +111,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.profile.MyProfileActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.barcode.NFCReadActivity"

@@ -102,9 +102,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             @Override
             public void onItemClick(Calendar item, int position) {
                 String weekDay;
-                SimpleDateFormat dayFormat = new SimpleDateFormat("E", Locale.US);
-                weekDay = dayFormat.format(item.getTime());
-                Utils.showToast(TaskListActivity.this, item.get(Calendar.DAY_OF_MONTH)+" "+weekDay+" Clicked");
+               // SimpleDateFormat dayFormat = new SimpleDateFormat("E", Locale.US);
+               // weekDay = dayFormat.format(item.getTime());
+               // Utils.showToast(TaskListActivity.this, item.get(Calendar.DAY_OF_MONTH)+" "+weekDay+" Clicked");
 
                 selectedDate = apiDateFormater.format(item.getTime());
                 getTaskList(selectedDate);

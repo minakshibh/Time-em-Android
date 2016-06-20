@@ -77,7 +77,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     private byte[] multipartBody;
     private ProgressDialog pDialog;
     private LinearLayout upload;
-    private TextView txtSpnUsers, headerInfo;
+    private TextView txtSpnUsers, headerInfo,txt_Image_Video;
     private FileUtils fileUtils;
     String sendNotificationAPI = Utils.SendNotificationAPI;
     TimeEmDbHandler dbHandler;
@@ -107,7 +107,8 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         back =(ImageView)findViewById(R.id.back);
         rightNavigation = (ImageView)findViewById(R.id.AddButton);
         rightNavigation.setVisibility(View.GONE);
-
+        txt_Image_Video=(TextView)findViewById(R.id.txt_Image_Video);
+        txt_Image_Video.setText("Upload Image");
         headerInfo.setText("Send Notification");
         parser = new Time_emJsonParser(SendNotification.this);
 
