@@ -72,7 +72,7 @@ public class NFCReadActivity extends Activity  {
     @Override
     protected void onResume() {
         super.onResume();
-
+Log.e("on resume","resume called");
         /**
          * It's important, that the activity is in the foreground (resumed). Otherwise
          * an IllegalStateException is thrown.
@@ -99,6 +99,7 @@ public class NFCReadActivity extends Activity  {
          *
          * In our case this method gets called, when the user attaches a Tag to the device.
          */
+        Log.e("Intent recieved","nfc discovered");
         handleIntent(intent);
     }
 
@@ -113,7 +114,7 @@ public class NFCReadActivity extends Activity  {
 
         final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
-        IntentFilter[] filters = new IntentFilter[1];
+        /*IntentFilter[] filters = new IntentFilter[1];
         String[][] techList = new String[][]{};
 
         // Notice that this is the same filter as in our manifest.
@@ -124,9 +125,9 @@ public class NFCReadActivity extends Activity  {
             filters[0].addDataType(MIME_TEXT_PLAIN);
         } catch (IntentFilter.MalformedMimeTypeException e) {
             throw new RuntimeException("Check your mime type.");
-        }
+        }*/
 
-        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
+        adapter.enableForegroundDispatch(activity, pendingIntent, null, null);
     }
 
 
@@ -135,13 +136,16 @@ public class NFCReadActivity extends Activity  {
     }
 
     private void handleIntent(Intent intent) {
+        Log.e("handle intent","intent called");
         String action = intent.getAction();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 
             String type = intent.getType();
             if (MIME_TEXT_PLAIN.equals(type)) {
 
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                tag.getId();
+                Utils.alertMessage(NFCReadActivity.this,String.valueOf(tag.getId()));
                 new NdefReaderTask().execute(tag);
 
             } else {
@@ -152,6 +156,7 @@ public class NFCReadActivity extends Activity  {
 
             // In case we would still use the Tech Discovered Intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            Utils.alertMessage(NFCReadActivity.this,String.valueOf(tag.getId()));
             String[] techList = tag.getTechList();
             String searchedTech = Ndef.class.getName();
 
@@ -161,6 +166,8 @@ public class NFCReadActivity extends Activity  {
                     break;
                 }
             }
+        }else{
+            Utils.alertMessage(NFCReadActivity.this,"Code in else clause, action: "+action);
         }
     }
 

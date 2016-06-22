@@ -283,7 +283,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
     private void loadNotificationsByType(){
         notifications.clear();
-        notifications = dbHandler.getNotificationsByType(selectedNotificationType,false);
+        notifications = dbHandler.getNotificationsByType(selectedNotificationType,false,"false");
         notificationListView.setAdapter(new NotificationAdapter());
     }
 

@@ -23,6 +23,7 @@ import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.barcode.NFCReadActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
 import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
@@ -32,7 +33,10 @@ import com.time_em.parser.Time_emJsonParser;
 import com.time_em.profile.MyProfileActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
+import com.time_em.utils.FileUtils;
 import com.time_em.utils.Utils;
+
+import junit.runner.TestSuiteLoader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,13 +58,14 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 	public LinearLayout myTasks, myTeam, lay_notifications,settings;
 	private Resources resources;
 	public ImageView menuUserStatus,imageSync;
+
 	private TimeEmDbHandler dbHandler;
 	private Time_emJsonParser parser;
+	private FileUtils fileUtils;
 
-	private ArrayList<Notification> notifications=new ArrayList<>();
-	private ArrayList<TaskEntry> tasks=new ArrayList<>();
-	private ArrayList<TaskEntry> tasks_delete=new ArrayList<>();
-	public static ArrayList<String> deleteIds=new ArrayList<>();
+
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -74,6 +79,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 	
 	private void initScreen(){
 		parser = new Time_emJsonParser(BaseActivity.this);
+		fileUtils = new FileUtils(BaseActivity.this);
 		slider = (RelativeLayout)findViewById(R.id.btnSlider);
 		contentFrame = (RelativeLayout)findViewById(R.id.content_frame);
 		profile = (RelativeLayout)findViewById(R.id.profile);
@@ -120,10 +126,10 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 				Intent mIntent = new Intent(BaseActivity.this, MyProfileActivity.class);
 				startActivity(mIntent);
 			}else if(v == sync){
-				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
+				/*if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
 					syncUploadData();
-				}
+				}*/
 			}else if(v == scanBarcode){
 				if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
 					mDrawerLayout.closeDrawers();
@@ -185,120 +191,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 		}
 	};
 
-	private void syncUploadData() {
 
-		TimeEmDbHandler dbHandler = new TimeEmDbHandler(BaseActivity.this);
-
-		//for notification
-		notifications.clear();
-		notifications.addAll(dbHandler.getNotificationsByType("true", true));
-		Log.e("notification size", "" + notifications.size());
-		//for delete notification
-		//if (notifications != null && notifications.size() > 0) {
-
-			//delete offline values
-			//dbHandler.deleteNotificationOffline("true");
-		//}
-
-
-		//for task
-		tasks.clear();
-		tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
-		syncUploadAPI(tasks,deleteIds,notifications);
-		Log.e("task size", "" + tasks.size());
-		// for delete task
-		//if (notifications != null && notifications.size() > 0) {
-
-			//delete offline values
-			//dbHandler.deleteNotificationOffline("true");
-		//}
-	}
-
-	private void syncUploadAPI(ArrayList<TaskEntry> tasks,ArrayList<String> deleteIds,ArrayList<Notification> notifications) {
-		/*{"userTaskActivities": [{"UserId" : "2","Comments" : "Asd asd asd","Id" : "0","Operation" : "add",
-				"UniqueNumber" : "img_21466429009139","ActivityId" : "29679","CreatedDate" : "06-20-2016","TaskId" : "7104"}]}*/
-
-		// for task
-		ArrayList<HashMap<String, String>> arrayHashMap=new ArrayList<>();
-		for(int i=0;i<tasks.size();i++) {
-			HashMap<String, String> parameters = new HashMap<String, String>();
-			parameters.put("CreatedDate", tasks.get(i).getCreatedDate());
-			parameters.put("Comments", "" + tasks.get(i).getComments());
-			parameters.put("UserId", "" + tasks.get(i).getUserId());
-			parameters.put("TaskId", "" + tasks.get(i).getTaskId());
-			parameters.put("ActivityId", "" + tasks.get(i).getActivityId());
-			parameters.put("Id", "" + tasks.get(i).getId());
-			parameters.put("UniqueNumber", String.valueOf(tasks.get(i).getUniqueNumber()));
-			Log.e("getAttachmentImageFile", "" + tasks.get(i).getAttachmentImageFile());
-
-			/*String string = tasks.get(i).getAttachmentImageFile();
-			if(string!=null && !string.equalsIgnoreCase("null") ) {
-				String[] parts = string.split("IMG_");
-				String part1 = parts[0];
-				String imageName = parts[1];
-				Log.e("imageName", "" + imageName);
-				//parameters.put("UniqueNumber", "" + imageName);
-			}else{
-				parameters.put("UniqueNumber", "" + "123");
-			}*/
-			if(tasks.get(i).getId()==0)
-			parameters.put("Operation", "add" );
-			else
-			parameters.put("Operation", "update" );
-			arrayHashMap.add(parameters);
-		}
-		for(int i=0;i<deleteIds.size();i++) {
-			HashMap<String, String> parameters = new HashMap<String, String>();
-			parameters.put("Id", "" + deleteIds.get(i));
-			parameters.put("Operation", "" + "delete");
-			arrayHashMap.add(parameters);
-		}
-
-// for notification
-		ArrayList<HashMap<String, String>> array_HashMapNotification=new ArrayList<>();
-		for(int i=0;i<notifications.size();i++) {
-			HashMap<String, String> parameters = new HashMap<String, String>();
-			//parameters.put("Id", ""+notifications.get(i).getNotificationId());
-			parameters.put("Subject", notifications.get(i).getSubject());
-			parameters.put("Message", notifications.get(i).getMessage());
-			//parameters.put("IsActive", "true");
-			parameters.put("CreatedDate", notifications.get(i).getCreatedDate());
-			parameters.put("NotificationTypeId", ""+notifications.get(i).getNotificationTypeId());
-			parameters.put("UniqueNumber", notifications.get(i).getUniqueNumber());
-			parameters.put("UserId",""+ notifications.get(i).getUserId());
-			parameters.put("NotifyTo",""+ notifications.get(i).getSenderId());
-			array_HashMapNotification.add(parameters);
-		}
-
-		if (Utils.isNetworkAvailable(BaseActivity.this)) {
-
-			JSONArray jsonArray=null;
-			JSONObject jsonObject = null;
-			try {
-				jsonArray = new JSONArray(arrayHashMap.toString());
-				jsonObject = new JSONObject();
-				jsonObject.put("userTaskActivities", jsonArray);
-				JSONArray jsonArray_NotificationData = new JSONArray(array_HashMapNotification.toString());
-				jsonObject.put("notifications", jsonArray_NotificationData);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
-
-			HashMap<String, String> postDataParameters = new HashMap<String, String>();
-			postDataParameters.put("Data", ""+jsonObject.toString());
-			Log.e("sync req",postDataParameters.toString());
-
-			AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-					BaseActivity.this, "post", Utils.Sync,
-					postDataParameters, true, "Please wait...");
-			mWebPageTask.delegate = (AsyncResponseTimeEm) BaseActivity.this;
-			mWebPageTask.execute();
-
-			} else {
-				Utils.alertMessage(BaseActivity.this, Utils.network_error);
-			}
-	}
 
 	public void setSelection(Boolean isTaskSelected, Boolean isTeamSelected, Boolean isNotificationSelected, Boolean isSettingsSelected){
 		myTasks.setBackgroundColor(getColor(isTaskSelected));
@@ -363,24 +256,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 
 	@Override
 	public void processFinish(String output, String methodName) {
-	if(methodName.contains(Utils.Sync)) {
-		Log.e("" + Utils.Sync, "" + output);
-		ArrayList<SyncData> arraySyncData = new ArrayList<SyncData>();
-		arraySyncData=parser.getSynOfflineData(output);
-		Log.e("size=",""+arraySyncData.size());
-		// for delete offline task value
-		tasks_delete.clear();
-		tasks_delete.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
-		if(tasks_delete.size()>=0)
-		{
-			for(int i=0;i<tasks_delete.size();i++) {
-				tasks_delete.get(i).setIsActive(false);
-			}
-			dbHandler = new TimeEmDbHandler(BaseActivity.this);
-			dbHandler.updateDeleteOffline(tasks_delete, "select date");
 
-
-			}
-		}
 	}
+
 }

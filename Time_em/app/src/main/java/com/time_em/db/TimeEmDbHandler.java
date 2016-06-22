@@ -352,7 +352,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public ArrayList<Notification> getNotificationsByType(String notificationType,boolean all) {
+	public ArrayList<Notification> getNotificationsByType(String notificationType,boolean all,String str_IsOffline) {
 		ArrayList<Notification> notifications = new ArrayList<Notification>();
 		String selectQuery=null;
 		if(all){
@@ -362,7 +362,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		else {
 			 selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS
 					+ " where "
-					+ NotificationType + "=\"" + notificationType + "\"";
+					+ NotificationType + "=\"" + notificationType + "\"" +" AND " + IsOffline + "=\"" + str_IsOffline + "\"";
 		}
 		SQLiteDatabase db = this.getReadableDatabase();
 
@@ -442,11 +442,11 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 
 		String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS + " where "
-				+ IsOffline + "= "+"'"+offline+"'";
+				+ IsOffline + "=\"" + offline + "\"";
 		try {
 			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 			if (cursor.moveToFirst()) {
-				db.delete(TABLE_NOTIFICATIONS, NotificationId + " = ?", new String[] { String.valueOf(offline) });
+				db.delete(TABLE_NOTIFICATIONS, IsOffline + " = ?", new String[] { String.valueOf(offline) });
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

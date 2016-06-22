@@ -315,7 +315,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     {
         long date = System.currentTimeMillis();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm");
         String dateString = sdf.format(date);
         return dateString;
     }

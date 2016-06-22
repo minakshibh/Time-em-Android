@@ -89,6 +89,7 @@ public class Utils {
     static public String UserTaskGraph = "/usertask/UserTaskGraph";
     static public String UsersGraph = "/usertask/UsersGraph";
     static public String Sync = "/UserActivity/Sync";
+    static public String SyncFileUpload = "/UserActivity/SyncFileUpload";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -162,6 +163,13 @@ public class Utils {
 
 
         });
+        alert.show();
+    }
+    public static void alertMessageWithoutBack(final Context context, String str) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        alert.setTitle("");
+        alert.setMessage(str);
+        alert.setPositiveButton("OK", null);
         alert.show();
     }
 

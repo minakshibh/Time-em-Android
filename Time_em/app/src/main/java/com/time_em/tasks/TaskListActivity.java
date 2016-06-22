@@ -217,7 +217,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             }
 
         } else {
-            BaseActivity.deleteIds.add(""+taskEntry.getId());
+            HomeActivity.deleteIds.add(""+taskEntry.getId());
             taskEntry.setIsActive(false);
             ArrayList<TaskEntry> taskEntries = new ArrayList<>();
             taskEntries.add(taskEntry);

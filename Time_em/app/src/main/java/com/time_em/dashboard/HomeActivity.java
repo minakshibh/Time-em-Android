@@ -38,13 +38,20 @@ import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
+import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
+import com.time_em.utils.FileUtils;
 import com.time_em.utils.GcmUtils;
 import com.time_em.utils.Utils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,TabLayout.OnTabSelectedListener {
 
@@ -68,8 +75,18 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     private Time_emJsonParser parser;
     private Double  maxValueTask=0.0,maxValueSignInOut=0.0;
     private TextView currentDate;
-    TabLayout  tabLayout;
-    int graphBarHeight = 140;
+    private TabLayout  tabLayout;
+    private int graphBarHeight = 140;
+
+    private String UpdateFileApi = Utils.SyncFileUpload;
+
+    private TimeEmDbHandler dbHandler;
+    private FileUtils fileUtils;
+
+
+    private ArrayList<Notification> notifications_delete=new ArrayList<>();
+    private ArrayList<TaskEntry> tasks_delete=new ArrayList<>();
+    public static ArrayList<String> deleteIds=new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,9 +102,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
 
 //		addGraph();
       //  populatRecyclerView();
-        registerDevice();
+
+       /* registerDevice();
         fetchTaskGraphsData();
-        fetchGraphsSignInOut();
+        fetchGraphsSignInOut();*/
         initScreen();
         setClickListeners();
         setTapBar();
@@ -193,7 +211,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     }*/
 
     private void initScreen() {
+        fileUtils=new FileUtils(HomeActivity.this);
+        dbHandler = new TimeEmDbHandler(HomeActivity.this);
 
+        sync = (RelativeLayout)findViewById(R.id.sync);
         viewPager=(ViewPager)findViewById(R.id.pager);
         changeStatus = (LinearLayout) findViewById(R.id.changeStatus);
         userStatus = (ImageView) findViewById(R.id.userStatus);
@@ -231,6 +252,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     }
     private void setClickListeners() {
         changeStatus.setOnClickListener(listener);
+        sync.setOnClickListener(listener);
     }
 
     private View.OnClickListener listener = new View.OnClickListener() {
@@ -239,6 +261,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
             // TODO Auto-generated method stub
             if (v == changeStatus) {
                 openChangeStatusDialog();
+            }
+            else if(v==sync)
+            {
+                if(mDrawerLayout.isDrawerOpen(flyoutDrawerRl)){
+					mDrawerLayout.closeDrawers();
+					syncUploadData();
+				}
+
             }
         }
     };
@@ -673,13 +703,42 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
 
             setViewPager();
         }
+        else if(methodName.contains(Utils.Sync)) {
+
+
+            SyncData  syncData=parser.getSynOfflineData(output);
+            syncUploadFile(syncData);// upload file
+
+    // for delete offline task values
+                tasks_delete.clear();
+                tasks_delete.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
+                if(tasks_delete.size()>=0)
+                {
+                    for(int i=0;i<tasks_delete.size();i++) {
+                        tasks_delete.get(i).setIsActive(false);
+                    }
+
+                    dbHandler.updateDeleteOffline(tasks_delete, "select date");
+
+
+                }
+      // for delete offline notification values
+                notifications_delete.clear();
+               // notifications_delete.addAll(dbHandler.getNotificationsByType("true",true));
+                dbHandler.deleteNotificationOffline("true");
+
+                syncDataCheck();//checking for offline data
+
+            }
+
     }
+
     private void syncDataCheck() {
         imageSync.setImageDrawable(getResources().getDrawable(R.drawable.online));
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
         //for notification
         notifications.clear();
-        notifications.addAll(dbHandler.getNotificationsByType("true", true));
+        notifications.addAll(dbHandler.getNotificationsByType("true",true, "true"));
         Log.e("notification size", "" + notifications.size());
         //for delete notification
         if (notifications != null && notifications.size() > 0) {
@@ -692,5 +751,159 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         if (tasks != null && tasks.size() > 0) {
             imageSync.setImageDrawable(getResources().getDrawable(R.drawable.offline));
         }
+    }
+
+    private void syncUploadData() {
+
+        TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
+
+        //for notification
+        notifications.clear();
+        notifications.addAll(dbHandler.getNotificationsByType("true",true, "true"));
+        Log.e("notification size", "" + notifications.size());
+
+
+        //for task
+        tasks.clear();
+        tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
+        syncUploadAPI(tasks,deleteIds,notifications);
+        Log.e("task size", "" + tasks.size());
+
+    }
+
+    private void syncUploadAPI(ArrayList<TaskEntry> tasks,ArrayList<String> deleteIds,ArrayList<Notification> notifications) {
+
+        // for task
+        ArrayList<HashMap<String, String>> arrayHashMap=new ArrayList<>();
+        for(int i=0;i<tasks.size();i++) {
+            HashMap<String, String> parameters = new HashMap<String, String>();
+            parameters.put("CreatedDate", tasks.get(i).getCreatedDate());
+            parameters.put("Comments", "" + tasks.get(i).getComments());
+            parameters.put("UserId", "" + tasks.get(i).getUserId());
+            parameters.put("TaskId", "" + tasks.get(i).getTaskId());
+            parameters.put("ActivityId", "" + tasks.get(i).getActivityId());
+            parameters.put("TimeSpent", "" + tasks.get(i).getTimeSpent());
+            parameters.put("Id", "" + tasks.get(i).getId());
+
+            Log.e("getAttachmentImageFile", "" + tasks.get(i).getAttachmentImageFile());
+            String value=tasks.get(i).getAttachmentImageFile();
+
+            if(value!=null && !value.equalsIgnoreCase("null") )
+                parameters.put("UniqueNumber", String.valueOf(tasks.get(i).getUniqueNumber()));
+            else
+                parameters.put("UniqueNumber", "null");
+
+
+            if(tasks.get(i).getId()==0)
+                parameters.put("Operation", "add" );
+            else
+                parameters.put("Operation", "update" );
+            arrayHashMap.add(parameters);
+        }
+        for(int i=0;i<deleteIds.size();i++) {
+            HashMap<String, String> parameters = new HashMap<String, String>();
+            parameters.put("Id", "" + deleteIds.get(i));
+            parameters.put("Operation", "" + "delete");
+            arrayHashMap.add(parameters);
+        }
+
+ 		/*for notification*/
+        ArrayList<HashMap<String, String>> array_HashMapNotification=new ArrayList<>();
+        for(int i=0;i<notifications.size();i++) {
+            HashMap<String, String> parameters = new HashMap<String, String>();
+            parameters.put("Subject", notifications.get(i).getSubject());
+            parameters.put("Message", notifications.get(i).getMessage());
+            String string = notifications.get(i).getCreatedDate();
+            String date=string.replace("/","-");
+            //parameters.put("CreatedDate", date);
+            parameters.put("NotificationTypeId", String.valueOf(notifications.get(i).getNotificationTypeId()));
+            parameters.put("UniqueNumber", notifications.get(i).getUniqueNumber());
+            parameters.put("UserId", String.valueOf(notifications.get(i).getUserId()));
+            parameters.put("NotifyTo", String.valueOf(notifications.get(i).getSenderId()));
+            array_HashMapNotification.add(parameters);
+        }
+        Log.e("task hash map",""+arrayHashMap.toString());
+        Log.e("notification hash map",""+array_HashMapNotification.toString());
+        if (Utils.isNetworkAvailable(HomeActivity.this)) {
+
+            JSONArray jsonArray=null,jsonArray_NotificationData=null;
+            JSONObject jsonObject = null,jsonObject_notification=null;
+            try {
+                jsonArray = new JSONArray(arrayHashMap.toString());
+                jsonObject = new JSONObject();
+                jsonObject.put("userTaskActivities", jsonArray);
+                jsonArray_NotificationData = new JSONArray(array_HashMapNotification.toString());
+                jsonObject.put("notifications", jsonArray_NotificationData);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("Data", ""+jsonObject.toString());
+            Log.e(""+Utils.Sync,""+postDataParameters.toString());
+
+            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                    HomeActivity.this, "post", Utils.Sync,
+                    postDataParameters, true, "Please wait...");
+            mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
+            mWebPageTask.execute();
+
+        } else {
+            Utils.alertMessageWithoutBack(HomeActivity.this, Utils.network_error);
+        }
+    }
+    private void syncUploadFile(SyncData syncData)
+    {
+
+		/*http://timeemapi.azurewebsites.net/api/UserActivity/SyncFileUpload
+		type: post
+		Parameters: Id,FileUploadFor(usertaskactivity,notification)*/
+        String ImagePath="";
+
+        //for task
+        for(int i=0;i<syncData.getArray_taks().size();i++) {
+
+            ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
+            dataModels.add(new MultipartDataModel("Id",
+                    String.valueOf(syncData.getArray_taks().get(i).getUserId()),MultipartDataModel.STRING_TYPE));
+            dataModels.add(new MultipartDataModel("FileUploadFor","notification", MultipartDataModel.STRING_TYPE));
+
+            ImagePath="";
+            for(int j=0;j<tasks.size();j++) {
+                Log.e("parser un",""+syncData.getArray_taks().get(i).getUniqueNumber());
+                Log.e("task un",""+tasks.get(j).getUniqueNumber());
+
+                if (syncData.getArray_taks().get(i).getUniqueNumber()
+                        .equalsIgnoreCase(tasks.get(j).getUniqueNumber())){
+                    ImagePath=tasks.get(j).getAttachmentImageFile();
+                }
+            }
+            dataModels.add(new MultipartDataModel("profile_picture", ImagePath,MultipartDataModel.FILE_TYPE));
+            Log.e("send task","send task"+ImagePath);
+            fileUtils.sendMultipartRequest(UpdateFileApi, dataModels);
+        }
+
+        //for notification
+        for(int i=0;i<syncData.getArray_noitification().size();i++) {
+
+            ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
+            dataModels.add(new MultipartDataModel("Id",
+                    String.valueOf(syncData.getArray_noitification().get(i).getUserId()),MultipartDataModel.STRING_TYPE));
+            dataModels.add(new MultipartDataModel("FileUploadFor", "usertaskactivity", MultipartDataModel.STRING_TYPE));
+            for(int j=0;j<notifications.size();j++) {
+                Log.e("parser un",""+syncData.getArray_noitification().get(i).getUniqueNumber());
+                Log.e("task un",""+notifications.get(j).getUniqueNumber());
+                if (syncData.getArray_noitification().get(i).getUniqueNumber()
+                        .equalsIgnoreCase(notifications.get(j).getUniqueNumber())){
+                    ImagePath=notifications.get(j).getAttachmentPath();
+                }
+            }
+            dataModels.add(new MultipartDataModel("profile_picture", ImagePath,MultipartDataModel.FILE_TYPE));
+            Log.e("send notification","send notification"+ImagePath);
+            fileUtils.sendMultipartRequest(UpdateFileApi, dataModels);
+
+        }
+
     }
 }
