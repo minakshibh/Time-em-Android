@@ -54,6 +54,7 @@ import com.time_em.model.SpinnerData;
 import com.time_em.model.User;
 
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.json.JSONObject;
 
 public class Utils {
 
@@ -171,9 +172,9 @@ public class Utils {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    public static String getResponseFromUrlPost(Boolean token, String functionName, HashMap<String, String> postDataParams, Context context) {
+    public static String getResponseFromUrlPost(Boolean token, String functionName, HashMap<String, String> postDataParams, Context context, JSONObject jsonObject, String methodType) {
         String requestString = context.getResources().getString(R.string.baseUrl) + "/" + functionName;
-
+                Log.e("url",""+requestString);
         URL url;
         String response = "";
         try {
@@ -190,7 +191,11 @@ public class Utils {
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
-            writer.write(getPostDataString(postDataParams));
+
+            if(methodType.equals("post"))
+                writer.write(getPostDataString(postDataParams));
+            else
+                writer.write(jsonObject.toString());
 
             writer.flush();
             writer.close();
@@ -232,6 +237,7 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return result.toString();
     }
 

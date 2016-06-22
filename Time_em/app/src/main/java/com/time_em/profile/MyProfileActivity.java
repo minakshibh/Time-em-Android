@@ -81,7 +81,7 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
     private void fetchUserData() {
         mUser= HomeActivity.user;
         edt_Name.setText(mUser.getFullName());
-        txtName.setText(mUser.getLastName());
+        txtName.setText(mUser.getFirstName()+" "+mUser.getLastName());
         edt_Email.setText(mUser.getEmail());
       //  edt_pass.setText(mUser.getLastName());
         edt_Phone.setText(mUser.getPhoneNumber());

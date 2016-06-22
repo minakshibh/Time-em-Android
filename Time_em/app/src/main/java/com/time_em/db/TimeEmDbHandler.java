@@ -50,7 +50,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TimeSpent = "TimeSpent";
 	private String SignedInHours = "SignedInHours";
 	private String TaskDate = "TaskDate";
-
+	private String UniqueNumber = "UniqueNumber";
 	// fields for user table
 	// private String UserId = "UserId";
 	private String SupervisorId = "SupervisorId";
@@ -89,7 +89,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String AttachmentPath = "AttachmentPath";
 	private String Subject = "Subject";
 	private String Msg = "Msg";
-//	private String CreatedDate = "CreatedDate";
+	private String notificationTypeId = "notificationTypeId";
 	private String SenderFullName = "SenderFullName";
 	private String TimeZone = "TimeZone";
 	private String IsOffline = "IsOffline";
@@ -124,7 +124,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ " TEXT," + UserId + " TEXT," + TaskName + " TEXT," + Comments
 				+ " TEXT," + StartTime + " TEXT," + CreatedDate + " TEXT,"
 				+ EndTime + " TEXT," + SelectedDate + " TEXT," + Token
-				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachmentImageFile + " TEXT," + TaskDate + " TEXT," + IsOffline + " TEXT)";
+				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachmentImageFile + " TEXT," + TaskDate
+				+ " TEXT," + IsOffline + " TEXT,"+ UniqueNumber + " TEXT)";
 
 
 		String CREATE_USER_TABLE = "CREATE TABLE if NOT Exists " + TABLE_TEAM
@@ -147,7 +148,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		String CREATE_NOTIFICATION_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS
 				+ "(" + NotificationId + " TEXT," + SenderId + " TEXT," + NotificationType + " TEXT,"
 				+ AttachmentPath + " TEXT," + Subject + " TEXT," + Msg + " TEXT," + CreatedDate + " TEXT,"
-				+ SenderFullName + " TEXT,"+ TimeZone + " TEXT," + IsOffline + " TEXT," + UserId + " TEXT)";
+				+ SenderFullName + " TEXT,"+ TimeZone + " TEXT,"+ notificationTypeId + " TEXT,"
+				+ IsOffline + " TEXT," + UserId + " TEXT,"+ UniqueNumber + " TEXT)";
 
 
 		String CREATE_NOTIFICATION_TYPE_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS_TYPE
@@ -247,6 +249,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(SignedInHours,String.valueOf(taskEntry.getSignedInHours()));
 				values.put(TaskDate,taskDate);
 				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
+				values.put(UniqueNumber,String.valueOf(taskEntry.getUniqueNumber()));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if(insert)
 				{
@@ -277,7 +280,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		for (int i = 0; i < taskList.size(); i++) {
 			TaskEntry taskEntry = taskList.get(i);
 			String selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
-					+ CreatedDate + "=\"" + taskEntry.getCreatedDate()+"\"";
+					+ UniqueNumber + "=\"" + taskEntry.getUniqueNumber()+"\"";
 			try {
 				ContentValues values = new ContentValues();
 				values.put(Id, String.valueOf(taskEntry.getId()));
@@ -296,14 +299,15 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(SignedInHours,String.valueOf(taskEntry.getSignedInHours()));
 				values.put(TaskDate,taskDate);
 				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
+				values.put(UniqueNumber,String.valueOf(taskEntry.getUniqueNumber()));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 
 				if (cursor.moveToFirst()) {
 					// updating row
 					if (!taskEntry.getIsActive())
-						db.delete(TABLE_TASK, CreatedDate + " = ?", new String[]{taskEntry.getCreatedDate()});
+						db.delete(TABLE_TASK, UniqueNumber + " = ?", new String[]{taskEntry.getUniqueNumber()});
 					else
-						db.update(TABLE_TASK, values, CreatedDate + " = ?", new String[]{taskEntry.getCreatedDate()});
+						db.update(TABLE_TASK, values, UniqueNumber + " = ?", new String[]{taskEntry.getUniqueNumber()});
 				}
 				/*else {
 					if (taskEntry.getIsActive())
@@ -334,10 +338,11 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(SenderFullName, notification.getSenderFullName());
 
 				values.put(TimeZone, notification.getTimeZone());
+				values.put(notificationTypeId, notification.getNotificationTypeId());
 				values.put(IsOffline, notification.getIsOffline());
 
 				values.put(UserId, notification.getUserId());
-
+				values.put(UniqueNumber, notification.getUniqueNumber());
 
 				db.insert(TABLE_NOTIFICATIONS, null, values);
 			} catch (Exception e) {
@@ -386,11 +391,14 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 					notification.setTimeZone(cursor.getString(cursor
 							.getColumnIndex(TimeZone)));
+					notification.setNotificationTypeId(cursor.getInt(cursor
+							.getColumnIndex(notificationTypeId)));
 					notification.setIsOffline(cursor.getString(cursor
 							.getColumnIndex(IsOffline)));
 					notification.setUserId(cursor.getInt(cursor
 							.getColumnIndex(UserId)));
-
+					notification.setUniqueNumber(cursor.getString(cursor
+							.getColumnIndex(UniqueNumber)));
 					notifications.add(notification);
 				} while (cursor.moveToNext());
 			}
@@ -596,6 +604,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 					taskEntry.setSelectedDate(cursor.getString(cursor.getColumnIndex(SelectedDate)));
 					taskEntry.setToken(cursor.getString(cursor.getColumnIndex(Token)));
 					taskEntry.setAttachmentImageFile(cursor.getString(cursor.getColumnIndex(AttachmentImageFile)));
+
 					String str_TimeSpent=cursor.getString(cursor.getColumnIndex(TimeSpent));
 					if(str_TimeSpent!=null && !str_TimeSpent.equalsIgnoreCase("null")) {
 						taskEntry.setTimeSpent(Double.valueOf(str_TimeSpent));
@@ -604,7 +613,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 					if(str_SignedIn!=null && !str_SignedIn.equalsIgnoreCase("null")) {
 						taskEntry.setSignedInHours(Double.valueOf(str_SignedIn));
 					}
-
+					taskEntry.setIsoffline(cursor.getString(cursor.getColumnIndex(IsOffline)));
+					taskEntry.setUniqueNumber(cursor.getString(cursor.getColumnIndex(UniqueNumber)));
 					taskEntryList.add(taskEntry);
 				} while (cursor.moveToNext());
 			}

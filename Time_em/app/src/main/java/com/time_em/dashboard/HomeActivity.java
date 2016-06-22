@@ -208,14 +208,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
 
 
     }
-private void getCurrentDate()
-{
-    long date = System.currentTimeMillis();
+    private void getCurrentDate()
+    {
+        long date = System.currentTimeMillis();
 
-    SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM, yyyy");
-    String dateString = sdf.format(date);
-    currentDate.setText(dateString);
-}
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM, yyyy");
+        String dateString = sdf.format(date);
+        currentDate.setText(dateString);
+    }
 
     private void setTapBar() {
         //Initializing the tablayout

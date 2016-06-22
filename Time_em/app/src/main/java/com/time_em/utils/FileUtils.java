@@ -146,7 +146,7 @@ public class FileUtils {
              //       storageDir      /* directory */
           //  );
             file= new File(storageDir
-                    + File.separator + imageFileName+".3gp");
+                    + File.separator + videoFileName+".3gp");
         }
         else {
          //   file = File.createTempFile(

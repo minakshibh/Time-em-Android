@@ -194,82 +194,106 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 		notifications.addAll(dbHandler.getNotificationsByType("true", true));
 		Log.e("notification size", "" + notifications.size());
 		//for delete notification
-		if (notifications != null && notifications.size() > 0) {
+		//if (notifications != null && notifications.size() > 0) {
 
 			//delete offline values
 			//dbHandler.deleteNotificationOffline("true");
-		}
+		//}
 
 
 		//for task
 		tasks.clear();
 		tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
-		syncUploadAPI(tasks,deleteIds);
+		syncUploadAPI(tasks,deleteIds,notifications);
 		Log.e("task size", "" + tasks.size());
 		// for delete task
-		if (notifications != null && notifications.size() > 0) {
+		//if (notifications != null && notifications.size() > 0) {
 
 			//delete offline values
 			//dbHandler.deleteNotificationOffline("true");
-		}
+		//}
 	}
 
-	private void syncUploadAPI(ArrayList<TaskEntry> tasks,ArrayList<String> deleteIds) {
+	private void syncUploadAPI(ArrayList<TaskEntry> tasks,ArrayList<String> deleteIds,ArrayList<Notification> notifications) {
+		/*{"userTaskActivities": [{"UserId" : "2","Comments" : "Asd asd asd","Id" : "0","Operation" : "add",
+				"UniqueNumber" : "img_21466429009139","ActivityId" : "29679","CreatedDate" : "06-20-2016","TaskId" : "7104"}]}*/
 
+		// for task
 		ArrayList<HashMap<String, String>> arrayHashMap=new ArrayList<>();
 		for(int i=0;i<tasks.size();i++) {
 			HashMap<String, String> parameters = new HashMap<String, String>();
-			parameters.put("TaskActivityId", "" + tasks.get(i).getActivityId());
-			parameters.put("CreatedDate", "" + tasks.get(i).getCreatedDate());
+			parameters.put("CreatedDate", tasks.get(i).getCreatedDate());
 			parameters.put("Comments", "" + tasks.get(i).getComments());
 			parameters.put("UserId", "" + tasks.get(i).getUserId());
 			parameters.put("TaskId", "" + tasks.get(i).getTaskId());
 			parameters.put("ActivityId", "" + tasks.get(i).getActivityId());
-
+			parameters.put("Id", "" + tasks.get(i).getId());
+			parameters.put("UniqueNumber", String.valueOf(tasks.get(i).getUniqueNumber()));
 			Log.e("getAttachmentImageFile", "" + tasks.get(i).getAttachmentImageFile());
 
-			String string = tasks.get(i).getAttachmentImageFile();
+			/*String string = tasks.get(i).getAttachmentImageFile();
 			if(string!=null && !string.equalsIgnoreCase("null") ) {
 				String[] parts = string.split("IMG_");
 				String part1 = parts[0];
 				String imageName = parts[1];
 				Log.e("imageName", "" + imageName);
-				parameters.put("UniqueNumber", "" + imageName);
+				//parameters.put("UniqueNumber", "" + imageName);
 			}else{
 				parameters.put("UniqueNumber", "" + "123");
-			}
+			}*/
 			if(tasks.get(i).getId()==0)
-			parameters.put("operation", "add" );
+			parameters.put("Operation", "add" );
 			else
-			parameters.put("operation", "update" );
+			parameters.put("Operation", "update" );
 			arrayHashMap.add(parameters);
 		}
 		for(int i=0;i<deleteIds.size();i++) {
 			HashMap<String, String> parameters = new HashMap<String, String>();
 			parameters.put("Id", "" + deleteIds.get(i));
-			parameters.put("operation", "" + "delete");
+			parameters.put("Operation", "" + "delete");
 			arrayHashMap.add(parameters);
 		}
 
-
-		//Log.e("hash", "" + arrayHashMap.toString());
+// for notification
+		ArrayList<HashMap<String, String>> array_HashMapNotification=new ArrayList<>();
+		for(int i=0;i<notifications.size();i++) {
+			HashMap<String, String> parameters = new HashMap<String, String>();
+			//parameters.put("Id", ""+notifications.get(i).getNotificationId());
+			parameters.put("Subject", notifications.get(i).getSubject());
+			parameters.put("Message", notifications.get(i).getMessage());
+			//parameters.put("IsActive", "true");
+			parameters.put("CreatedDate", notifications.get(i).getCreatedDate());
+			parameters.put("NotificationTypeId", ""+notifications.get(i).getNotificationTypeId());
+			parameters.put("UniqueNumber", notifications.get(i).getUniqueNumber());
+			parameters.put("UserId",""+ notifications.get(i).getUserId());
+			parameters.put("NotifyTo",""+ notifications.get(i).getSenderId());
+			array_HashMapNotification.add(parameters);
+		}
 
 		if (Utils.isNetworkAvailable(BaseActivity.this)) {
-			HashMap<String, String> postDataParameters = new HashMap<String, String>();
-			JSONArray jarray=null;
+
+			JSONArray jsonArray=null;
+			JSONObject jsonObject = null;
 			try {
-				 jarray = new JSONArray(arrayHashMap.toString());
+				jsonArray = new JSONArray(arrayHashMap.toString());
+				jsonObject = new JSONObject();
+				jsonObject.put("userTaskActivities", jsonArray);
+				JSONArray jsonArray_NotificationData = new JSONArray(array_HashMapNotification.toString());
+				jsonObject.put("notifications", jsonArray_NotificationData);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			postDataParameters.put("userTaskActivities",""+ "userTaskActivities:"+jarray);
-				//timeemapi.azurewebsites.net/api/UserActivity/Sync
-				Log.e(Utils.Sync,postDataParameters.toString());
-				AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-						BaseActivity.this, "post", Utils.Sync,
-						postDataParameters, true, "Please wait...");
-				mWebPageTask.delegate = (AsyncResponseTimeEm) BaseActivity.this;
-				mWebPageTask.execute();
+
+
+			HashMap<String, String> postDataParameters = new HashMap<String, String>();
+			postDataParameters.put("Data", ""+jsonObject.toString());
+			Log.e("sync req",postDataParameters.toString());
+
+			AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+					BaseActivity.this, "post", Utils.Sync,
+					postDataParameters, true, "Please wait...");
+			mWebPageTask.delegate = (AsyncResponseTimeEm) BaseActivity.this;
+			mWebPageTask.execute();
 
 			} else {
 				Utils.alertMessage(BaseActivity.this, Utils.network_error);
@@ -343,7 +367,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 		Log.e("" + Utils.Sync, "" + output);
 		ArrayList<SyncData> arraySyncData = new ArrayList<SyncData>();
 		arraySyncData=parser.getSynOfflineData(output);
-
+		Log.e("size=",""+arraySyncData.size());
 		// for delete offline task value
 		tasks_delete.clear();
 		tasks_delete.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));

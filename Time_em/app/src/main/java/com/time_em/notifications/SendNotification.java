@@ -176,16 +176,17 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                         notification.setUserId(HomeActivity.user.getId());
                         notification.setSubject(subject.getText().toString());
                         notification.setMessage(message.getText().toString());
-                        notification.setNotificationId(Integer.parseInt(selectedNotificationTypeId));
+                        notification.setNotificationId(0);
+                        notification.setNotificationTypeId(Integer.parseInt(selectedNotificationTypeId));
                         notification.setSenderId(Integer.parseInt(selectedIds));
-
                         notification.setNotificationType(selectedNotificationTypeName);
                         notification.setCreatedDate(getCurrentDate());
                         notification.setSenderFullName(selectedUsers);
 
                         notification.setTimeZone(getCurrentDate());
                         notification.setIsOffline("true");
-
+                        long timeStamp = System.currentTimeMillis();
+                        notification.setUniqueNumber(HomeActivity.user.getId() + "" + timeStamp);
                         Log.e("",""+notification.toString());
                         offline_notification.add(notification);
                         dbHandler.updateNotifications(offline_notification);

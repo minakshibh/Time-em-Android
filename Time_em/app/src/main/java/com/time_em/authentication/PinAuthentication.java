@@ -185,7 +185,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 	@Override
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
-		Log.e("output", output);
+		Log.e("output", ""+output);
 		Time_emJsonParser parser = new Time_emJsonParser(PinAuthentication.this);
 //		Boolean isAuthenticated = parser.authorizePIN(output);
 		

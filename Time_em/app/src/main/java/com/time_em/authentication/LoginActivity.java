@@ -97,7 +97,7 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 	@Override
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
-		Log.e("output", output);
+		Log.e("output",""+ output);
 		
 //		Utils.alertMessage(LoginActivity.this, output);
 		HomeActivity.user = parser.getUserDetails(output , methodName);

@@ -58,7 +58,7 @@
                     android:id="@+id/userName"
                     android:text="User Name goes here"
                     android:layout_centerInParent="true"
-                    android:textColor="@color/alphabeticalTextColor"
+                    android:textColor="@color/sendTextColor"
                     android:textSize="14sp"/>
 
                 <TextView

@@ -98,8 +98,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         txtProjectSelection.setText("Select Project or Task");
         txtCommentsHeader.setText("Enter your Comments");
         comments.setHint("Your comments goes here");
-        txtHoursHeader.setText("Specify no. of hours");
-        hours.setHint("No. of hours");
+        txtHoursHeader.setText("Specify number of hours");
+        hours.setHint("No. of hours.(max 24hrs)");
         hours.setInputType(InputType.TYPE_CLASS_NUMBER);
         hoursIcon.setImageResource(R.drawable.user_icon);
         recipientSection.setVisibility(View.GONE);
@@ -130,6 +130,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
     }
 
     private void selectedSpinnerValue(Spinner sp) {
+
 
         if(assignedTasks!=null && assignedTasks.equals("null")){
             for(int i=0;i<assignedTasks.size();i++)
@@ -209,7 +210,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                         if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
                             fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
                         } else {
-                            if (HomeActivity.user.isSignedIn()) {
+                           // if (HomeActivity.user.isSignedIn()) {
 
                                 long timeStamp = System.currentTimeMillis();
                                 TaskEntry task = new TaskEntry();
@@ -227,6 +228,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                                 task.setIsActive(true);
                                 task.setAttachmentImageFile(fileUtils.getAttachmentPath());
                                 task.setIsoffline("true");
+                                task.setCreatedDate(selectedDate);
+                                task.setToken("00");
                                 // task.setEndTime(taskObject.getString("EndTime"));
                                 // task.setStartTime(taskObject.getString("StartTime"));
 
@@ -234,31 +237,32 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
 
                                     // task.setStartTime(taskObject.getString("StartTime"));
                                     Log.e("milliSecond", "" + timeStamp);
-                                    task.setCreatedDate(HomeActivity.user.getId() + "" + timeStamp);
+
                                     Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
 
-                                    task.setToken("00");
+                                    task.setToken(HomeActivity.user.getId() + "" + timeStamp);
+                                    task.setUniqueNumber(HomeActivity.user.getId() + "" + timeStamp);
                                     taskEntries.add(task);
                                     dbHandler.updateTask(taskEntries, selectedDate, true);
                                     Utils.alertMessage(AddEditTaskEntry.this, "Task Add Successfully.!");
-                                } //for edit delete old offline
+                                }
+                                //for edit delete old offline
                                 else {
 
 
                                     Log.e("milliSecond", "" + timeStamp);
-                                    task.setCreatedDate(taskEntry.getCreatedDate());
                                     Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
 
-                                    task.setToken(taskEntry.getCreatedDate());
+                                    task.setUniqueNumber(taskEntry.getUniqueNumber());
                                     taskEntries.add(task);
                                     dbHandler.updateDeleteOffline(taskEntries, selectedDate);
                                     Utils.alertMessage(AddEditTaskEntry.this, "Task Updated Successfully.!");
                                 }
 
-                            }
-                        else{
-                                Utils.alertMessage(AddEditTaskEntry.this, "User is sign out, Please sign in first");
-                        }
+                           // }
+                       // else{
+                               // Utils.alertMessage(AddEditTaskEntry.this, "User is sign out, Please sign in first");
+                        //}
                         }
                     }else{
                         Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 24");
@@ -294,8 +298,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
             dbHandler.updateProjectTasks(assignedTasks);//update data for notification type
 
             assignedTasks=dbHandler.getProjectTasksData();
-            adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this,
-                    R.layout.spinner_row_layout, assignedTasks);
+            adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this, R.layout.spinner_row_layout, assignedTasks);
+            adapter.setDropDownViewResource(R.layout.spinner_dropdown);
             spnProject.setAdapter(adapter);
             if(taskEntry!=null)
             {

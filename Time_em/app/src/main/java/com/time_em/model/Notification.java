@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 public class Notification  implements Parcelable{
 
-    int notificationId, senderId,UserId;
-    String notificationType, attachmentPath, subject, message, createdDate, senderFullName,TimeZone,IsOffline;
+    int notificationId, senderId,UserId,notificationTypeId;
+    String notificationType, attachmentPath, subject, message, createdDate, senderFullName,TimeZone,IsOffline,UniqueNumber;
 
     public Notification(){
 
@@ -21,8 +21,10 @@ public class Notification  implements Parcelable{
         createdDate = in.readString();
         senderFullName = in.readString();
         TimeZone = in.readString();
+        notificationTypeId =in.readInt();
         IsOffline = in.readString();
-        UserId = in.readInt();;
+        UserId = in.readInt();
+        UniqueNumber =in.readString();
     }
 
     @Override
@@ -36,8 +38,10 @@ public class Notification  implements Parcelable{
         dest.writeString(createdDate);
         dest.writeString(senderFullName);
         dest.writeString(TimeZone);
+        dest.writeInt(notificationTypeId);
         dest.writeString(IsOffline);
         dest.writeInt(UserId);
+        dest.writeString(UniqueNumber);
     }
 
     @Override
@@ -72,6 +76,22 @@ public class Notification  implements Parcelable{
     public String getIsOffline() {
         return IsOffline;
 
+    }
+
+    public int getNotificationTypeId() {
+        return notificationTypeId;
+    }
+
+    public void setNotificationTypeId(int notificationTypeId) {
+        this.notificationTypeId = notificationTypeId;
+    }
+
+    public String getUniqueNumber() {
+        return UniqueNumber;
+    }
+
+    public void setUniqueNumber(String uniqueNumber) {
+        UniqueNumber = uniqueNumber;
     }
 
     public void setIsOffline(String isOffline) {

@@ -219,7 +219,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             Calendar cal = Calendar.getInstance();
 
             //System.out.println(dateFormat.format(cal.getTime()));
-            String getcuurentdate=dateFormat.format(cal.getTime());
+            String getCurrentDate=dateFormat.format(cal.getTime());
             try {
                 String[] parts = getDate.split(" ");
                 part1 = parts[0]; // date
@@ -232,12 +232,15 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
                 e.printStackTrace();
             }
 
-            if (getcuurentdate.equalsIgnoreCase(part1)) {
+            if (getCurrentDate.equalsIgnoreCase(part1)) {
 
-                date.setText(part2);
+                date.setText(part2);//time
             }else{
 
-                date.setText(part1);
+               //date.setText(part1);//date
+               String str_date= formatDateFromOnetoAnother(part1,"dd/MM/yyyy","EEE dd MMM, yyyy");
+               date.setText(str_date);
+
             }
 
 
@@ -308,7 +311,27 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             }
         }*/
     }
+    public static String formatDateFromOnetoAnother(String date,String givenformat,String resultformat) {
 
+        String result = "";
+        SimpleDateFormat sdf;
+        SimpleDateFormat sdf1;
+
+        try {
+            sdf = new SimpleDateFormat(givenformat);
+            sdf1 = new SimpleDateFormat(resultformat);
+            result = sdf1.format(sdf.parse(date));
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+        finally {
+            sdf=null;
+            sdf1=null;
+        }
+        return result;
+    }
     @Override
     protected void onResume() {
         super.onResume();

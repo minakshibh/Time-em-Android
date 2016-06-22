@@ -203,7 +203,8 @@ public class Time_emJsonParser {
 				notification.setMessage(taskObject.getString("Message"));
 				notification.setCreatedDate(taskObject.getString("createdDate"));
 				notification.setSenderFullName(taskObject.getString("SenderFullName"));
-
+				notification.setIsOffline("false");
+				notification.setUniqueNumber("-1");
 				notificationList.add(notification);
 			}
 
@@ -260,6 +261,7 @@ public class Time_emJsonParser {
 				task.setAttachmentImageFile(video);
 			}
 			task.setIsoffline("false");
+			task.setUniqueNumber("-1");
 			//task.setSignedOutHours(0.0);
 			taskList.add(task);
 		}
@@ -605,7 +607,8 @@ public class Time_emJsonParser {
 		ArrayList<SyncData> arraySyncData = new ArrayList<SyncData>();
 		ArrayList<TaskEntry> arrayTaskEntry = new ArrayList<TaskEntry>();
 		ArrayList<Notification> arrayNotification = new ArrayList<Notification>();
-
+		//{"isError":false,"Message":"Sync Complete.","UsersData":[{"UserId":2,"Id":26960,
+		// "UniqueNumber":"21466505042487"}],"NotificationData":[]}
 		try{
 			jObject = new JSONObject(webResponse);
 			isError = jObject.getBoolean("IsError");
@@ -615,19 +618,12 @@ public class Time_emJsonParser {
 			JSONArray jArray = jObject.getJSONArray("UsersData");
 
 			for(int i = 0; i<jArray.length(); i++){
-				//JSONObject userObject = jArray.getJSONObject(i);
+				JSONObject userObject = jArray.getJSONObject(i);
 
-				//TaskEntry timerTask = new TaskEntry();
-				//timerTask.setSignedInHours(userObject.getDouble("signedin"));
-				//timerTask.setSignedOutHours(userObject.getDouble("signedout"));
-				//SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
-				//String str_date=userObject.getString("date");
-				//String str_date="11-June-07";
-				//DateFormat formatter = new SimpleDateFormat("mm-dd-yyyy");
-				//Date date = formatter.parse(str_date);
-				//timerTask.setCreatedDate(dateFormatter.format(date));
-				//timerTask.setCreatedDate();
-				//arrayTaskEntry.add(timerTask);
+				TaskEntry timerTask = new TaskEntry();
+				timerTask.setUserId(userObject.getInt("UserId"));
+				timerTask.setUniqueNumber(userObject.getString("UniqueNumber"));
+				arrayTaskEntry.add(timerTask);
 			}
 			JSONArray nArray = jObject.getJSONArray("NotificationData");
 			for(int j = 0; j<nArray.length(); j++){

@@ -162,13 +162,14 @@
             android:textSize="14sp" />
 
     </LinearLayout>
-    <TextView style="@style/separator" />
+            <TextView style="@style/separator" />
     <LinearLayout
         android:id="@+id/lay_Logout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_margin="10dp"
+        android:visibility="gone"
         android:gravity="center_vertical">
 
         <ImageView
@@ -190,7 +191,7 @@
             android:textSize="16sp" />
 
     </LinearLayout>
-    <TextView style="@style/separator" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -9,6 +9,8 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 
 public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 
@@ -19,7 +21,7 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 	private String methodName, message,method_type,email;
 	private HashMap<String, String> postDataParameters;
 	private boolean displayProgress,token;
-	
+	private JSONObject jsonObject = new JSONObject();
 	
 	private String name,pass;
 	
@@ -31,7 +33,16 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 		this.displayProgress = displayDialog;
 		this.message = message;
 	}
-	
+
+	public AsyncTaskTimeEm(Activity activity, String method_type, String methodName, JSONObject jsonObject, boolean displayDialog, String message) {
+		this.activity = activity;
+		this.method_type=method_type;
+		this.methodName = methodName;
+		this.jsonObject = jsonObject;
+		this.displayProgress = displayDialog;
+		this.message = message;
+	}
+
 	@Override
 	protected void onPreExecute() {
 		// TODO Auto-generated method stub
@@ -52,9 +63,9 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 		{
 			result = Utils.getResponseFromUrlGet(token,methodName, postDataParameters, activity);
 		
-		}else if(method_type.equalsIgnoreCase("post")){
+		}else if(method_type.equalsIgnoreCase("post") || method_type.equalsIgnoreCase("postJson")){
 //			
-			result = Utils.getResponseFromUrlPost(token,methodName, postDataParameters, activity);
+			result = Utils.getResponseFromUrlPost(token,methodName, postDataParameters, activity, jsonObject, method_type);
 		}
 		
 		return result;
