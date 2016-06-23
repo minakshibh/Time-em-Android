@@ -145,7 +145,7 @@ Log.e("on resume","resume called");
 
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 tag.getId();
-                Utils.alertMessage(NFCReadActivity.this,String.valueOf(tag.getId()));
+                Utils.alertMessageWithoutBack(NFCReadActivity.this,action+"::"+String.valueOf(tag.getId()));
                 new NdefReaderTask().execute(tag);
 
             } else {
@@ -156,7 +156,7 @@ Log.e("on resume","resume called");
 
             // In case we would still use the Tech Discovered Intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Utils.alertMessage(NFCReadActivity.this,String.valueOf(tag.getId()));
+            Utils.alertMessageWithoutBack(NFCReadActivity.this,action+"::"+String.valueOf(tag.getId()));
             String[] techList = tag.getTechList();
             String searchedTech = Ndef.class.getName();
 
@@ -166,8 +166,23 @@ Log.e("on resume","resume called");
                     break;
                 }
             }
-        }else{
-            Utils.alertMessage(NFCReadActivity.this,"Code in else clause, action: "+action);
+        }else if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+
+            // In case we would still use the Tech Discovered Intent
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            //Utils.alertMessageWithoutBack(NFCReadActivity.this,action+"::"+"tag id = "+String.valueOf(tag.getId())+
+           // ",, tag = "+String.valueOf(tag.toString()));
+
+            getCodeSend(String.valueOf(tag.getId()));
+            /* String[] techList = tag.getTechList();
+            String searchedTech = Ndef.class.getName();
+
+            for (String tech : techList) {
+                if (searchedTech.equals(tech)) {
+                    new NdefReaderTask().execute(tag);
+                    break;
+                }
+            }*/
         }
     }
 
@@ -262,7 +277,35 @@ Log.e("on resume","resume called");
             }
         }
     }
-
+private void getCodeSend(String scanResult)
+{
+    if (scanResult != null) {
+        if(BarcodeScanActivity.arrayList_scanCode!=null && BarcodeScanActivity.arrayList_scanCode.size()>0 ) {
+            boolean bolResult=true;
+            for(int i=0;i<BarcodeScanActivity.arrayList_scanCode.size();i++){
+                if(BarcodeScanActivity.arrayList_scanCode.get(i).equalsIgnoreCase(scanResult))
+                {
+                    bolResult=false;
+                    //   againOpenCamera();
+                    //   Toast.makeText(BarcodeScanActivity.this, scanResult +" code already scanned",Toast.LENGTH_SHORT).show();
+                }
+            }
+            if(bolResult)
+            {
+                showAlertDialog(scanResult, bolResult);
+            }
+            else{
+                showAlertDialog(scanResult,bolResult);
+            }
+        }
+        else{
+            showAlertDialog(scanResult,true);
+        }
+    }
+    else{
+        Utils.alertMessage(getApplicationContext(),"261 on post");
+    }
+}
     private void showAlertDialog(final String code, boolean result) {
 
         String massage="";

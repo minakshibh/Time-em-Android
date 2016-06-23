@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +91,7 @@ public class Utils {
     static public String UsersGraph = "/usertask/UsersGraph";
     static public String Sync = "/UserActivity/Sync";
     static public String SyncFileUpload = "/UserActivity/SyncFileUpload";
+    static public String GetUsersListByTagId = "/User/GetUsersListByTagId";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -355,5 +357,14 @@ public class Utils {
 
     }
 
+    public static String getCurrentDate()
+    {
+        String str_date="";
+        long date = System.currentTimeMillis();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM, yyyy");
+        str_date  = sdf.format(date);
+
+        return str_date;
+    }
 }

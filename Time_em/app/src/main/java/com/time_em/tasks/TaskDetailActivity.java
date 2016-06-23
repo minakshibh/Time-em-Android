@@ -40,9 +40,9 @@ public class TaskDetailActivity extends Activity {
     private TextView info, taskDesc, taskComments, hoursWorked, txtDate;
     private TaskEntry taskEntry;
     private TextView AttachementTxt;
-  //  private VideoView videoView;
+    private VideoView videoView;
     private String image_url=null;
-    JCVideoPlayerStandard videoView;
+    //JCVideoPlayerStandard videoView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class TaskDetailActivity extends Activity {
         AttachementTxt = (TextView) findViewById(R.id.AttachementTxt);
         attachment.setVisibility(View.GONE);
         AttachementTxt.setVisibility(View.GONE);
-        videoView = (JCVideoPlayerStandard) findViewById(R.id.videoView);
+        videoView = (VideoView) findViewById(R.id.videoView);
        // videoView=(VideoView)findViewById(R.id.videoView);
         //mVideoPlayer_2 = (VideoView)root.findViewById(R.id.videoView);
         taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
@@ -113,6 +113,10 @@ public class TaskDetailActivity extends Activity {
                 } else {
                     videoView.setVisibility(View.VISIBLE);
                     attachment.setVisibility(View.GONE);
+                    videoView.setVideoPath(image_url);
+                    videoView.setMediaController(new MediaController(TaskDetailActivity.this));
+                    videoView.requestFocus();
+                    videoView.seekTo(5);
 
                 }/*MediaController mc = new MediaController(this);
                *//* MediaController mediaController = new MediaController(this);
@@ -140,15 +144,30 @@ public class TaskDetailActivity extends Activity {
                 videoView.seekTo(1);*/
 
 
-                videoView.setUp(image_url, "Video");
+                //videoView.setUp(image_url, "Video");
             }
             else{
-                videoView.setVisibility(View.GONE);
+             /*   videoView.setVisibility(View.GONE);
                 attachment.setVisibility(View.VISIBLE);
                 FileUtils fileUtils=new FileUtils(TaskDetailActivity.this);
-                attachment.setImageBitmap(fileUtils.getScaledBitmap(image_url, 800, 800));
+                attachment.setImageBitmap(fileUtils.getScaledBitmap(image_url, 800, 800));*/
+
+                if(image_url.contains(".jpg") | image_url.contains(".png")) {
+                    attachment.setVisibility(View.VISIBLE);
+                    videoView.setVisibility(View.GONE);
+                    FileUtils fileUtils = new FileUtils(TaskDetailActivity.this);
+                    attachment.setImageBitmap(fileUtils.getScaledBitmap(image_url, 500, 500));
+                }
+                else{
+                    attachment.setVisibility(View.GONE);
+                    videoView.setVisibility(View.VISIBLE);
+                    videoView.setVideoPath(image_url);
+                    videoView.setMediaController(new MediaController(TaskDetailActivity.this));
+                    videoView.requestFocus();
+                    videoView.seekTo(5);
+                }
             }
-          //  videoView.startButton.performClick();
+
 
         }
         else{
@@ -161,7 +180,7 @@ public class TaskDetailActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        videoView.releaseAllVideos();
+       // videoView.releaseAllVideos();
     }
 
     private void setClickListeners() {

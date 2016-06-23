@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:ems="10"
+			android:singleLine="true"
 			android:textColorHint="@color/dullTextColor"
             android:hint="Enter Login ID"
             android:textColor="@color/textColor"
@@ -68,7 +69,8 @@
             android:src="@drawable/lock_login"
             android:layout_marginRight="10dp" />
 
-<EditText 
+<EditText
+	android:singleLine="true"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:password="true"

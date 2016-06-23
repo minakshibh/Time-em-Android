@@ -156,6 +156,8 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 				dbHandler.deleteActiveUsers();
 				dbHandler.deleteTaskTable();
 				dbHandler.deleteTeamTable();
+				dbHandler.deleteTABLE_NOTIFICATIONS_TYPE();
+				dbHandler.deleteProjectTask();
 
 				Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

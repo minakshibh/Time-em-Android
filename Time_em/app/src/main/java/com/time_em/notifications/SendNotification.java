@@ -40,6 +40,7 @@ import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.tasks.AddEditTaskEntry;
 import com.time_em.utils.FileUtils;
 import com.time_em.utils.MultipartRequest;
 import com.time_em.utils.SpinnerTypeAdapter;
@@ -93,6 +94,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     }
 
     private void initScreen() {
+        AddEditTaskEntry.UniqueNumber= FileUtils.getUniqueNumber();
         fileUtils = new FileUtils(SendNotification.this);
         dbHandler = new TimeEmDbHandler(SendNotification.this);
         spnNotificationType = (Spinner) findViewById(R.id.spnNotificationType);

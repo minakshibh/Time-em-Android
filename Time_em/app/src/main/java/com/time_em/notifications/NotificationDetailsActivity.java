@@ -97,17 +97,20 @@ public class NotificationDetailsActivity extends Activity {
         Log.e("attachmentPath",""+attachmentPath);
         if(attachmentPath!=null && attachmentPath.equalsIgnoreCase("null"))
         {
+            lay_Attachment.setVisibility(View.VISIBLE);
             if(attachmentPath.contains("http")) {
-                lay_Attachment.setVisibility(View.VISIBLE);
+
                 int loader = R.drawable.add;
                 ImageLoader imgLoader = new ImageLoader(getApplicationContext());
                 imgLoader.DisplayImage(attachmentPath, loader, Image_Attachment);
-            }else
+            }
+           /* else
             {
+
                 FileUtils fileUtils=new FileUtils(NotificationDetailsActivity.this);
-                Bitmap bitmap= fileUtils.getScaledBitmap(attachmentPath,800,800);
+                Bitmap bitmap= fileUtils.getScaledBitmap(attachmentPath,500,500);
                 Image_Attachment.setImageBitmap(bitmap);
-                }
+                }*/
             }
         else
         {

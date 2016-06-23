@@ -27,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -78,7 +80,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     private TabLayout  tabLayout;
     private int graphBarHeight = 140;
 
-    private String UpdateFileApi = Utils.SyncFileUpload;
+
 
     private TimeEmDbHandler dbHandler;
     private FileUtils fileUtils;
@@ -109,7 +111,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         initScreen();
         setClickListeners();
         setTapBar();
-        getCurrentDate();
+
 
         if (trigger.equals("login"))
             openChangeStatusDialog();
@@ -223,20 +225,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         trigger = getIntent().getStringExtra("trigger");
         lay_indicator=(LinearLayout)findViewById(R.id.lay_indicator);
         currentDate=(TextView)findViewById(R.id.currentDate);
+        currentDate.setText(Utils.getCurrentDate());
          parser = new Time_emJsonParser(HomeActivity.this);
         if (user.getUserTypeId() == 4)
             myTeam.setVisibility(View.GONE);
 
 
     }
-    private void getCurrentDate()
-    {
-        long date = System.currentTimeMillis();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM, yyyy");
-        String dateString = sdf.format(date);
-        currentDate.setText(dateString);
-    }
 
     private void setTapBar() {
         //Initializing the tablayout
@@ -728,13 +724,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
                 dbHandler.deleteNotificationOffline("true");
 
                 syncDataCheck();//checking for offline data
-
+                deleteIds.clear(); // delete task ids.
             }
 
     }
 
     private void syncDataCheck() {
-        imageSync.setImageDrawable(getResources().getDrawable(R.drawable.online));
+        imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_green));
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
         //for notification
         notifications.clear();
@@ -742,15 +738,19 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         Log.e("notification size", "" + notifications.size());
         //for delete notification
         if (notifications != null && notifications.size() > 0) {
-            imageSync.setImageDrawable(getResources().getDrawable(R.drawable.offline));
+            imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_red));
         }
         tasks.clear();
         tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(),"true",true));
         Log.e("task size", "" + tasks.size());
         // for delete task
         if (tasks != null && tasks.size() > 0) {
-            imageSync.setImageDrawable(getResources().getDrawable(R.drawable.offline));
+            imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_red));
         }
+        if(deleteIds.size()>0)
+        {
+            imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_red));
+            }
     }
 
     private void syncUploadData() {
@@ -829,13 +829,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
             JSONArray jsonArray=null,jsonArray_NotificationData=null;
             JSONObject jsonObject = null,jsonObject_notification=null;
             try {
-                jsonArray = new JSONArray(arrayHashMap.toString());
+                jsonArray = new JSONArray(arrayHashMap.toString().replace(" ",""));
                 jsonObject = new JSONObject();
                 jsonObject.put("userTaskActivities", jsonArray);
-                jsonArray_NotificationData = new JSONArray(array_HashMapNotification.toString());
+                jsonArray_NotificationData = new JSONArray(array_HashMapNotification.toString().replace(" ",""));
                 jsonObject.put("notifications", jsonArray_NotificationData);
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+                Toast.makeText(HomeActivity.this,"Someting Wrong, try again",Toast.LENGTH_LONG).show();
             }
 
 
@@ -856,52 +857,56 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
     private void syncUploadFile(SyncData syncData)
     {
 
-		/*http://timeemapi.azurewebsites.net/api/UserActivity/SyncFileUpload
-		type: post
-		Parameters: Id,FileUploadFor(usertaskactivity,notification)*/
-        String ImagePath="";
+        String ImagePath=null;
 
-        //for task
+        //for task file upload
         for(int i=0;i<syncData.getArray_taks().size();i++) {
 
             ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
             dataModels.add(new MultipartDataModel("Id",
-                    String.valueOf(syncData.getArray_taks().get(i).getUserId()),MultipartDataModel.STRING_TYPE));
-            dataModels.add(new MultipartDataModel("FileUploadFor","notification", MultipartDataModel.STRING_TYPE));
+                    String.valueOf(syncData.getArray_taks().get(i).getId()),MultipartDataModel.STRING_TYPE));
+            dataModels.add(new MultipartDataModel("FileUploadFor","usertaskactivity", MultipartDataModel.STRING_TYPE));
 
             ImagePath="";
             for(int j=0;j<tasks.size();j++) {
-                Log.e("parser un",""+syncData.getArray_taks().get(i).getUniqueNumber());
-                Log.e("task un",""+tasks.get(j).getUniqueNumber());
+
+            //   Log.e("parser un",""+syncData.getArray_taks().get(i).getUniqueNumber());
+            //    Log.e("task un",""+tasks.get(j).getUniqueNumber());
 
                 if (syncData.getArray_taks().get(i).getUniqueNumber()
                         .equalsIgnoreCase(tasks.get(j).getUniqueNumber())){
                     ImagePath=tasks.get(j).getAttachmentImageFile();
                 }
             }
+            if(ImagePath!=null)
             dataModels.add(new MultipartDataModel("profile_picture", ImagePath,MultipartDataModel.FILE_TYPE));
             Log.e("send task","send task"+ImagePath);
-            fileUtils.sendMultipartRequest(UpdateFileApi, dataModels);
+
+            fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
         }
 
-        //for notification
+        //for notification file upload
         for(int i=0;i<syncData.getArray_noitification().size();i++) {
 
             ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
             dataModels.add(new MultipartDataModel("Id",
-                    String.valueOf(syncData.getArray_noitification().get(i).getUserId()),MultipartDataModel.STRING_TYPE));
-            dataModels.add(new MultipartDataModel("FileUploadFor", "usertaskactivity", MultipartDataModel.STRING_TYPE));
+                    String.valueOf(syncData.getArray_noitification().get(i).getNotificationId()),MultipartDataModel.STRING_TYPE));
+            dataModels.add(new MultipartDataModel("FileUploadFor", "notification", MultipartDataModel.STRING_TYPE));
             for(int j=0;j<notifications.size();j++) {
-                Log.e("parser un",""+syncData.getArray_noitification().get(i).getUniqueNumber());
-                Log.e("task un",""+notifications.get(j).getUniqueNumber());
+
+               // Log.e("parser un",""+syncData.getArray_noitification().get(i).getUniqueNumber());
+               // Log.e("task un",""+notifications.get(j).getUniqueNumber());
+
                 if (syncData.getArray_noitification().get(i).getUniqueNumber()
                         .equalsIgnoreCase(notifications.get(j).getUniqueNumber())){
                     ImagePath=notifications.get(j).getAttachmentPath();
                 }
             }
+            if(ImagePath!=null)
             dataModels.add(new MultipartDataModel("profile_picture", ImagePath,MultipartDataModel.FILE_TYPE));
+
             Log.e("send notification","send notification"+ImagePath);
-            fileUtils.sendMultipartRequest(UpdateFileApi, dataModels);
+            fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
 
         }
 

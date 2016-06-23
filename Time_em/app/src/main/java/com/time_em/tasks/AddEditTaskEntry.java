@@ -35,7 +35,7 @@ import com.time_em.utils.Utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
+public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader;
     private Spinner spnProject;
@@ -51,8 +51,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
     private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0";
     private TaskEntry taskEntry;
     private VideoView uploadedVideo;
-    TimeEmDbHandler dbHandler ;
-    ArrayList<TaskEntry> taskEntries=new ArrayList<>();
+    TimeEmDbHandler dbHandler;
+    public static String UniqueNumber="";
+    ArrayList<TaskEntry> taskEntries = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +63,11 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         initScreen();
         loadProjects();
         setListeners();
+        UniqueNumber= FileUtils.getUniqueNumber();
     }
+
+
+
 
     private void initScreen() {
         parser = new Time_emJsonParser(AddEditTaskEntry.this);
@@ -85,13 +91,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
         rightNavigation = (ImageView)findViewById(R.id.AddButton);
         rightNavigation.setVisibility(View.GONE);
         dateHeader = (TextView)findViewById(R.id.dateHeader);
-        try{
+
         selectedDate = getIntent().getStringExtra("selectDate");
         taskEntry = getIntent().getParcelableExtra("taskEntry");
-        }catch(Exception e)
-        {
-            e.printStackTrace();
-        }
 
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
@@ -115,15 +117,40 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
 
             hours.setText(String.valueOf(taskEntry.getTimeSpent()));
             String image_url = taskEntry.getAttachmentImageFile();
+            Log.e("image_url",""+image_url);
             int loader = R.drawable.add;
             // ImageLoader class instance
-            if (image_url != null &&!image_url.equalsIgnoreCase("null")) {
+            if (image_url != null && !image_url.equalsIgnoreCase("null")) {
                 if(image_url.contains("http")) {
-                    ImageLoader imgLoader = new ImageLoader(getApplicationContext());
-                    imgLoader.DisplayImage(image_url, loader, uploadedImage);
+                    if(image_url.contains(".jpg") | image_url.contains(".png")) {
+                        uploadedImage.setVisibility(View.VISIBLE);
+                        uploadedVideo.setVisibility(View.GONE);
+                        ImageLoader imgLoader = new ImageLoader(getApplicationContext());
+                        imgLoader.DisplayImage(image_url, loader, uploadedImage);
+                    }else{
+                        uploadedImage.setVisibility(View.GONE);
+                        uploadedVideo.setVisibility(View.VISIBLE);
+                        uploadedVideo.setVideoPath(image_url);
+                        uploadedVideo.setMediaController(new MediaController(AddEditTaskEntry.this));
+                        uploadedVideo.requestFocus();
+                        uploadedVideo.seekTo(5);
+                    }
                 }else{
-                    FileUtils fileUtils=new FileUtils(AddEditTaskEntry.this);
-                    uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 500, 500));
+
+                    if(image_url.contains(".jpg") | image_url.contains(".png")) {
+                        uploadedImage.setVisibility(View.VISIBLE);
+                        uploadedVideo.setVisibility(View.GONE);
+                        FileUtils fileUtils = new FileUtils(AddEditTaskEntry.this);
+                        uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 500, 500));
+                    }
+                    else{
+                        uploadedImage.setVisibility(View.GONE);
+                        uploadedVideo.setVisibility(View.VISIBLE);
+                        uploadedVideo.setVideoPath(image_url);
+                        uploadedVideo.setMediaController(new MediaController(AddEditTaskEntry.this));
+                        uploadedVideo.requestFocus();
+                        uploadedVideo.seekTo(5);
+                    }
                 }
             }
         }
@@ -212,7 +239,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                         } else {
                            // if (HomeActivity.user.isSignedIn()) {
 
-                                long timeStamp = System.currentTimeMillis();
+
                                 TaskEntry task = new TaskEntry();
                                 if (fileUtils.getAttachmentPath() != null)
                                     task.setAttachmentImageFile(fileUtils.getAttachmentPath());
@@ -236,12 +263,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                                 if (taskEntry == null) {   //for add new offline
 
                                     // task.setStartTime(taskObject.getString("StartTime"));
-                                    Log.e("milliSecond", "" + timeStamp);
 
-                                    Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
 
-                                    task.setToken(HomeActivity.user.getId() + "" + timeStamp);
-                                    task.setUniqueNumber(HomeActivity.user.getId() + "" + timeStamp);
+                                    Log.e("UniqueNumber", "" + UniqueNumber);
+
+                                    task.setToken("00");
+                                    task.setUniqueNumber(UniqueNumber);
                                     taskEntries.add(task);
                                     dbHandler.updateTask(taskEntries, selectedDate, true);
                                     Utils.alertMessage(AddEditTaskEntry.this, "Task Add Successfully.!");
@@ -250,13 +277,21 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm{
                                 else {
 
 
-                                    Log.e("milliSecond", "" + timeStamp);
-                                    Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
+                                    Log.e("UniqueNumber", "" + UniqueNumber);
+                                   // Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
 
-                                    task.setUniqueNumber(taskEntry.getUniqueNumber());
-                                    taskEntries.add(task);
-                                    dbHandler.updateDeleteOffline(taskEntries, selectedDate);
-                                    Utils.alertMessage(AddEditTaskEntry.this, "Task Updated Successfully.!");
+                                    if(taskEntry.getId()==0) {
+                                        task.setUniqueNumber(taskEntry.getUniqueNumber());
+                                        taskEntries.add(task);
+                                        dbHandler.updateDeleteOffline(taskEntries, selectedDate);
+                                        Utils.alertMessage(AddEditTaskEntry.this, "Task Updated Successfully.!");
+                                    }else{
+
+                                        task.setUniqueNumber(UniqueNumber);
+                                        taskEntries.add(task);
+                                        dbHandler.updateTask(taskEntries, selectedDate, false);
+                                        Utils.alertMessage(AddEditTaskEntry.this, "Task Updated Successfully.!");
+                                    }
                                 }
 
                            // }

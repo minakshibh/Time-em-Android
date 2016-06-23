@@ -45,7 +45,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
     private Time_emJsonParser parser;
     private int UserId;
     private ImageView addTaskButton, back;
-    private TextView headerText;
+    private TextView headerText,currentDate;
     private Intent intent;
     private LinearLayout footer;
     private RecyclerView recyclerView;
@@ -77,6 +77,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         parser = new Time_emJsonParser(TaskListActivity.this);
         headerText = (TextView)findViewById(R.id.headerText);
         UserId = getIntent().getIntExtra("UserId",HomeActivity.user.getId());
+        currentDate=(TextView)findViewById(R.id.currentDate);
+        currentDate.setVisibility(View.VISIBLE);
+        currentDate.setText(Utils.getCurrentDate());
 
         if(UserId == HomeActivity.user.getId()){
             headerText.setText("My Tasks");
@@ -217,12 +220,20 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
             }
 
         } else {
-            HomeActivity.deleteIds.add(""+taskEntry.getId());
-            taskEntry.setIsActive(false);
-            ArrayList<TaskEntry> taskEntries = new ArrayList<>();
-            taskEntries.add(taskEntry);
-            dbHandler.updateDeleteOffline(taskEntries, selectedDate);
-            getTaskList(selectedDate);
+            if(taskEntry.getId()==0) {
+                taskEntry.setIsActive(false);
+                ArrayList<TaskEntry> taskEntries = new ArrayList<>();
+                taskEntries.add(taskEntry);
+                dbHandler.updateDeleteOffline(taskEntries, selectedDate);
+                getTaskList(selectedDate);
+            }
+            else{
+                taskEntry.setIsActive(false);
+                ArrayList<TaskEntry> taskEntries = new ArrayList<>();
+                taskEntries.add(taskEntry);
+                HomeActivity.deleteIds.add("" + taskEntry.getId());
+                dbHandler.updateTask(taskEntries, selectedDate,false);
+            }
            // Utils.alertMessage(TaskListActivity.this, "Task Updated Successfully.!");
             //Utils.alertMessage(TaskListActivity.this, Utils.network_error);
         }

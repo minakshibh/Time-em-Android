@@ -23,7 +23,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.time_em.android.R;
+import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.MultipartDataModel;
+import com.time_em.tasks.AddEditTaskEntry;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,10 +133,10 @@ public class FileUtils {
     private File createImageFile(boolean video) throws IOException {
         // Create an image file name
        // String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        long timeStamp=System.currentTimeMillis();
-        Log.e("timeStamp",""+timeStamp);
-        String imageFileName = "IMG_" + ""+timeStamp;// + "_";
-        String videoFileName = "VID_" + ""+timeStamp;//+ "_";
+      //  long timeStamp=System.currentTimeMillis();
+       // Log.e("timeStamp",""+timeStamp);
+        String imageFileName = "IMG_" + ""+ AddEditTaskEntry.UniqueNumber;// + "_";
+        String videoFileName = "VID_" + ""+AddEditTaskEntry.UniqueNumber;//+ "_";
         Log.e("imageFileName",""+imageFileName);
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File file;
@@ -146,7 +148,7 @@ public class FileUtils {
              //       storageDir      /* directory */
           //  );
             file= new File(storageDir
-                    + File.separator + videoFileName+".3gp");
+                    + File.separator + videoFileName+".mp4");
         }
         else {
          //   file = File.createTempFile(
@@ -213,9 +215,9 @@ public class FileUtils {
 
         return inSampleSize;
     }
-    public void sendMultipartRequest(String APIName, ArrayList<MultipartDataModel> data){
+    public void sendMultipartRequest(final String APIName, ArrayList<MultipartDataModel> data){
 
-        Log.e("Notification","Send notification called");
+        Log.e("multipart","Send calling");
 
         final ProgressDialog pDialog = new ProgressDialog(context);
         pDialog.setTitle("Time'em");
@@ -224,11 +226,12 @@ public class FileUtils {
         pDialog.show();
 
         String url = context.getResources().getString(R.string.baseUrl)+APIName;
-
+        Log.e("Req Data"+url, ""+data.toString());
         MultipartRequest mCustomRequest = new MultipartRequest(url, data, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 pDialog.dismiss();
+
                 Log.e("volley error", "::: error , "+error.getMessage());
                 Utils.showToast(context, "Something went wrong, "+error.getMessage());
             }
@@ -242,7 +245,7 @@ public class FileUtils {
                     Log.e("volley response", ":::"+responseString);
 
                     pDialog.dismiss();
-                    Utils.alertMessage(context, "::::: " + responseString);
+                    Utils.alertMessageWithoutBack(context, "::::: " + responseString);
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -254,7 +257,7 @@ public class FileUtils {
         });
 
         mCustomRequest.setShouldCache(false);
-        mCustomRequest.setRetryPolicy(new DefaultRetryPolicy(30 * 1000, 0,
+        mCustomRequest.setRetryPolicy(new DefaultRetryPolicy(90 * 1000, 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleySingleton.getInstance(context).addToRequestQueue(mCustomRequest);
     }
@@ -272,8 +275,8 @@ public class FileUtils {
      //   File sdcard = Environment.getExternalStorageDirectory();
         //File oldFile = new File(attachmentPath,".png");
         //File newFile = new File(attachmentPath,"to.png");
-        long timeStamp=System.currentTimeMillis();
-        String imageFileName = "IMG_" + ""+timeStamp;
+
+        String imageFileName = "IMG_" + ""+AddEditTaskEntry.UniqueNumber;
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File file = new File(attachmentPath);
         File file2 = new File(storageDir+File.separator+imageFileName+".png");
@@ -306,4 +309,12 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
+
+    public static String getUniqueNumber()
+    {
+        String UniqueNumber="";
+        long timeStamp = System.currentTimeMillis();
+        UniqueNumber= HomeActivity.user.getId()+""+timeStamp;
+        return UniqueNumber;
+        }
 }

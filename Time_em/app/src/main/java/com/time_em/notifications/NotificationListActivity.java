@@ -144,6 +144,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
             postDataParameters.put("timeStamp", timeStamp);
 
+            Log.e("ss","ss"+postDataParameters.toString());
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     NotificationListActivity.this, "post", Utils.GetNotificationAPI,
                     postDataParameters, true, "Please wait...");

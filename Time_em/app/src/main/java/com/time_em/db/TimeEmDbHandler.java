@@ -193,9 +193,14 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public void deleteSync() {
+	public void deleteTABLE_NOTIFICATIONS_TYPE() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_NOTIFICATIONS_TYPE, null, null);
+		db.close();
+	}
+	public void deleteProjectTask() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_PROJECT_TASK, null, null);
 		db.close();
 	}
 	public void updateActiveUsers(ArrayList<User> activeUsers) {
@@ -700,11 +705,17 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			return team;
 		}
 	}
-	public User getTeamByLoginCode(long loginCode) {
+	public User getTeamByLoginCode(long code,String type) {
 		//ArrayList<User> team = new ArrayList<User>();
 		User user = null;
+		String selectQuery=null;
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_TEAM +" where "+LoginCode+" = "+loginCode;
+		if(type.equalsIgnoreCase("barcode")) {
+			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + LoginCode + " = " + code;
+		}
+		else{
+			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + NfcTagId + "=\"" + code + "\"";
+		}
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
