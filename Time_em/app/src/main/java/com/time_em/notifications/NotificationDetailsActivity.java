@@ -95,7 +95,7 @@ public class NotificationDetailsActivity extends Activity {
 
         attachmentPath=mNotification.getAttachmentPath();
         Log.e("attachmentPath",""+attachmentPath);
-        if(attachmentPath!=null && attachmentPath.equalsIgnoreCase("null"))
+        if(attachmentPath!=null && !attachmentPath.equalsIgnoreCase("null"))
         {
             lay_Attachment.setVisibility(View.VISIBLE);
             if(attachmentPath.contains("http")) {
