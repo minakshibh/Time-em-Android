@@ -3,11 +3,15 @@ package com.time_em.authentication;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,6 +39,7 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
         
         initScreen();
         setClickListeners();
+		keyBoard_DoneButton();
     }
     
 	private void initScreen() {
@@ -119,5 +124,28 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 		//"UserTypeId":2,"Department":null,"DepartmentId":0,"Company":null,"CompanyId":2,
 		//"Worksite":null,"WorksiteId":0,"Project":null,"ProjectId":0,"RefrenceCount":false,
 		//"IsSecurityPin":null,"NFCTagId":null,"Token":"azcx2b5lwos","isError":false,"ReturnMessage":null}
+	}
+	private void  keyBoard_DoneButton()
+	{
+		password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					hideKeyboard(LoginActivity.this);
+					return true;
+				}
+				return false;
+			}
+		});
+	}
+	 public void hideKeyboard(Context cxt) {
+		//   context=cxt;
+		InputMethodManager inputManager = (InputMethodManager) cxt.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+		// check if no view has focus:
+		View view = ((Activity) cxt).getCurrentFocus();
+		if (view != null) {
+			inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
 	}
 }
