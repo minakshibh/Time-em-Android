@@ -367,4 +367,25 @@ public class Utils {
 
         return str_date;
     }
+    public static String formatDateChange(String date,String givenformat,String resultformat) {
+
+        String result = "";
+        SimpleDateFormat sdf;
+        SimpleDateFormat sdf1;
+
+        try {
+            sdf = new SimpleDateFormat(givenformat);
+            sdf1 = new SimpleDateFormat(resultformat);
+            result = sdf1.format(sdf.parse(date));
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+        finally {
+            sdf=null;
+            sdf1=null;
+        }
+        return result;
+    }
 }

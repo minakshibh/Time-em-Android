@@ -911,4 +911,5 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         }
 
     }
+
 }

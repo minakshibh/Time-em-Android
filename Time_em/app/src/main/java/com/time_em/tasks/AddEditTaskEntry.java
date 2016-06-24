@@ -48,7 +48,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private SpinnerTypeAdapter adapter;
     private SpinnerData selectedSpinnerData;
     private FileUtils fileUtils;
-    private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0";
+    private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0",taskId="0";
     private TaskEntry taskEntry;
     private VideoView uploadedVideo;
     TimeEmDbHandler dbHandler;
@@ -113,6 +113,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         }else{
             headerInfo.setText("Edit Task Details");
             taskEntryId = String.valueOf(taskEntry.getId());
+            taskId=String.valueOf(taskEntry.getTaskId());
             comments.setText(taskEntry.getComments());
 
             hours.setText(String.valueOf(taskEntry.getTimeSpent()));
@@ -141,7 +142,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                         uploadedImage.setVisibility(View.VISIBLE);
                         uploadedVideo.setVisibility(View.GONE);
                         FileUtils fileUtils = new FileUtils(AddEditTaskEntry.this);
-                        uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 500, 500));
+                        uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 800, 800));
                     }
                     else{
                         uploadedImage.setVisibility(View.GONE);
@@ -158,12 +159,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private void selectedSpinnerValue(Spinner sp) {
 
-
-        if(assignedTasks!=null && assignedTasks.equals("null")){
+        Log.e("taskEntryId",""+taskId);
+        if(assignedTasks!=null && !assignedTasks.equals("null")){
             for(int i=0;i<assignedTasks.size();i++)
             {
                String value=""+assignedTasks.get(i).getId();
-                    if(taskEntryId.equalsIgnoreCase(value)) {
+                    if(taskId.equalsIgnoreCase(value)) {
                         sp.setSelection(i);
                        // return;
                     }
@@ -219,12 +220,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                    /* ["ActivityId": "29644", "CreatedDate": "06-10-2016", "UserId": "8049", "TaskId": "16168", "ID": "0",
                             "TaskName": "Test Task May 3", "TimeSpent": "10", "Comments": "Test Parv 10 June"]*/
                         if (fileUtils.getAttachmentPath() != null) {
-                            if (fileUtils.getAttachmentPath().contains(".3gp")) {
-                                dataModels.add(new MultipartDataModel("profile_video", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
-                            } else {
-                                dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
-                            }
-                        }
+                             dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                             }
                         dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
                         dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
                         dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));

@@ -705,16 +705,16 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			return team;
 		}
 	}
-	public User getTeamByLoginCode(long code,String type) {
+	public User getTeamByLoginCode(long loginCode,String nfcCode,String type) {
 		//ArrayList<User> team = new ArrayList<User>();
 		User user = null;
 		String selectQuery=null;
 		// Select All Query
 		if(type.equalsIgnoreCase("barcode")) {
-			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + LoginCode + " = " + code;
+			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + LoginCode + " = " + loginCode;
 		}
 		else{
-			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + NfcTagId + "=\"" + code + "\"";
+			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + NfcTagId + "=\"" + nfcCode + "\"";
 		}
 		SQLiteDatabase db = this.getReadableDatabase();
 

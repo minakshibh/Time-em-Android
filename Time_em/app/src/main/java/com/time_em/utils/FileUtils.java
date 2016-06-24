@@ -245,7 +245,7 @@ public class FileUtils {
                     Log.e("volley response", ":::"+responseString);
 
                     pDialog.dismiss();
-                    Utils.alertMessageWithoutBack(context, "::::: " + responseString);
+                    Utils.alertMessage(context, "uploaded successfully");
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -284,14 +284,14 @@ public class FileUtils {
        // oldFile.renameTo(newFile);
         if(success)
         attachmentPath = "" + file2.getAbsolutePath();
-        imageView.setImageBitmap(getScaledBitmap(attachmentPath, 500, 500));
+        imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
 
     }
 
     public void onCaptureImageResult(Intent data, ImageView imageView) {
         try {
           Log.e("image path:",""+attachmentPath);
-          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 500, 500));
+          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
         } catch (Exception e) {
             e.printStackTrace();
         }

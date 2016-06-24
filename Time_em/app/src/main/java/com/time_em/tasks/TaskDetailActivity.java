@@ -156,7 +156,7 @@ public class TaskDetailActivity extends Activity {
                     attachment.setVisibility(View.VISIBLE);
                     videoView.setVisibility(View.GONE);
                     FileUtils fileUtils = new FileUtils(TaskDetailActivity.this);
-                    attachment.setImageBitmap(fileUtils.getScaledBitmap(image_url, 500, 500));
+                    attachment.setImageBitmap(fileUtils.getScaledBitmap(image_url, 800, 800));
                 }
                 else{
                     attachment.setVisibility(View.GONE);

@@ -2,11 +2,14 @@ package com.time_em.utils;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.RequiresPermission;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.time_em.android.R;
 import com.time_em.model.SpinnerData;
 
 import java.util.ArrayList;
@@ -58,9 +61,12 @@ public class SpinnerTypeAdapter extends ArrayAdapter<SpinnerData> {
     // And here is when the "chooser" is popped up
     // Normally is the same view, but you can customize it if you want
     @Override
-    public View getDropDownView(int position, View convertView,
-                                ViewGroup parent) {
-        TextView label = new TextView(context);
+    public View getDropDownView(int position, View convertView,  ViewGroup parent) {
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mySpinner = inflater.inflate(R.layout.spinner_dropdown, parent, false);
+
+        TextView label = (TextView)mySpinner.findViewById(R.id.text);
         label.setTextColor(Color.BLACK);
         label.setText(spinnerList.get(position).getName());
 

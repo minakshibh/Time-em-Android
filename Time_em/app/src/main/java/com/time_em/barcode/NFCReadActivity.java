@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.time_em.android.R;
 import com.time_em.utils.Utils;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
@@ -170,10 +171,11 @@ Log.e("on resume","resume called");
 
             // In case we would still use the Tech Discovered Intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            //Utils.alertMessageWithoutBack(NFCReadActivity.this,action+"::"+"tag id = "+String.valueOf(tag.getId())+
-           // ",, tag = "+String.valueOf(tag.toString()));
+            String tagId = bin2hex(tag.getId());
 
-            getCodeSend(String.valueOf(tag.getId()));
+            Utils.alertMessageWithoutBack(NFCReadActivity.this,action+"::"+"tag id = "+tagId);
+
+            getCodeSend(tagId);
             /* String[] techList = tag.getTechList();
             String searchedTech = Ndef.class.getName();
 
@@ -184,6 +186,11 @@ Log.e("on resume","resume called");
                 }
             }*/
         }
+    }
+
+    //To display the UID
+    static String bin2hex(byte[] data) {
+        return String.format("%0" + (data.length * 2) + "X", new BigInteger(1,data));
     }
 
     /**

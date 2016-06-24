@@ -65,6 +65,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         initScreen();
         setUpClickListeners();
         getTaskList(selectedDate);
+       // currentDate.setText(Utils.formatDateChange(selectedDate,"MM-dd-yyyy","EEE dd MMM, yyyy"));
     }
 
     private void initScreen() {
@@ -76,10 +77,15 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
         headerText = (TextView)findViewById(R.id.headerText);
-        UserId = getIntent().getIntExtra("UserId",HomeActivity.user.getId());
+        try {
+            UserId = HomeActivity.user.getId();
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
         currentDate=(TextView)findViewById(R.id.currentDate);
         currentDate.setVisibility(View.VISIBLE);
-        currentDate.setText(Utils.getCurrentDate());
+
 
         if(UserId == HomeActivity.user.getId()){
             headerText.setText("My Tasks");
@@ -111,6 +117,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
 
                 selectedDate = apiDateFormater.format(item.getTime());
                 getTaskList(selectedDate);
+
             }
         });
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
@@ -169,6 +176,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
 
     private void getTaskList(String createdDate) {
 
+        currentDate.setText(Utils.formatDateChange(selectedDate,"MM-dd-yyyy","EEE dd MMM, yyyy"));
        //if (Utils.isNetworkAvailable(TaskListActivity.this)) {
 
             String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId+"-"+selectedDate+"-" + getResources().getString(R.string.taskTimeStampStr));
