@@ -55,7 +55,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			user = null;
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		if(isError)
@@ -150,7 +150,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			user = new User();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		return user;
@@ -272,7 +272,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			taskList = new ArrayList<TaskEntry>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		if(isError)
@@ -305,7 +305,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			notificationTypeList = new ArrayList<SpinnerData>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		return notificationTypeList;
@@ -340,7 +340,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			userList = new ArrayList<User>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		if(isError)
@@ -509,7 +509,7 @@ public class Time_emJsonParser {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		if(isError)
@@ -551,7 +551,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			arrayTaskEntry = new ArrayList<TaskEntry>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		if(isError)
@@ -594,7 +594,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			arrayTaskEntry = new ArrayList<TaskEntry>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		if(isError)
@@ -645,7 +645,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			arrayTaskEntry = new ArrayList<TaskEntry>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		if(isError)
