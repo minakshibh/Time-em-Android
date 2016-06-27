@@ -1,12 +1,15 @@
 package com.time_em.tasks;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -53,6 +56,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private VideoView uploadedVideo;
     TimeEmDbHandler dbHandler;
     public static String UniqueNumber="";
+    private String newTaskName="";
     ArrayList<TaskEntry> taskEntries = new ArrayList<>();
 
     @Override
@@ -180,12 +184,15 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         spnProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 // Here you get the current item (a User object) that is selected by its position
                 selectedSpinnerData = adapter.getItem(position);
                 // Here you can do the action you want to...
 //                selectedProjectId = String.valueOf(project.getId());
+                //for add new task
+                if(selectedSpinnerData.getId()==1){
+                    showAddNewTask();
+                }
             }
 
             @Override
@@ -380,5 +387,40 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
             }
         }
+    }
+    private  void showAddNewTask()
+    {
+        // get prompts.xml view
+        LayoutInflater li = LayoutInflater.from(AddEditTaskEntry.this);
+        View promptsView = li.inflate(R.layout.layout_addnewtask, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddEditTaskEntry.this);
+
+        alertDialogBuilder.setTitle("Enter task name");
+        // alertDialogBuilder.setMessage("Enter Password");
+        alertDialogBuilder.setView(promptsView);
+        final EditText userInput = (EditText) promptsView.findViewById(R.id.editText);
+
+        // set dialog message
+        alertDialogBuilder.setCancelable(false) .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                newTaskName = userInput.getText().toString();
+                                if (newTaskName.equals("")) {
+                                    Utils.alertMessage(AddEditTaskEntry.this, "Please enter task name");
+                                }
+
+                                else {
+                                    Utils.hideKeyboard(AddEditTaskEntry.this);
+                                   // getOldParent();
+                                }
+                            }
+                        })
+                .setNegativeButton("Cancel",null);
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        // show it
+        alertDialog.show();
     }
 }

@@ -493,8 +493,13 @@ public class Time_emJsonParser {
 			message = jObject.getString("Message");
 
 			SpinnerData task_header = new SpinnerData();
-			task_header.setId(0);
+			task_header.setId(-1);
 			task_header.setName("Select Project/Task");
+			taskList.add(task_header);
+
+			task_header = new SpinnerData();
+			task_header.setId(0);
+			task_header.setName("Add New Task");
 			taskList.add(task_header);
 			if(!isError) {
 				JSONArray jArray = jObject.getJSONArray("ReturnKeyValueViewModel");

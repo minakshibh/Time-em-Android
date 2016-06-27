@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.time_em.model.GeoGraphsData;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
@@ -34,6 +35,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_NOTIFICATIONS = "Notifications";
 	private String TABLE_NOTIFICATIONS_TYPE = "NotificationsType";
 	private String TABLE_PROJECT_TASK = "ProjectTask";
+	private String TABLE_GeoGraph = "GeoGraph";
 	// fields for task table
 	private String Id = "Id";
 	private String ActivityId = "ActivityId";
@@ -97,6 +99,13 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	// fields for message type table
 	private String MessageId = "MessageId";
 	private String MessageType = "MessageType";
+
+	// fields for GeoGraphs type table
+	private String DateData = "DateData";
+	private String hoursCount = "hoursCount";
+	private String Name = "name";
+	private String GeoId = "GeoId";
+
 	SQLiteCursor cursor;
 
 	/**
@@ -157,12 +166,17 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 		String CREATE_PROJECT_TASKS = "CREATE TABLE if NOT Exists " + TABLE_PROJECT_TASK
 				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
+
+		String CREATE_GEO_GRAPHS = "CREATE TABLE if NOT Exists " + TABLE_GeoGraph
+				+ "(" + GeoId + " TEXT," + Name + " TEXT,"+ hoursCount + " TEXT,"+ UserId + " TEXT,"+ DateData + " TEXT)";
+
 		db.execSQL(CREATE_TASK_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
 		db.execSQL(CREATE_ACTIVE_USERS_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TYPE_TABLE);
 		db.execSQL(CREATE_PROJECT_TASKS);
+		db.execSQL(CREATE_GEO_GRAPHS);
 	}
 
 	@Override
@@ -971,5 +985,43 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			db.close();
 			return types;
 		}
+	}
+
+	//for Geo Graphs
+	public void updateGeoGraphData(ArrayList<GeoGraphsData> taskList, String str_date) {
+		// Fetch only records with selected Date
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < taskList.size(); i++) {
+			GeoGraphsData taskEntry = taskList.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
+					+ GeoId + "=" + taskEntry.getGeoId();
+			try {
+				ContentValues values = new ContentValues();
+				values.put(GeoId, String.valueOf(taskEntry.getGeoId()));
+				values.put(Name,String.valueOf(taskEntry.getName()));
+				values.put(UserId, String.valueOf(taskEntry.getUserId()));
+				values.put(hoursCount, String.valueOf(taskEntry.getUserId()));
+				values.put(DateData, String.valueOf(taskEntry.getDate()));
+
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+
+
+				if (cursor.moveToFirst()) {
+					// updating row
+					/*if (!taskEntry.getIsActive())
+						db.delete(TABLE_TASK, Id + " = ?", new String[]{String.valueOf(taskEntry.getId())});
+					else*/
+						db.update(TABLE_GeoGraph, values, GeoId + " = ?", new String[]{String.valueOf(taskEntry.getGeoId())});
+				} else {
+					//if (taskEntry.getIsActive())
+						db.insert(TABLE_GeoGraph, null, values);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
 	}
 }

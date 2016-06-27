@@ -335,9 +335,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
             Utils.alertMessage(HomeActivity.this, Utils.network_error);
         }
     }
-    private void fetchGraphsSignInOut(){
-        if (Utils.isNetworkAvailable(HomeActivity.this)) {
 
+     private void fetchGraphsSignInOut(){
+        if (Utils.isNetworkAvailable(HomeActivity.this)) {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("userid", ""+user.getId());

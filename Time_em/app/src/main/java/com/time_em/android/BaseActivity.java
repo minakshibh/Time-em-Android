@@ -7,8 +7,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -17,33 +15,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
-import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.LoginActivity;
 import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.barcode.NFCReadActivity;
+import com.time_em.dashboard.GeoGraphsActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
-import com.time_em.model.MultipartDataModel;
-import com.time_em.model.Notification;
-import com.time_em.model.SyncData;
-import com.time_em.model.TaskEntry;
 import com.time_em.notifications.NotificationListActivity;
-import com.time_em.notifications.SendNotification;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.profile.MyProfileActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.FileUtils;
 import com.time_em.utils.Utils;
-
-import junit.runner.TestSuiteLoader;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
