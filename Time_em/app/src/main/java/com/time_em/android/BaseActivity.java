@@ -55,7 +55,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_base);
-	
+
 		initScreen();
 		setClickListeners();
 		setListenerOnDrawer();

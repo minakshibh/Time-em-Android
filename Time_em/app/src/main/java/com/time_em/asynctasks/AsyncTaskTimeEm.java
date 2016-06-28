@@ -6,6 +6,7 @@ import com.time_em.utils.Utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import org.json.JSONObject;
 public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 
 	private Activity activity;
+	private Context context;
 	public AsyncResponseTimeEm delegate = null;
 	private String result = "";	
 	private  ProgressDialog pDialog;
@@ -34,6 +36,7 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 		this.message = message;
 	}
 
+
 	public AsyncTaskTimeEm(Activity activity, String method_type, String methodName, JSONObject jsonObject, boolean displayDialog, String message) {
 		this.activity = activity;
 		this.method_type=method_type;
@@ -49,6 +52,7 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 		super.onPreExecute();
 
 		if(displayProgress){
+
 			pDialog = new ProgressDialog(activity);
 			pDialog.setTitle("Time'em");
 			pDialog.setMessage(message);

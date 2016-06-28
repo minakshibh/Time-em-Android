@@ -21,6 +21,8 @@ import com.time_em.model.SpinnerData;
 import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
+import com.time_em.model.UserWorkSite;
+import com.time_em.model.WorkSiteList;
 import com.time_em.utils.Utils;
 
 public class Time_emJsonParser {
@@ -658,5 +660,66 @@ public class Time_emJsonParser {
 
 		return syncData;
 	}
+	/*[
+	{
+		"CreatedDate": "06-28-2016",
+			"workSiteList": [
+		{
+			"WorkSiteId": 3004,
+				"WorkSiteName": "OSBORNE PARK",
+				"WorkingHour": 0.3
+		},
+		{
+			"WorkSiteId": 3004,
+				"WorkSiteName": "OSBORNE PARK",
+				"WorkingHour": 0.23
+		}
+		]
+	}
+	]*/
 
+	public ArrayList<UserWorkSite> getUserWorkSite(String webResponse){
+		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
+		UserWorkSite userWorkSite=new UserWorkSite();
+		ArrayList<WorkSiteList> arrayWorkSiteList = new ArrayList<WorkSiteList>();
+
+		String CreatedDate=null;
+
+		try{
+
+			JSONArray mainArray = new JSONArray(webResponse);
+			for(int j = 0; j<mainArray.length(); j++) {
+				jObject = mainArray.getJSONObject(j);
+				//isError = jObject.getBoolean("isError");
+				//message = jObject.getString("Message");
+				userWorkSite.setDate(jObject.getString("CreatedDate"));
+
+
+				JSONArray jArray = jObject.getJSONArray("workSiteList");
+
+				for (int i = 0; i < jArray.length(); i++) {
+
+					JSONObject userObject = jArray.getJSONObject(i);
+					WorkSiteList workSiteList = new WorkSiteList();
+					workSiteList.setWorkSiteId(userObject.getString("WorkSiteId"));
+					workSiteList.setWorkSiteName(userObject.getString("WorkSiteName"));
+					workSiteList.setWorkingHour(userObject.getString("WorkingHour"));
+					arrayWorkSiteList.add(workSiteList);
+				}
+
+				userWorkSite.setArraylist_WorkSiteList(arrayWorkSiteList);
+				arrayUserWorkSite.add(userWorkSite);
+			}
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return arrayUserWorkSite;
+	}
 }

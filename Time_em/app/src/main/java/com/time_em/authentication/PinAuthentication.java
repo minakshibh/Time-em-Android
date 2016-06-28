@@ -190,6 +190,10 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 //		Boolean isAuthenticated = parser.authorizePIN(output);
 		
 		HomeActivity.user = parser.getUserDetails(output , methodName);
+		if(HomeActivity.user!=null)
+		{
+			Utils.saveInSharedPrefs(getApplicationContext(),"apiUserId",""+HomeActivity.user.getId());
+			}
 //		HomeActivity.user.setSignedIn(Boolean.valueOf((Utils.getSharedPrefs(PinAuthentication.this, "isSignedIn").equals(""))?"false":"true"));
 //		 HomeActivity.user.setActivityId(Integer.parseInt((Utils.getSharedPrefs(PinAuthentication.this, "activityId").equals(""))?"0":Utils.getSharedPrefs(PinAuthentication.this, "activityId")));
 //		

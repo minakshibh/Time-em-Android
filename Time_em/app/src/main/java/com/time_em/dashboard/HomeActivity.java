@@ -40,6 +40,7 @@ import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.geofencing.BackgroundLocationService;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
 import com.time_em.model.SyncData;
@@ -105,13 +106,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
 //		addGraph();
       //  populatRecyclerView();
 
-        registerDevice();
+       /* registerDevice();
         fetchTaskGraphsData();
-        fetchGraphsSignInOut();
+        fetchGraphsSignInOut();*/
         initScreen();
         setClickListeners();
         setTapBar();
 
+        startLocationService(getApplicationContext());
 
         if (trigger.equals("login"))
             openChangeStatusDialog();
@@ -911,5 +913,15 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
         }
 
     }
-
+    public static void startLocationService(Context context)
+    {
+        //start services
+        stopLocationService(context);
+        context.startService(new Intent(context,BackgroundLocationService.class));
+    }
+    public static void stopLocationService(Context context)
+    {
+        //stop services
+        context.stopService(new Intent(context,BackgroundLocationService.class));
+    }
 }

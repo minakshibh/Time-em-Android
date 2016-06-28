@@ -10,12 +10,12 @@ import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.time_em.model.GeoGraphsData;
+import com.time_em.model.UserWorkSite;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
-import com.time_em.team.UserListActivity.TeamAdapter;
+import com.time_em.model.WorkSiteList;
 
 public class TimeEmDbHandler extends SQLiteOpenHelper {
 
@@ -988,12 +988,13 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	}
 
 	//for Geo Graphs
-	public void updateGeoGraphData(ArrayList<GeoGraphsData> taskList, String str_date) {
+	/*public void updateGeoGraphData(ArrayList<UserWorkSite> taskList, String str_date) {
 		// Fetch only records with selected Date
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < taskList.size(); i++) {
-			GeoGraphsData taskEntry = taskList.get(i);
+			for (int j = 0; j < taskList.size(); j++) {
+			UserWorkSite taskEntry = taskList.get(i).getArraylist_WorkSiteList().get(j);
 			String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
 					+ GeoId + "=" + taskEntry.getGeoId();
 			try {
@@ -1009,9 +1010,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 				if (cursor.moveToFirst()) {
 					// updating row
-					/*if (!taskEntry.getIsActive())
+					*//*if (!taskEntry.getIsActive())
 						db.delete(TABLE_TASK, Id + " = ?", new String[]{String.valueOf(taskEntry.getId())});
-					else*/
+					else*//*
 						db.update(TABLE_GeoGraph, values, GeoId + " = ?", new String[]{String.valueOf(taskEntry.getGeoId())});
 				} else {
 					//if (taskEntry.getIsActive())
@@ -1023,5 +1024,5 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			}
 		}
 		db.close();
-	}
+	}*/
 }

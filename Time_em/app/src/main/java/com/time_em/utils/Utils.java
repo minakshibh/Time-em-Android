@@ -93,7 +93,8 @@ public class Utils {
     static public String Sync = "/UserActivity/Sync";
     static public String SyncFileUpload = "/UserActivity/SyncFileUpload";
     static public String GetUsersListByTagId = "/User/GetUsersListByTagId";
-
+    static public String GetUserWorksiteActivity ="/Worksite/GetUserWorksiteActivity";
+    static public String AddUsersTimeIn="/Worksite/AddUsersTimeIn";
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

@@ -12,12 +12,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.time_em.android.BaseActivity;
@@ -35,6 +38,8 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.TaskEntry;
+import com.time_em.model.UserWorkSite;
+import com.time_em.model.WorkSiteList;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
 
@@ -55,19 +60,31 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
     private String selectedDate;
     TimeEmDbHandler dbHandler;
 
+    //for graphs
+    private LinearLayout mainLinearLayout,lay_date,lay_hours;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
+        showTaskList();
+
+       // currentDate.setText(Utils.formatDateChange(selectedDate,"MM-dd-yyyy","EEE dd MMM, yyyy"));
+    }
+
+    private void showTaskList()
+    {
         populatRecyclerView();
         initScreen();
         setUpClickListeners();
         getTaskList(selectedDate);
-       // currentDate.setText(Utils.formatDateChange(selectedDate,"MM-dd-yyyy","EEE dd MMM, yyyy"));
     }
+    private void showGraphs()
+    {
+        setContentView(R.layout.activity_graph);
 
+        }
     private void initScreen() {
         dbHandler = new TimeEmDbHandler(TaskListActivity.this);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -352,6 +369,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
                 getTaskList(selectedDate);
             }
         }
+        else if(methodName.contains(Utils.GetUserWorksiteActivity))
+        {
+            ArrayList<UserWorkSite> array_worksite=  parser.getUserWorkSite(output);
+            Log.e("UserWorkSite",""+array_worksite.size());
+            settingGraph(array_worksite);
+            }
     }
 
     public class DateSliderAdapter extends RecyclerView.Adapter<DateSliderAdapter.ViewHolder> {
@@ -414,5 +437,100 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm{
 
     public interface OnItemClickListener {
         void onItemClick(Calendar item, int position);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+      //  if(getIntent().getStringExtra("UserName")!=null){
+
+            int value = TaskListActivity.this.getResources().getConfiguration().orientation;
+            String orientation = "";
+            if (value == Configuration.ORIENTATION_PORTRAIT) {
+                orientation = "Portrait";
+              //  Toast.makeText(this, "PORTRAIT", Toast.LENGTH_SHORT).show();
+                showTaskList();
+            }
+
+            if (value == Configuration.ORIENTATION_LANDSCAPE) {
+                orientation = "Landscape";
+             //   Toast.makeText(this, "LANDSCAPE", Toast.LENGTH_SHORT).show();
+
+                GetUserWorkSiteApi();
+                showGraphs();
+            }
+        //}
+       // else {
+
+           // showTaskList();
+       // }
+
+    }
+
+    private void GetUserWorkSiteApi() {
+        // http://timeemapi.azurewebsites.net/api/Worksite/GetUserWorksiteActivity
+       // type: Get
+       // parameter:userid
+
+        HashMap<String, String> postDataParameters = new HashMap<String, String>();
+
+        postDataParameters.put("userid", String.valueOf(UserId));
+
+        Log.e(""+Utils.GetUserWorksiteActivity, ""+postDataParameters.toString());
+
+        AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                TaskListActivity.this, "get", Utils.GetUserWorksiteActivity,
+                postDataParameters, true, "Please wait...");
+        mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
+        mWebPageTask.execute();
+    }
+
+    private void settingGraph(ArrayList<UserWorkSite> array_worksite) {
+        mainLinearLayout = (LinearLayout)findViewById(R.id.graphLayout);
+        lay_date= (LinearLayout)findViewById(R.id.lay_date);
+        for(int i=0;i<array_worksite.size();i++) {
+
+            // Create LinearLayout
+            LinearLayout linearLayout = new LinearLayout(this);
+            linearLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            //linearLayout.setBackgroundColor(getResources().getColor(R.color.grey));
+            linearLayout.setPadding(0, 10, 10, 0);
+
+            // Add text view
+            for (int j = 0; j <array_worksite.get(i).getArraylist_WorkSiteList().size(); j++) {
+                TextView textView = new TextView(this);
+                textView.setLayoutParams(new LinearLayout.LayoutParams(30, 55));
+                textView.setGravity(Gravity.CENTER);
+
+                if (j == 0 | j == 5 | j == 8 | j == 10)// hex color 0xAARRGGBB
+                    textView.setBackgroundColor(getResources().getColor(R.color.dullTextColor));
+                if (j == 2 | j == 4 | j == 11 | j == 12 | j == 9)// hex color 0xAARRGGBB
+                    textView.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
+                if (j == 3 | j == 7 | j == 13 | j == 14 | j == 17 | j == 21 | j == 19)// hex color 0xAARRGGBB
+                    textView.setBackgroundColor(getResources().getColor(R.color.black));
+                if (j == 1 | j == 6 | j == 16 | j == 15 | j == 18 | j == 22 | j == 23 | j == 20)
+                    textView.setBackgroundColor(0xff66ff66);
+
+
+                textView.setPadding(0, 0, 5, 0);// in pixels (left, top, right, bottom)
+                linearLayout.addView(textView);
+            }
+
+            mainLinearLayout.addView(linearLayout);
+
+            //for date
+            TextView textView = new TextView(this);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(60, 66));
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextColor(getResources().getColor(R.color.black));
+            textView.setText("date" + i);
+            textView.setPadding(0, 10, 0, 10);
+            lay_date.addView(textView);
+        }
+
     }
 }
