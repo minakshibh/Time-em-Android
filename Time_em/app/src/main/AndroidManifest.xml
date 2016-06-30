@@ -118,9 +118,18 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.dashboard.GeoGraphsActivity"
-
             android:windowSoftInputMode="stateHidden"
              />
+        <activity
+            android:name="com.time_em.dashboard.SettingActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            />
+        <activity
+            android:name="com.time_em.dashboard.AddWigdetActvity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            />
         <activity
             android:name="com.time_em.barcode.NFCReadActivity"
             android:screenOrientation="portrait">

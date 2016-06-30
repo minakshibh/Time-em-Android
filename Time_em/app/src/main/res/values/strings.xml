@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Time_em</string>
-    <string name="add">Add</string>
+    <string name="add">+Manage</string>
     <string name="attachment">Attachment:</string>
     <string name="task_description">Task Description:</string>
     <string name="action_settings">Settings</string>

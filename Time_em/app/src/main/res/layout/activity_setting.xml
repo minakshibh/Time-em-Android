@@ -1,0 +1,87 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     >
+    <include android:id="@+id/headerLayout" layout="@layout/include_toolbar"></include>
+
+
+    <!--<TextView
+        android:id="@+id/txtHeader"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/LinearLayout_header"
+        android:background="@color/app_yellow"
+        android:gravity="start|center_vertical"
+        android:padding="5dp"
+        android:text="ABOUT APP"
+       />
+-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/headerLayout"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/txtBuildVersion"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Build Version" />
+
+            <TextView
+                android:id="@+id/txtBuildVersionOutput"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="1.1"
+
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtBuildVersionline"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/dullTextColor"
+            android:layout_marginTop="5dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:background="@color/white"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/txtBuildSize"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Build Size" />
+
+            <TextView
+                android:id="@+id/txtBuildSizeOutput"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="1.1"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtBuildSizeline"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/dullTextColor"
+             android:layout_marginTop="5dp"
+           />
+    </LinearLayout>
+
+</RelativeLayout>

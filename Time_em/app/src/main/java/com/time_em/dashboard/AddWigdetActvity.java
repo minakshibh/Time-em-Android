@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridLayout;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,7 +22,8 @@ import java.util.ArrayList;
 public class AddWigdetActvity extends Activity {
 
     private GridView gridView;
-
+    private TextView headerInfo;
+    private ImageView back,AddButton;
     private SelectViewAdapter selectViewAdapter;
 
     public ArrayList<String> backGroundColor;
@@ -46,9 +48,20 @@ public class AddWigdetActvity extends Activity {
     }
 
     private void inItScreen() {
+        headerInfo = (TextView)findViewById(R.id.headerText);
+        headerInfo.setText("Add View..");
+        back =(ImageView)findViewById(R.id.back);
+        AddButton=(ImageView)findViewById(R.id.AddButton);
+        AddButton.setVisibility(View.GONE);
         gridView = (GridView) findViewById(R.id.addView_GrideView);
         selectViewAdapter = new SelectViewAdapter(this, backGroundColor);
         gridView.setAdapter(selectViewAdapter);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     public class SelectViewAdapter extends BaseAdapter {

@@ -444,7 +444,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     protected void onResume() {
         super.onResume();
 
-          if(getIntent().getStringExtra("UserName")!=null){
+         // if(getIntent().getStringExtra("UserName")!=null){
 
         int value = TaskListActivity.this.getResources().getConfiguration().orientation;
         String orientation = "";
@@ -461,12 +461,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             GetUserWorkSiteApi();
             showGraphs();
         }
-        }
+     /*   }
     else {
 
          showTaskList();
          }
-
+*/
     }
 
     private void GetUserWorkSiteApi() {
@@ -655,10 +655,5 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         return 0;
 
     }
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        //Here you can get the size!
-      totalWidth=  lay_hours.getWidth();
-    }
+
 }

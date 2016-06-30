@@ -57,6 +57,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     TimeEmDbHandler dbHandler;
     public static String UniqueNumber="";
     private String newTaskName="";
+   // private String addNewTask="0",taskName="";
     ArrayList<TaskEntry> taskEntries = new ArrayList<>();
 
     @Override
@@ -190,7 +191,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 // Here you can do the action you want to...
 //                selectedProjectId = String.valueOf(project.getId());
                 //for add new task
-                if(selectedSpinnerData.getId()==1){
+                if(selectedSpinnerData.getId()==0){
                     showAddNewTask();
                 }
             }
@@ -216,7 +217,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                         || selectedSpinnerData == null){
                     Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
                 }
-                else if(selectedSpinnerData.getId()==0){
+                else if(selectedSpinnerData.getId()==-1){
                     Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
                 }
               else {
@@ -229,12 +230,19 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                         if (fileUtils.getAttachmentPath() != null) {
                              dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
                              }
+
+
                         dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
                         dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
                         dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
                         dataModels.add(new MultipartDataModel("Comments", comments.getText().toString(), MultipartDataModel.STRING_TYPE));
-                        dataModels.add(new MultipartDataModel("TaskId", String.valueOf(selectedSpinnerData.getId()), MultipartDataModel.STRING_TYPE));
-                        dataModels.add(new MultipartDataModel("TaskName", String.valueOf(selectedSpinnerData.getName()), MultipartDataModel.STRING_TYPE));
+                        if(selectedSpinnerData.getId()==0) {
+                            dataModels.add(new MultipartDataModel("TaskId", String.valueOf(0), MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("TaskName", newTaskName, MultipartDataModel.STRING_TYPE));
+                        }else{
+                            dataModels.add(new MultipartDataModel("TaskId", String.valueOf(selectedSpinnerData.getId()), MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("TaskName", String.valueOf(selectedSpinnerData.getName()), MultipartDataModel.STRING_TYPE));
+                        }
                         dataModels.add(new MultipartDataModel("CreatedDate", selectedDate, MultipartDataModel.STRING_TYPE));
                         dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));
 
@@ -249,9 +257,16 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                     task.setAttachmentImageFile(fileUtils.getAttachmentPath());
                                 task.setId(Integer.parseInt(taskEntryId));
                                 task.setActivityId(HomeActivity.user.getActivityId());
-                                task.setTaskId(selectedSpinnerData.getId());
+
+                                if(selectedSpinnerData.getId()==0) {
+                                    task.setTaskId(0);
+                                    task.setTaskName(newTaskName);
+                                }else{
+                                    task.setTaskId(selectedSpinnerData.getId());
+                                    task.setTaskName(selectedSpinnerData.getName());
+                                }
+
                                 task.setUserId(HomeActivity.user.getId());
-                                task.setTaskName(selectedSpinnerData.getName());
                                 task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
                                 task.setComments(comments.getText().toString());
                                 task.setSignedInHours(0.0);
@@ -402,23 +417,24 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         final EditText userInput = (EditText) promptsView.findViewById(R.id.editText);
 
         // set dialog message
-        alertDialogBuilder.setCancelable(false) .setPositiveButton("OK",
+        alertDialogBuilder.setCancelable(false) .setPositiveButton("Submit",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 newTaskName = userInput.getText().toString();
                                 if (newTaskName.equals("")) {
                                     Utils.alertMessage(AddEditTaskEntry.this, "Please enter task name");
-                                }
+                                      }
 
                                 else {
+
                                     Utils.hideKeyboard(AddEditTaskEntry.this);
-                                   // getOldParent();
-                                }
+                                    }
                             }
                         })
                 .setNegativeButton("Cancel",null);
 
         // create alert dialog
+
         AlertDialog alertDialog = alertDialogBuilder.create();
         // show it
         alertDialog.show();

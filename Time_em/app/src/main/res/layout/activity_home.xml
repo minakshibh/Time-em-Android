@@ -274,8 +274,8 @@
     <LinearLayout
         android:id="@+id/AddWidgetView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_above="@+id/AddNewWidgetView"
+        android:layout_height="120dp"
+        android:layout_below="@+id/lay_indicator"
         android:orientation="horizontal"></LinearLayout>
 
     <RelativeLayout
@@ -291,7 +291,8 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
-            android:padding="15dp"
+            android:gravity="center"
+            android:textColor="@color/sendTextColor"
             android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
             android:text="@string/add" />
