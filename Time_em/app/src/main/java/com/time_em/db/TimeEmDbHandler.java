@@ -994,7 +994,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < taskList.size(); i++) {
 			for (int j = 0; j < taskList.size(); j++) {
-			UserWorkSite taskEntry = taskList.get(i).getArraylist_WorkSiteList().get(j);
+			//UserWorkSite taskEntry = taskList.get(i).getArraylist_WorkSiteList().get(j);
 			String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
 					+ GeoId + "=" + taskEntry.getGeoId();
 			try {
@@ -1010,9 +1010,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 				if (cursor.moveToFirst()) {
 					// updating row
-					*//*if (!taskEntry.getIsActive())
+					*//**//*if (!taskEntry.getIsActive())
 						db.delete(TABLE_TASK, Id + " = ?", new String[]{String.valueOf(taskEntry.getId())});
-					else*//*
+					else*//**//*
 						db.update(TABLE_GeoGraph, values, GeoId + " = ?", new String[]{String.valueOf(taskEntry.getGeoId())});
 				} else {
 					//if (taskEntry.getIsActive())

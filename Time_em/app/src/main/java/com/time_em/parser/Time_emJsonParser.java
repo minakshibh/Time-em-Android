@@ -680,21 +680,19 @@ public class Time_emJsonParser {
 
 	public ArrayList<UserWorkSite> getUserWorkSite(String webResponse){
 		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
-		UserWorkSite userWorkSite=new UserWorkSite();
-		ArrayList<WorkSiteList> arrayWorkSiteList = new ArrayList<WorkSiteList>();
+		ArrayList<WorkSiteList> arrayWorkSiteList= null;
 
-		String CreatedDate=null;
+
 
 		try{
 
 			JSONArray mainArray = new JSONArray(webResponse);
 			for(int j = 0; j<mainArray.length(); j++) {
+				UserWorkSite userWorkSite=new UserWorkSite();
 				jObject = mainArray.getJSONObject(j);
 				//isError = jObject.getBoolean("isError");
 				//message = jObject.getString("Message");
-				userWorkSite.setDate(jObject.getString("CreatedDate"));
-
-
+				arrayWorkSiteList= new ArrayList<WorkSiteList>();
 				JSONArray jArray = jObject.getJSONArray("workSiteList");
 
 				for (int i = 0; i < jArray.length(); i++) {
@@ -704,10 +702,12 @@ public class Time_emJsonParser {
 					workSiteList.setWorkSiteId(userObject.getString("WorkSiteId"));
 					workSiteList.setWorkSiteName(userObject.getString("WorkSiteName"));
 					workSiteList.setWorkingHour(userObject.getString("WorkingHour"));
+					workSiteList.setTimeIn(userObject.getString("TimeIn"));
+					workSiteList.setTimeOut(userObject.getString("TimeOut"));
 					arrayWorkSiteList.add(workSiteList);
 				}
-
 				userWorkSite.setArraylist_WorkSiteList(arrayWorkSiteList);
+				userWorkSite.setDate(jObject.getString("CreatedDate"));
 				arrayUserWorkSite.add(userWorkSite);
 			}
 
@@ -719,6 +719,7 @@ public class Time_emJsonParser {
 
 		if(isError)
 			Utils.showToast(context, message);
+
 
 		return arrayUserWorkSite;
 	}
