@@ -106,14 +106,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm,Ta
 //		addGraph();
       //  populatRecyclerView();
 
-       /* registerDevice();
+        registerDevice();
         fetchTaskGraphsData();
-        fetchGraphsSignInOut();*/
+        fetchGraphsSignInOut();
         initScreen();
         setClickListeners();
         setTapBar();
 
-        startLocationService(getApplicationContext());
+        //startLocationService(getApplicationContext());
 
         if (trigger.equals("login"))
             openChangeStatusDialog();

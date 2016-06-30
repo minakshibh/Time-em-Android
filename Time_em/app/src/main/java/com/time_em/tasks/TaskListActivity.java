@@ -444,7 +444,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     protected void onResume() {
         super.onResume();
 
-        //  if(getIntent().getStringExtra("UserName")!=null){
+          if(getIntent().getStringExtra("UserName")!=null){
 
         int value = TaskListActivity.this.getResources().getConfiguration().orientation;
         String orientation = "";
@@ -461,11 +461,11 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             GetUserWorkSiteApi();
             showGraphs();
         }
-        //}
-        // else {
+        }
+    else {
 
-        // showTaskList();
-        // }
+         showTaskList();
+         }
 
     }
 
@@ -500,7 +500,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     LinearLayout.LayoutParams.WRAP_CONTENT));
             linearLayout.setOrientation(LinearLayout.HORIZONTAL);
             linearLayout.setPadding(0, 10, 10, 0);
-            totalWidth = 480;//linearLayout.getMeasuredWidth();
+            totalWidth = 650;//linearLayout.getMeasuredWidth();
         //   float totalWidth= lay_hours.getWidth();
             float oneHour = totalWidth / 24;
             float totalMins= 24*60;
@@ -592,7 +592,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             else{
                 TextView textView = new TextView(this);
                 textView.setPadding((int) 0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                textView.setLayoutParams(new LinearLayout.LayoutParams(0, 54));
+                textView.setLayoutParams(new LinearLayout.LayoutParams(0, 56));
                 textView.setGravity(Gravity.CENTER_VERTICAL);
                 textView.setBackgroundColor(getResources().getColor(R.color.white));
                 linearLayout.addView(textView);
@@ -629,21 +629,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         return 0;
 
 }
-    /*private float getEndTime(String endTime) {
-        try {
-            String[] parts = endTime.split(":");
-            String part1 = parts[0]; //
-            String part2 = parts[1]; //
-            float fPart1 = Float.parseFloat(part1);
-            float fPart2 = Float.parseFloat(part2);
-            float endPoint = fPart1 * 60 + fPart2;
-            return endPoint;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
 
-    }*/
     private float getDifferenceTwoMins(float startTime, float endTime) {
         try {
            float totalWidth= endTime-startTime;
