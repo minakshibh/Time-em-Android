@@ -10,7 +10,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -46,6 +48,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
@@ -54,6 +57,7 @@ import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.User;
+import com.time_em.model.Widget;
 
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.json.JSONObject;
@@ -62,6 +66,8 @@ public class Utils {
 
     static public String network_error = "Please check your internet connection, try again";
     static int statusCode;
+    public static final String PREFS_NAME = "NKDROID_APP";
+    public static final String Loation = "loation";
     private static SharedPreferences preferences;
     public static String PROJECT_ID = "554809123006";
     public static String API_KEY = "AIzaSyBGO_uGOOR6YyW0qvENCw_vGX6BHQY--RA";
@@ -399,5 +405,57 @@ public class Utils {
         if (view != null) {
             inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+    // This four methods are used for maintaining widget
+    public static void saveLocations(Context context,
+                                     List<Widget> locations) {
+        SharedPreferences settings;
+        Editor editor;
+
+        settings = context.getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
+        editor = settings.edit();
+
+        Gson gson = new Gson();
+        String jsonFavorites = gson.toJson(locations);
+        editor.putString(Loation, jsonFavorites);
+        editor.commit();
+    }
+
+    public static void addValues(Context context, Widget location) {
+        List<Widget> favorites = getWidget(context);
+        if (favorites == null)
+            favorites = new ArrayList<Widget>();
+        favorites.add(location);
+        saveLocations(context, favorites);
+    }
+
+    public static void removeValues(Context context, int position) {
+        ArrayList<Widget> loations = getWidget(context);
+        if (loations != null) {
+            // loations.remove(position ,loation);
+            loations.remove(position);
+            saveLocations(context, loations);
+        }
+    }
+
+    public static ArrayList<Widget> getWidget(Context context) {
+        SharedPreferences settings;
+        List<Widget> loations;
+
+        settings = context.getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+
+        if (settings.contains(Loation)) {
+            String jsonFavorites = settings.getString(Loation, null);
+            Gson gson = new Gson();
+            Widget[] favoriteItems = gson.fromJson(jsonFavorites,
+                    Widget[].class);
+
+            loations = Arrays.asList(favoriteItems);
+            loations = new ArrayList<Widget>(loations);
+        } else
+            return null;
+
+        return (ArrayList<Widget>) loations;
     }
 }

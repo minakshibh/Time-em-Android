@@ -11,6 +11,7 @@ import java.util.TimerTask;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
@@ -24,6 +25,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -41,11 +43,13 @@ import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.authentication.ChangeStatusActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.geofencing.BackgroundLocationService;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
 import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
+import com.time_em.model.Widget;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.utils.FileUtils;
@@ -91,6 +95,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private ArrayList<Notification> notifications_delete = new ArrayList<>();
     private ArrayList<TaskEntry> tasks_delete = new ArrayList<>();
     public static ArrayList<String> deleteIds = new ArrayList<>();
+    private  ArrayList<Widget> Home_arrayList_widget = new ArrayList<Widget>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,13 +112,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 //		addGraph();
         //  populatRecyclerView();
 
-        /*registerDevice();
+
+      /*  registerDevice();
         fetchTaskGraphsData();
         fetchGraphsSignInOut();*/
         initScreen();
         setClickListeners();
         setTapBar();
-
+        startLocationService(getApplicationContext());
 
         if (trigger.equals("login"))
             openChangeStatusDialog();
@@ -221,13 +227,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         changeStatus = (LinearLayout) findViewById(R.id.changeStatus);
         AddWigdetView = (LinearLayout) findViewById(R.id.AddWidgetView);
         AddNewWidgetTextVew = (TextView) findViewById(R.id.AddNewWidgetTextVew);
-        AddNewWidgetTextVew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(HomeActivity.this, AddWigdetActvity.class);
-                startActivity(intent);
-            }
-        });
         userStatus = (ImageView) findViewById(R.id.userStatus);
         txtUserStatus = (TextView) findViewById(R.id.txtUserStatus);
         imgStatus = (ImageView) findViewById(R.id.imgStatus);
@@ -236,9 +235,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         currentDate = (TextView) findViewById(R.id.currentDate);
         currentDate.setText(Utils.getCurrentDate());
         parser = new Time_emJsonParser(HomeActivity.this);
-        if (user.getUserTypeId() == 4)
-            myTeam.setVisibility(View.GONE);
-
+        try {
+            if (user.getUserTypeId() == 4)
+                myTeam.setVisibility(View.GONE);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         SetUpWigdet();
 
     }
@@ -265,6 +268,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private void setClickListeners() {
         changeStatus.setOnClickListener(listener);
         sync.setOnClickListener(listener);
+        AddNewWidgetTextVew.setOnClickListener(listener);
     }
 
     private View.OnClickListener listener = new View.OnClickListener() {
@@ -280,6 +284,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 }
 
             }
+            else if(v==AddNewWidgetTextVew)
+            {
+                intent = new Intent(HomeActivity.this, AddWigdetActvity.class);
+                startActivity(intent);
+            }
         }
     };
 
@@ -294,6 +303,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     protected void onResume() {
         super.onResume();
         syncDataCheck();
+        addWidget();
         if (HomeActivity.user.isSignedIn()) {
             resolver.pref().SetUserId(String.valueOf(HomeActivity.user.getId()));
             resolver.pref().SetActivityId(String.valueOf(HomeActivity.user.getActivityId()));
@@ -410,7 +420,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         viewPager.setCurrentItem(tab.getPosition());
         if (tab.getPosition() == 0) {
             tab.setText("UserGraph");
-            lay_indicator.setVisibility(View.GONE);
+            lay_indicator.setVisibility(View.INVISIBLE);
         } else if (tab.getPosition() == 1) {
             tab.setText("UserLoginGraph");
             lay_indicator.setVisibility(View.VISIBLE);
@@ -556,7 +566,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 tabLayout.setScrollPosition(position, 0f, true);
                 if (position == 0) {
                     firstGraphView();
-                    lay_indicator.setVisibility(View.GONE);
+                    lay_indicator.setVisibility(View.INVISIBLE);
 
                 }
                 if (position == 1) {
@@ -626,7 +636,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
             if (position == 0) {
                 maxValue = maxValueTask.intValue();
-                lay_indicator.setVisibility(View.GONE);
+                lay_indicator.setVisibility(View.INVISIBLE);
                 //tabLayout.getTabAt(position).select();
                 tabLayout.setScrollPosition(position, 0f, true);
                 maxValue = maxValue / 4;
@@ -915,7 +925,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     ImagePath = notifications.get(j).getAttachmentPath();
                 }
             }
-            if (ImagePath != null)
+            if
+                    (ImagePath != null)
                 dataModels.add(new MultipartDataModel("profile_picture", ImagePath, MultipartDataModel.FILE_TYPE));
 
             Log.e("send notification", "send notification" + ImagePath);
@@ -924,5 +935,44 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         }
 
     }
+    public static void startLocationService(Context context)
+    {
+        //start services
+        stopLocationService(context);
+        context.startService(new Intent(context,BackgroundLocationService.class));
+    }
+    public static void stopLocationService(Context context)
+    {
+        //stop services
+        context.stopService(new Intent(context,BackgroundLocationService.class));
+    }
+    private void addWidget()
+    {
+        Home_arrayList_widget=new ArrayList<>();
+        Home_arrayList_widget.clear();
+        AddWigdetView.removeAllViews();
+        Home_arrayList_widget=Utils.getWidget(HomeActivity.this);
+        if(Home_arrayList_widget!=null && Home_arrayList_widget.size()>0) {
+           for(int i=0;i<Home_arrayList_widget.size();i++) {
+               try {
+                   LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                   View rowView = inflater.inflate(R.layout.template_add_widget_view, null);
+                   CheckBox checkBox = (CheckBox) rowView.findViewById(R.id.checkBox);
+                   checkBox.setVisibility(View.GONE);
+                   TextView textView_name = (TextView) rowView.findViewById(R.id.textView_name);
+                   textView_name.setText(Home_arrayList_widget.get(i).getName());
+                   rowView.setBackgroundColor(Color.parseColor(Home_arrayList_widget.get(i).getColor()));
+                   AddWigdetView.addView(rowView);
+               }catch(Exception e)
+               {
+                   e.printStackTrace();
+               }
+
+
+            }
+        }
+
+    }
+
 
 }

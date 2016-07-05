@@ -2,10 +2,16 @@ package com.time_em.tasks;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,17 +20,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,12 +45,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.gson.Gson;
 import com.time_em.android.BaseActivity;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.model.ColorSiteId;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.UserWorkSite;
 import com.time_em.model.WorkSiteList;
@@ -60,10 +78,21 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private int selectedPos = 14;
     private String selectedDate;
     TimeEmDbHandler dbHandler;
-    int first_time=1,totalWidth=0;
-    float oneMin,stratPoint,endPoint;
+    TextView headerInfo;
+    private Context context;
+    int first_time = 1, totalWidth = 0;
+    float oneMin, stratPoint, endPoint;
+    ImageView addButton;
+    LinearLayout lay_upperGraph, lay_colorIndicator;
+    ArrayList<String> backGroundColor_array = new ArrayList<>();
+    ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
     //for graphs
     private LinearLayout mainLinearLayout, lay_date, lay_hours;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,9 +100,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
-       // showTaskList();
-
+        // showTaskList();
+        context = getApplicationContext();
         // currentDate.setText(Utils.formatDateChange(selectedDate,"MM-dd-yyyy","EEE dd MMM, yyyy"));
+        //  GetUserWorkSiteApi();
     }
 
     private void showTaskList() {
@@ -85,7 +115,30 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
     private void showGraphs() {
         setContentView(R.layout.activity_graph);
+        setColorArray();
+        lay_colorIndicator = (LinearLayout) findViewById(R.id.lay_colorIndicator);
+        lay_upperGraph = (LinearLayout) findViewById(R.id.lay_upperGraph);
+        lay_upperGraph.setVisibility(View.GONE);
+        lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
+        lay_hours.setVisibility(View.GONE);
+        headerInfo = (TextView) findViewById(R.id.headerText);
+        headerInfo.setText("Graphs");
+        back = (ImageView) findViewById(R.id.back);
+        back.setVisibility(View.INVISIBLE);
+        addButton = (ImageView) findViewById(R.id.AddButton);
+        addButton.setVisibility(View.GONE);
 
+
+        //fetch from data base
+        dbHandler = new TimeEmDbHandler(TaskListActivity.this);
+        ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraphData();
+        fetchDataGraphs(array_workSite);
+
+
+
+        //getScreenWidth(TaskListActivity.this);//get width of screen
+
+        //GetUserWorkSiteApi();
     }
 
     private void initScreen() {
@@ -262,6 +315,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         }
     }
 
+
+
     public class TaskAdapter extends BaseSwipeAdapter {
         private Context context;
         private TextView taskName, hours, taskComments;
@@ -366,12 +421,102 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             if (!error) {
                 getTaskList(selectedDate);
             }
-        } else if (methodName.contains(Utils.GetUserWorksiteActivity)) {
+        }
+
+       /* else if (methodName.contains(Utils.GetUserWorksiteActivity)) {
             parser = new Time_emJsonParser(TaskListActivity.this);
             ArrayList<UserWorkSite> array_worksite = parser.getUserWorkSite(output);
-            Log.e("UserWorkSite", "" + array_worksite.size());
-            settingGraph(array_worksite);
+            dbHandler.deleteGeoGraphs();
+            for(int i=0;i<array_worksite.size();i++) {
+                Gson gson = new Gson();
+                // This can be any object. Does not have to be an arraylist.
+                String allData = gson.toJson(array_worksite.get(i).getArraylist_WorkSiteList());
+                dbHandler.updateGeoGraphData(allData, array_worksite.get(i).getDate());
+            }
+            array_worksite=  dbHandler.getGeoGraphData();
+            fetchDataGraphs(array_worksite);
+           // array_worksite.clear();
+          //  array_worksite= dbHandler.getGeoGraphData("10");
+            //Log.e("UserWorkSite", "" + array_worksite.size());
+            //setColorWithModel(array_worksite);
+            //settingGraph(array_worksite); // setting graphs with bar
+
+
+
+        }*/
+    }
+    public static <WorkSiteList> List<com.time_em.model.WorkSiteList> stringToArray(String s, Class<com.time_em.model.WorkSiteList[]> clazz) {
+        com.time_em.model.WorkSiteList[] arr = new Gson().fromJson(s, clazz);
+        return Arrays.asList(arr); //or return Arrays.asList(new Gson().fromJson(s, clazz)); for a one-liner
+    }
+    private void fetchDataGraphs(ArrayList<UserWorkSite> arrayList) {
+        //Gson gson = new Gson();
+        ArrayList<UserWorkSite> array_UserWorkSite= new ArrayList<UserWorkSite>();
+        for(int i=0;i<arrayList.size();i++) {
+           String allData= arrayList.get(i).getAllData();
+           String date= arrayList.get(i).getDate();
+           List<WorkSiteList> arrayList_WorkSiteList= stringToArray(allData, WorkSiteList[].class);
+
+
+            Log.e("size=",""+arrayList_WorkSiteList.size());
+            UserWorkSite userWorkSite=new UserWorkSite();
+            userWorkSite.setDate(date);
+            ArrayList<WorkSiteList> array_WorkSiteList= new ArrayList<WorkSiteList>();
+
+            for(int j=0;j<arrayList_WorkSiteList.size();j++) {
+                WorkSiteList workSiteList=new WorkSiteList();
+                workSiteList.setWorkSiteId(stringToArray(allData, WorkSiteList[].class).get(j).getWorkSiteId());
+                workSiteList.setWorkSiteName(stringToArray(allData, WorkSiteList[].class).get(j).getWorkSiteName());
+                workSiteList.setWorkingHour(stringToArray(allData, WorkSiteList[].class).get(j).getWorkingHour());
+                workSiteList.setTimeIn(stringToArray(allData, WorkSiteList[].class).get(j).getTimeIn());
+                workSiteList.setTimeOut(stringToArray(allData, WorkSiteList[].class).get(j).getTimeOut());
+               array_WorkSiteList.add(workSiteList);
+            }
+
+            userWorkSite.setArraylist_WorkSiteList(array_WorkSiteList);
+            array_UserWorkSite.add(userWorkSite);
         }
+        array_UserWorkSite.size();
+        Log.e("total","ss="+array_UserWorkSite.size());
+        setColorWithModel(array_UserWorkSite);
+        settingGraph(array_UserWorkSite); //
+    }
+
+    private void setColorWithModel(ArrayList<UserWorkSite> array_worksite) {
+        if (array_worksite != null && array_worksite.size() > 0) {
+            for (int i = 0; i < array_worksite.size(); i++) {
+
+                for (int j = 0; j < array_worksite.get(i).getArraylist_WorkSiteList().size(); j++) {
+                    String siteId = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkSiteId();
+                    array_colorSiteId = new ArrayList<>();
+                    ColorSiteId colorSiteId = new ColorSiteId();
+                    if(j>10) {
+                        String position=i+""+j;
+                        int pos=Integer.parseInt(position);
+                        colorSiteId.setColor(backGroundColor_array.get(pos));
+                    }else{
+                        colorSiteId.setColor(backGroundColor_array.get(i + j));
+                    }
+                    colorSiteId.setSietId(siteId);
+                    array_colorSiteId.add(colorSiteId);
+                }
+                Log.e("color size", "" + array_colorSiteId.size());
+            }
+            removeDuplicateValue(array_colorSiteId);
+            setColor(removeDuplicateValue(array_colorSiteId));// set color to indicator
+        }
+    }
+
+    private ArrayList<ColorSiteId> removeDuplicateValue(ArrayList<ColorSiteId> array_colorIds) {
+
+        Set setObject = new HashSet(array_colorIds);
+        List listObject = new ArrayList(setObject);
+
+        array_colorSiteId.clear();
+        array_colorSiteId.addAll(listObject);
+        /** Printing original list **/
+        System.out.println(array_colorSiteId);
+        return array_colorSiteId;
     }
 
     public class DateSliderAdapter extends RecyclerView.Adapter<DateSliderAdapter.ViewHolder> {
@@ -444,36 +589,33 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     protected void onResume() {
         super.onResume();
 
-         // if(getIntent().getStringExtra("UserName")!=null){
+        if (getIntent().getStringExtra("UserName") != null) {
 
-        int value = TaskListActivity.this.getResources().getConfiguration().orientation;
-        String orientation = "";
-        if (value == Configuration.ORIENTATION_PORTRAIT) {
-            orientation = "Portrait";
-            //  Toast.makeText(this, "PORTRAIT", Toast.LENGTH_SHORT).show();
+            int value = TaskListActivity.this.getResources().getConfiguration().orientation;
+            String orientation = "";
+            if (value == Configuration.ORIENTATION_PORTRAIT) {
+                orientation = "Portrait";
+                //  Toast.makeText(this, "PORTRAIT", Toast.LENGTH_SHORT).show();
+                showTaskList();
+            }
+
+            if (value == Configuration.ORIENTATION_LANDSCAPE) {
+                orientation = "Landscape";
+                //   Toast.makeText(this, "LANDSCAPE", Toast.LENGTH_SHORT).show();
+                showGraphs();
+
+
+            }
+        } else {
+
             showTaskList();
         }
 
-        if (value == Configuration.ORIENTATION_LANDSCAPE) {
-            orientation = "Landscape";
-            //   Toast.makeText(this, "LANDSCAPE", Toast.LENGTH_SHORT).show();
-
-            GetUserWorkSiteApi();
-            showGraphs();
-        }
-     /*   }
-    else {
-
-         showTaskList();
-         }
-*/
     }
 
-    private void GetUserWorkSiteApi() {
-        // http://timeemapi.azurewebsites.net/api/Worksite/GetUserWorksiteActivity
-        // type: Get
-        // parameter:userid
-        UserId =10;
+    /*private void GetUserWorkSiteApi() {
+
+        UserId = HomeActivity.user.getId();
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
         postDataParameters.put("userid", String.valueOf(UserId));
@@ -485,12 +627,19 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
         mWebPageTask.execute();
-    }
+    }*/
 
     private void settingGraph(ArrayList<UserWorkSite> array_worksite) {
+        lay_upperGraph = (LinearLayout) findViewById(R.id.lay_upperGraph);
+        lay_upperGraph.setVisibility(View.VISIBLE);
+        lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
+        lay_hours.setVisibility(View.VISIBLE);
         mainLinearLayout = (LinearLayout) findViewById(R.id.graphLayout);
         lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
         lay_date = (LinearLayout) findViewById(R.id.lay_date);
+        totalWidth = getScreenWidth(TaskListActivity.this);
+        mainLinearLayout.removeAllViews();
+        lay_date.removeAllViews();
         for (int i = 0; i < array_worksite.size(); i++) {
 
             // Create LinearLayout
@@ -500,35 +649,48 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     LinearLayout.LayoutParams.WRAP_CONTENT));
             linearLayout.setOrientation(LinearLayout.HORIZONTAL);
             linearLayout.setPadding(0, 10, 10, 0);
-            totalWidth = 650;//linearLayout.getMeasuredWidth();
-        //   float totalWidth= lay_hours.getWidth();
+
+            //   float totalWidth= lay_hours.getWidth();
             float oneHour = totalWidth / 24;
-            float totalMins= 24*60;
-             oneMin = totalWidth /totalMins;
+            float totalMins = 24 * 60;
+            oneMin = totalWidth / totalMins;
 
             // Add text view
-            if(array_worksite.get(i).getArraylist_WorkSiteList()!=null && array_worksite.get(i).getArraylist_WorkSiteList().size() > 0) {
-                    for (int j = 0; j < array_worksite.get(i).getArraylist_WorkSiteList().size(); j++) {
-                        String value = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkingHour();
-                        Log.e("hours", "" + value);
-                        String valueIn = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeIn();
-                        String valueOut = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeOut();
+            if (array_worksite.get(i).getArraylist_WorkSiteList() != null && array_worksite.get(i).getArraylist_WorkSiteList().size() > 0) {
+                for (int j = 0; j < array_worksite.get(i).getArraylist_WorkSiteList().size(); j++) {
+                    String value=null,valueIn=null,valueOut=null;
+                    value = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkingHour();
 
-                        if (first_time == 1) {
-                            first_time = 0;
-                            endPoint = getStartTime(valueIn);
-                            float width = getDifferenceTwoMins(0, endPoint);
-                            Log.e("width", "" + width);
-                            float oneWidth = width * oneMin;
-                            int int_width = (int) oneWidth;
-                            View view = new TextView(this);
-                            view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                            view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
-                            view.setBackgroundColor(getResources().getColor(R.color.white));
-                            linearLayout.addView(view);
-                        }
-                        if(endPoint!=getStartTime(valueIn)){
-                           // endPoint = getStartTime(valueIn);
+                     valueIn = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeIn();
+                     valueOut = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeOut();
+                    Log.e("hours", "hours=" + value+" valueIn=" + valueIn+" valueOut=" + valueOut);
+
+
+                    if (first_time == 1) {
+                        first_time = 0;
+                        endPoint = getStartTime(valueIn);
+                        float width = getDifferenceTwoMins(0, endPoint);
+                        Log.e("width", "" + width);
+                        float oneWidth = width * oneMin;
+                        int int_width = (int) oneWidth;
+                        View view = new TextView(this);
+                        view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
+                        view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
+                        view.setBackgroundColor(getResources().getColor(R.color.white));
+                        linearLayout.addView(view);
+                    }
+                    if (endPoint != getStartTime(valueIn) &&  endPoint!=0) {
+                        // endPoint = getStartTime(valueIn);
+                        if(value!=null
+                                        && !value.equalsIgnoreCase("0.0")
+                                        && valueIn!=null
+                                        && !valueIn.equalsIgnoreCase("null")
+                                        && valueOut!=null
+                                        && !valueOut.equalsIgnoreCase("null")
+
+
+                                ) {
+
                             float width = getDifferenceTwoMins(endPoint, getStartTime(valueIn));
                             Log.e("width", "" + width);
                             float oneWidth = width * oneMin;
@@ -539,57 +701,60 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                             view.setBackgroundColor(getResources().getColor(R.color.white));
                             linearLayout.addView(view);
                         }
-                        stratPoint = getStartTime(valueIn);
-                        endPoint = getStartTime(valueOut);
-                        float width = getDifferenceTwoMins(stratPoint, endPoint);
-                        //Log.e("width", "" + width);
-                        // float oneWidth = endPoint * oneMin;
-                        // float width = getDifferenceTwoPointsHours(valueIn, valueOut);
-                        Log.e("width", "" + width);
-                        float one_width = width * oneMin;
-                        //float widtha= width+Float.parseFloat(value);
-                        int int_width = (int) one_width;
-                        Log.e("int_width", "" + int_width);
+                    }
+                    stratPoint = getStartTime(valueIn);
+                    endPoint = getStartTime(valueOut);
+                    float width = getDifferenceTwoMins(stratPoint, endPoint);
+
+                    Log.e("difference width", "" + width);
+                    float one_width = width * oneMin;
+                    //float widtha= width+Float.parseFloat(value);
+                    int int_width = (int) one_width;
+                    Log.e("total_width", "" + int_width);
+                    if(int_width>0) {
                         View view = new TextView(this);
                         view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
                         view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
+                        // view.setBackgroundColor(getResources().getColor(R.color.black));
 
-
-                        if (j == 0 ) {
-                            view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
-                        }
-                        else if(j==1)
-                        {
-                            String Id=array_worksite.get(i).getArraylist_WorkSiteList().get(0).getWorkSiteId();
-                            String Id2=array_worksite.get(i).getArraylist_WorkSiteList().get(1).getWorkSiteId();
-                            if(Id.equalsIgnoreCase(Id2)) {
-                                view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
-                            }else{
-                                view.setBackgroundColor(getResources().getColor(R.color.sendTextColor));
+                        String id = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkSiteId();
+                        if (array_colorSiteId != null && array_colorSiteId.size() > 0) {
+                            for (int k = 0; k < array_colorSiteId.size(); k++) {
+                                if (id.equalsIgnoreCase(array_colorSiteId.get(k).getSietId()))
+                                    view.setBackgroundColor(Color.parseColor(array_colorSiteId.get(k).getColor()));
                             }
                         }
-                        else if(j==2)
-                        {
-                            String Id=array_worksite.get(i).getArraylist_WorkSiteList().get(0).getWorkSiteId();
-                            String Id2=array_worksite.get(i).getArraylist_WorkSiteList().get(1).getWorkSiteId();
-                            String Id3=array_worksite.get(i).getArraylist_WorkSiteList().get(2).getWorkSiteId();
-                            if(Id.equalsIgnoreCase(Id2)) {
-                                view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
-                            }
-                            else if(Id.equalsIgnoreCase(Id3)){
-                                view.setBackgroundColor(getResources().getColor(R.color.sendTextColor));
-                                }
-                            else{
-                                view.setBackgroundColor(getResources().getColor(R.color.alphabeticalTextColor));
-                            }
-                        }
-
-
+                      //  view.setBackgroundColor(getResources().getColor(R.color.black));
                         linearLayout.addView(view);
                     }
-                }
+                   /* if (j == 0) {
+                        view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
 
-            else{
+                    } else if (j == 1) {
+                        String Id = array_worksite.get(i).getArraylist_WorkSiteList().get(0).getWorkSiteId();
+                        String Id2 = array_worksite.get(i).getArraylist_WorkSiteList().get(1).getWorkSiteId();
+                        if (Id.equalsIgnoreCase(Id2)) {
+                            view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
+                        } else {
+                            view.setBackgroundColor(getResources().getColor(R.color.sendTextColor));
+                        }
+                    } else if (j == 2) {
+                        String Id = array_worksite.get(i).getArraylist_WorkSiteList().get(0).getWorkSiteId();
+                        String Id2 = array_worksite.get(i).getArraylist_WorkSiteList().get(1).getWorkSiteId();
+                        String Id3 = array_worksite.get(i).getArraylist_WorkSiteList().get(2).getWorkSiteId();
+                        if (Id.equalsIgnoreCase(Id2)) {
+                            view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
+                        } else if (Id.equalsIgnoreCase(Id3)) {
+                            view.setBackgroundColor(getResources().getColor(R.color.sendTextColor));
+                        } else {
+                            view.setBackgroundColor(getResources().getColor(R.color.alphabeticalTextColor));
+                        }
+                    }*/
+
+
+
+                }
+            } else {
                 TextView textView = new TextView(this);
                 textView.setPadding((int) 0, 0, 0, 0);// in pixels (left, top, right, bottom)
                 textView.setLayoutParams(new LinearLayout.LayoutParams(0, 56));
@@ -597,7 +762,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 textView.setBackgroundColor(getResources().getColor(R.color.white));
                 linearLayout.addView(textView);
             }
-            first_time=1;
+            first_time = 1;
             mainLinearLayout.addView(linearLayout);
 
             //for date
@@ -620,19 +785,19 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             String part2 = parts[1]; //
             float fPart1 = Float.parseFloat(part1);
             float fPart2 = Float.parseFloat(part2);
-           float hoursInMins=fPart1 * 60;
-            float totalMins = hoursInMins+fPart2;
+            float hoursInMins = fPart1 * 60;
+            float totalMins = hoursInMins + fPart2;
             return totalMins;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
 
-}
+    }
 
     private float getDifferenceTwoMins(float startTime, float endTime) {
         try {
-           float totalWidth= endTime-startTime;
+            float totalWidth = endTime - startTime;
             return totalWidth;
         } catch (Exception e) {
             e.printStackTrace();
@@ -640,20 +805,148 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         return 0;
 
     }
-    private float getDifferenceTwoPointsHours(String startTime, String endTime) {
+
+   /* private float getDifferenceTwoPointsHours(String startTime, String endTime) {
         try {
-           float start= Float.parseFloat(startTime.replace(":","."));
-            float end= Float.parseFloat(endTime.replace(":","."));
+            float start = Float.parseFloat(startTime.replace(":", "."));
+            float end = Float.parseFloat(endTime.replace(":", "."));
 
             Float totalTime = end - start;
-            Log.d("totalTime",""+totalTime);
-            float totalWidth= totalTime;
+            Log.d("totalTime", "" + totalTime);
+            float totalWidth = totalTime;
             return totalWidth;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
 
+    }*/
+
+    private void setColor(ArrayList<ColorSiteId> arrayList) {
+           lay_colorIndicator.removeAllViews();
+         for(int i=0;i<arrayList.size();i++) {
+             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+             View rowView = inflater.inflate(R.layout.color_indicator, null);
+             TextView txt_color = (TextView) rowView.findViewById(R.id.txt_color);
+             TextView txt_name = (TextView) rowView.findViewById(R.id.txt_name);
+             txt_name.setText(arrayList.get(i).getSietId());
+             txt_color.setBackgroundColor(Color.parseColor(arrayList.get(i).getColor()));
+             lay_colorIndicator.addView(rowView);
+         }
     }
 
+    private int getScreenWidth(Activity activity)
+    {
+        WindowManager w = activity.getWindowManager();
+        Display d = w.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        d.getMetrics(metrics);
+// since SDK_INT = 1;
+        int  widthPixels = metrics.widthPixels;
+        long  heightPixels = metrics.heightPixels;
+// includes window decorations (statusbar bar/menu bar)
+        if (Build.VERSION.SDK_INT >= 14 && Build.VERSION.SDK_INT < 17)
+            try {
+                widthPixels = (Integer) Display.class.getMethod("getRawWidth").invoke(d)-120;
+                heightPixels = (Integer) Display.class.getMethod("getRawHeight").invoke(d);
+                Log.e("widthPixels","widthPixels="+widthPixels+" heightPixels="+heightPixels);
+                return widthPixels;
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+// includes window decorations (statusbar bar/menu bar)
+        if (Build.VERSION.SDK_INT >= 17)
+            try {
+                Point realSize = new Point();
+                Display.class.getMethod("getRealSize", Point.class).invoke(d, realSize);
+                widthPixels = realSize.x-120;
+                heightPixels = realSize.y;
+
+                Log.e("widthPixels","widthPixels="+widthPixels+" heightPixels="+heightPixels);
+                return widthPixels;
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        return 650;
+    }
+    private void setColorArray() {
+
+        backGroundColor_array.clear();
+        backGroundColor_array = new ArrayList<>();
+        backGroundColor_array.add("#63C070");
+        backGroundColor_array.add("#B83F3A");
+        backGroundColor_array.add("#51B3CE");
+        backGroundColor_array.add("#63C070");
+        backGroundColor_array.add("#B83F3A");
+        backGroundColor_array.add("#FFFAF0");
+        backGroundColor_array.add("#FFFFF0");
+        backGroundColor_array.add("#FFFAFA");
+        backGroundColor_array.add("#FFFF00");
+        backGroundColor_array.add("#B0171F");
+        backGroundColor_array.add("#FFB6C1");
+        backGroundColor_array.add("#EEA2AD");
+        backGroundColor_array.add("#8B5F65");
+        backGroundColor_array.add("#DA70D6");
+        backGroundColor_array.add("#FF00FF");
+        backGroundColor_array.add("#912CEE");
+        backGroundColor_array.add("#551A8B");
+        backGroundColor_array.add("#9F79EE");
+        backGroundColor_array.add("#0000FF");
+        backGroundColor_array.add("#00008B");
+        backGroundColor_array.add("#3D59AB");
+        backGroundColor_array.add("#27408B");
+        backGroundColor_array.add("#B0C4DE");
+        backGroundColor_array.add("#6E7B8B");
+        backGroundColor_array.add("#00B2EE");
+        backGroundColor_array.add("#00FA9A");
+        backGroundColor_array.add("#98FB98");
+        backGroundColor_array.add("#FFFF00");
+        backGroundColor_array.add("#BDB76B");
+        backGroundColor_array.add("#FCE6C9");
+        backGroundColor_array.add("#CDAA7D");
+        backGroundColor_array.add("#00008b");
+        backGroundColor_array.add("#cd3333");
+        backGroundColor_array.add("#5f9ea0");
+        backGroundColor_array.add("#8ee5ee");
+        backGroundColor_array.add("#7fff00");
+
+
+        backGroundColor_array.add("#63C070");
+        backGroundColor_array.add("#B83F3A");
+        backGroundColor_array.add("#51B3CE");
+        backGroundColor_array.add("#63C070");
+        backGroundColor_array.add("#B83F3A");
+        backGroundColor_array.add("#FFFAF0");
+        backGroundColor_array.add("#FFFFF0");
+        backGroundColor_array.add("#FFFAFA");
+        backGroundColor_array.add("#FFFF00");
+        backGroundColor_array.add("#B0171F");
+        backGroundColor_array.add("#FFB6C1");
+        backGroundColor_array.add("#EEA2AD");
+        backGroundColor_array.add("#8B5F65");
+        backGroundColor_array.add("#DA70D6");
+        backGroundColor_array.add("#FF00FF");
+        backGroundColor_array.add("#912CEE");
+        backGroundColor_array.add("#551A8B");
+        backGroundColor_array.add("#9F79EE");
+        backGroundColor_array.add("#0000FF");
+        backGroundColor_array.add("#00008B");
+        backGroundColor_array.add("#3D59AB");
+        backGroundColor_array.add("#27408B");
+        backGroundColor_array.add("#B0C4DE");
+        backGroundColor_array.add("#6E7B8B");
+        backGroundColor_array.add("#00B2EE");
+        backGroundColor_array.add("#00FA9A");
+        backGroundColor_array.add("#98FB98");
+        backGroundColor_array.add("#FFFF00");
+        backGroundColor_array.add("#BDB76B");
+        backGroundColor_array.add("#FCE6C9");
+        backGroundColor_array.add("#CDAA7D");
+        backGroundColor_array.add("#00008b");
+        backGroundColor_array.add("#cd3333");
+        backGroundColor_array.add("#5f9ea0");
+        backGroundColor_array.add("#8ee5ee");
+        backGroundColor_array.add("#7fff00");
+
+    }
 }

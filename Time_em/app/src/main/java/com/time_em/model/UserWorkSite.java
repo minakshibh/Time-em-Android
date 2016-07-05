@@ -4,7 +4,7 @@ package com.time_em.model;
 import java.util.ArrayList;
 
 public class UserWorkSite {
-    String date;
+    String date,allData;
     ArrayList<WorkSiteList> arraylist_WorkSiteList=new ArrayList<>();
 
     public ArrayList<WorkSiteList> getArraylist_WorkSiteList() {
@@ -24,5 +24,11 @@ public class UserWorkSite {
         this.date = date;
     }
 
+    public String getAllData() {
+        return allData;
+    }
 
+    public void setAllData(String allData) {
+        this.allData = allData;
+    }
 }

@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
@@ -31,6 +32,7 @@ import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
+import com.time_em.model.UserWorkSite;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.utils.Utils;
@@ -44,6 +46,8 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	private TextView swipeInfo, headerText;
 	private ImageView back, addTask;
 	private RecyclerView recyclerView;
+	private TimeEmDbHandler dbHandler;
+	private int array_position=0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	}
 	
 	private void initScreen(){
+		dbHandler = new TimeEmDbHandler(UserListActivity.this);
 		taskListview = (ListView)findViewById(R.id.taskList);
 		recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 		parser = new Time_emJsonParser(UserListActivity.this);
@@ -80,14 +85,29 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 		taskListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent intent = new Intent(UserListActivity.this, TaskListActivity.class);
-				intent.putExtra("UserId", team.get(position).getId());
-				intent.putExtra("UserName", team.get(position).getFirstName());
-				startActivity(intent);
+
+				array_position=position;
+				GetUserWorkSiteApi();
+
+
 			}
 		});
 	}
-	
+	private void GetUserWorkSiteApi() {
+
+		int UserId = HomeActivity.user.getId();
+		HashMap<String, String> postDataParameters = new HashMap<String, String>();
+
+		postDataParameters.put("userid", String.valueOf(UserId));
+
+		Log.e("" + Utils.GetUserWorksiteActivity, "" + postDataParameters.toString());
+
+		AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+				UserListActivity.this, "get", Utils.GetUserWorksiteActivity,
+				postDataParameters, true, "Please wait...");
+		mWebPageTask.delegate = (AsyncResponseTimeEm) UserListActivity.this;
+		mWebPageTask.execute();
+	}
 	private void getUserList(int userId){
 		
 		if (Utils.isNetworkAvailable(UserListActivity.this)) {
@@ -222,9 +242,42 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 
 
 			taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
-		}else{
+		}
+		else if (methodName.contains(Utils.GetUserWorksiteActivity)) {
+			parser = new Time_emJsonParser(UserListActivity.this);
+			ArrayList<UserWorkSite> array_worksite = parser.getUserWorkSite(output);
+			dbHandler.deleteGeoGraphs();
+			for(int i=0;i<array_worksite.size();i++) {
+				Gson gson = new Gson();
+				// This can be any object. Does not have to be an arraylist.
+				String allData = gson.toJson(array_worksite.get(i).getArraylist_WorkSiteList());
+				dbHandler.updateGeoGraphData(allData, array_worksite.get(i).getDate());
+				goToNext();
+			}
+			//array_worksite=  dbHandler.getGeoGraphData();
+			//fetchDataGraphs(array_worksite);
+
+
+					// array_worksite.clear();
+			//  array_worksite= dbHandler.getGeoGraphData("10");
+			//Log.e("UserWorkSite", "" + array_worksite.size());
+			//setColorWithModel(array_worksite);
+			//settingGraph(array_worksite); // setting graphs with bar
+
+
+
+		}
+
+
+		else{
 //			Utils.showToast(UserListActivity.this, output);
 			getUserList(HomeActivity.user.getId());
 		}
+	}
+	private void goToNext() {
+		Intent intent = new Intent(UserListActivity.this, TaskListActivity.class);
+		intent.putExtra("UserId", team.get(array_position).getId());
+		intent.putExtra("UserName", team.get(array_position).getFirstName());
+		startActivity(intent);
 	}
 }

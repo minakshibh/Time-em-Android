@@ -57,7 +57,7 @@ private void initUIComponents() {
         // TODO Auto-generated method stub
 
         headerInfo = (TextView)findViewById(R.id.headerText);
-        headerInfo.setText("Setting");
+        headerInfo.setText("Settings");
         back =(ImageView)findViewById(R.id.back);
         AddButton=(ImageView)findViewById(R.id.AddButton);
         AddButton.setVisibility(View.GONE);
