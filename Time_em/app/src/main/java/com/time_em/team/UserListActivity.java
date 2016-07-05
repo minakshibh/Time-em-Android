@@ -252,8 +252,9 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 				// This can be any object. Does not have to be an arraylist.
 				String allData = gson.toJson(array_worksite.get(i).getArraylist_WorkSiteList());
 				dbHandler.updateGeoGraphData(allData, array_worksite.get(i).getDate());
-				goToNext();
+
 			}
+			goToNext();
 			//array_worksite=  dbHandler.getGeoGraphData();
 			//fetchDataGraphs(array_worksite);
 

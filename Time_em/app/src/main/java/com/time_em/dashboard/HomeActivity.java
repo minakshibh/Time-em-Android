@@ -113,9 +113,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         //  populatRecyclerView();
 
 
-      /*  registerDevice();
+        registerDevice();
         fetchTaskGraphsData();
-        fetchGraphsSignInOut();*/
+        fetchGraphsSignInOut();
         initScreen();
         setClickListeners();
         setTapBar();
