@@ -110,6 +110,7 @@ public class FileUtils {
             }
         }
     }
+
     public void videoIntent()
     {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -136,7 +137,7 @@ public class FileUtils {
       //  long timeStamp=System.currentTimeMillis();
        // Log.e("timeStamp",""+timeStamp);
         String imageFileName = "IMG_" + ""+ AddEditTaskEntry.UniqueNumber;// + "_";
-        String videoFileName = "VID_" + ""+AddEditTaskEntry.UniqueNumber;//+ "_";
+        String videoFileName = "VID_" + ""+ AddEditTaskEntry.UniqueNumber;//+ "_";
         Log.e("imageFileName",""+imageFileName);
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File file;
@@ -306,6 +307,7 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
+
     public void onRecordVideoResult(Activity Activity,Intent data, VideoView mVideoView) {
         Log.e("video path:",""+attachmentPath);
       // Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(attachmentPath), 800,800);
@@ -327,4 +329,5 @@ public class FileUtils {
         UniqueNumber= HomeActivity.user.getId()+""+timeStamp;
         return UniqueNumber;
         }
+
 }

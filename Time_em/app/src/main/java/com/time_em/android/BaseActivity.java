@@ -22,6 +22,7 @@ import com.time_em.dashboard.GeoGraphsActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.dashboard.SettingActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.inappbilling.PurchaseActivity;
 import com.time_em.notifications.NotificationListActivity;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.profile.MyProfileActivity;
@@ -174,13 +175,12 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 				startActivity(intent);
 			} else if (v == settings) {
 				setSelection(false, false, false, true);
-				Intent intent = new Intent(BaseActivity.this, SettingActivity.class);
+				Intent intent = new Intent(BaseActivity.this, PurchaseActivity.class);
 				startActivity(intent);
 			}
 
 		}
 	};
-
 
 
 	public void setSelection(Boolean isTaskSelected, Boolean isTeamSelected, Boolean isNotificationSelected, Boolean isSettingsSelected){

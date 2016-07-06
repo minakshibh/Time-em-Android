@@ -73,8 +73,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     }
 
 
-
-
     private void initScreen() {
         parser = new Time_emJsonParser(AddEditTaskEntry.this);
         fileUtils = new FileUtils(AddEditTaskEntry.this);
