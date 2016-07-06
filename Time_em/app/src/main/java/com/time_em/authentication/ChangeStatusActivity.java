@@ -13,8 +13,12 @@ import android.widget.TextView;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class ChangeStatusActivity extends Activity implements AsyncResponseTimeEm{
 	
@@ -52,7 +56,8 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 		updateUI();
 	}
 
-	private void updateUI(){
+	private void
+	updateUI(){
 		if(HomeActivity.user.isSignedIn()){
 			information.setText(res.getString(R.string.userSignedIn));
 			changeStatus.setText("Sign Out");
@@ -91,11 +96,33 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
 		Boolean isError;
+		String message;
 		Log.e("output", output);
-		
-//		Utils.alertMessage(ChangeStatusActivity.this, output);
-		//isError = parser.parseChangeStatusResponse(output, methodName);
-		//if(!isError)
-			//updateUI();
+		try {
+			JSONObject jObject = new JSONObject(output);
+			isError = jObject.getBoolean("isError");
+			message = jObject.getString("Message");
+			if(!isError){
+				if(output.contains("SignedOutUser")) {
+					HomeActivity.user.setSignedIn(false);
+				}
+				else if(output.contains("SignedinUser")){
+					HomeActivity.user.setSignedIn(true);
+				}
+				else if(message.contains("already Signed out")){
+					HomeActivity.user.setSignedIn(false);
+				}
+				else if(message.contains("already Signed In")){
+					HomeActivity.user.setSignedIn(true);
+				}
+				updateUI();
+				finish();
+			}
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+
+			}
+
 	}
 }

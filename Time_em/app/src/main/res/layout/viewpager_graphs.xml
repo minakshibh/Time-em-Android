@@ -8,6 +8,12 @@
         android:layout_above="@+id/footer"
         android:orientation="horizontal"
         >
+    <TextView
+        android:layout_width="1dp"
+        android:layout_marginTop="30dp"
+        android:layout_height="match_parent"
+        android:background="@color/dullTextColor"
+        />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="140dp"
@@ -18,13 +24,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/sep5"
-                    android:layout_width="10dp"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/seperator"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -35,18 +34,18 @@
                     android:textSize="8sp"
                     android:textColor="@color/black"
                     android:id="@+id/scale5"/>
+                <TextView
+                    android:id="@+id/sep5"
+                    android:layout_width="10dp"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/seperator"/>
+
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/sep4"
-                    android:layout_width="10dp"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/seperator"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -57,6 +56,13 @@
                     android:textSize="8sp"
                     android:textColor="@color/black"
                     android:id="@+id/scale4"/>
+                <TextView
+                    android:id="@+id/sep4"
+                    android:layout_width="10dp"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/seperator"/>
+
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -110,6 +116,7 @@
                 <TextView
                     android:id="@+id/sep1"
                     android:layout_width="10dp"
+
                     android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
                     android:background="@color/seperator"/>
@@ -147,10 +154,18 @@
                     android:id="@+id/scale0"/>
             </RelativeLayout>
         </LinearLayout>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/task_graph"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
             tools:listitem="@layout/graph_slider_row"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/black"
+        />
 </LinearLayout>

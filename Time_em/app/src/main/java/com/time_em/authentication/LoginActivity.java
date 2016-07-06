@@ -108,7 +108,9 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 		HomeActivity.user = parser.getUserDetails(output , methodName);
 		 if(HomeActivity.user != null){
 
+			 //saved userId into SharedPrefs
 			 Utils.saveInSharedPrefs(getApplicationContext(),"apiUserId",""+HomeActivity.user.getId());
+
 			 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
 			 intent.putExtra("trigger", "login");
 			 startActivity(intent);

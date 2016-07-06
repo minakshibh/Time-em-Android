@@ -245,7 +245,17 @@ public class FileUtils {
                     Log.e("volley response", ":::"+responseString);
 
                     pDialog.dismiss();
-                    Utils.alertMessage(context, "uploaded successfully");
+                    if(APIName.contains("AddUpdateUserTaskActivity")) {
+                        Utils.alertMessage(context, "Task Added successfully.");
+                    }
+                    else if(APIName.contains("AddNotification"))
+                    {
+                        Utils.alertMessage(context, " Add Notification successfully.");
+                    }
+                    else
+                    {
+                        Utils.alertMessage(context, " Data Uploaded successfully.");
+                    }
 
                 }catch (Exception e){
                     e.printStackTrace();

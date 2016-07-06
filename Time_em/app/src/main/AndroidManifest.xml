@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.NFC" />
+   <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
@@ -166,7 +166,9 @@
         <service android:name="com.time_em.geofencing.BackgroundLocationService" />
 
 
-        <activity android:name="com.time_em.tasks.AddEditTaskEntry" android:screenOrientation="portrait"></activity>
+        <activity android:name="com.time_em.tasks.AddEditTaskEntry"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"></activity>
 
 
     </application>

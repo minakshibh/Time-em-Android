@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -108,6 +109,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         txtHoursHeader.setText("Specify number of hours");
         hours.setHint("No. of hours.(max 24hrs)");
         hours.setInputType(InputType.TYPE_CLASS_NUMBER);
+        int maxLength = 2;
+        hours.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         hoursIcon.setImageResource(R.drawable.user_icon);
         recipientSection.setVisibility(View.GONE);
         addUpdateTask.setText("Add Task Entry");
@@ -411,13 +414,13 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddEditTaskEntry.this);
 
-        alertDialogBuilder.setTitle("Enter task name");
+        alertDialogBuilder.setTitle("Add new task");
         // alertDialogBuilder.setMessage("Enter Password");
         alertDialogBuilder.setView(promptsView);
         final EditText userInput = (EditText) promptsView.findViewById(R.id.editText);
 
         // set dialog message
-        alertDialogBuilder.setCancelable(false) .setPositiveButton("Submit",
+        alertDialogBuilder.setCancelable(false) .setPositiveButton("Add",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 newTaskName = userInput.getText().toString();

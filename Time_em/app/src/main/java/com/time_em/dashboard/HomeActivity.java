@@ -390,7 +390,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             @Override
             public void onItemClick(TaskEntry item, int position) {
 
-                Utils.showToast(HomeActivity.this, item.getCreatedDate() + " Clicked");
+               // Utils.showToast(HomeActivity.this, item.getCreatedDate() + " Clicked");
 
             }
         });
@@ -406,7 +406,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             @Override
             public void onItemClick(TaskEntry item, int position) {
 
-                Utils.showToast(HomeActivity.this, item.getCreatedDate() + " Clicked");
+                //Utils.showToast(HomeActivity.this, item.getCreatedDate() + " Clicked");
 
             }
         });
@@ -731,8 +731,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             syncUploadFile(syncData);// upload file
 
             // for delete offline task values
+            int int_userId=getUserId();
+
             tasks_delete.clear();
-            tasks_delete.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(), "true", true));
+            tasks_delete.addAll(dbHandler.getTaskEnteries(int_userId, "true", true));
             if (tasks_delete.size() >= 0) {
                 for (int i = 0; i < tasks_delete.size(); i++) {
                     tasks_delete.get(i).setIsActive(false);
@@ -754,6 +756,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void syncDataCheck() {
+
+
         imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_green));
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
         //for notification
@@ -764,8 +768,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         if (notifications != null && notifications.size() > 0) {
             imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_red));
         }
+       int userId=getUserId();
         tasks.clear();
-        tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(), "true", true));
+        tasks.addAll(dbHandler.getTaskEnteries(userId, "true", true));
         Log.e("task size", "" + tasks.size());
         // for delete task
         if (tasks != null && tasks.size() > 0) {
@@ -777,7 +782,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void syncUploadData() {
-
+        int int_userId=getUserId();
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
 
         //for notification
@@ -788,7 +793,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
         //for task
         tasks.clear();
-        tasks.addAll(dbHandler.getTaskEnteries(HomeActivity.user.getId(), "true", true));
+        tasks.addAll(dbHandler.getTaskEnteries(int_userId, "true", true));
         syncUploadAPI(tasks, deleteIds, notifications);
         Log.e("task size", "" + tasks.size());
 
@@ -951,17 +956,24 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         Home_arrayList_widget=new ArrayList<>();
         Home_arrayList_widget.clear();
         AddWigdetView.removeAllViews();
+        AddWigdetView.setPadding(5,0,5,0);
         Home_arrayList_widget=Utils.getWidget(HomeActivity.this);
         if(Home_arrayList_widget!=null && Home_arrayList_widget.size()>0) {
            for(int i=0;i<Home_arrayList_widget.size();i++) {
                try {
                    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                    View rowView = inflater.inflate(R.layout.template_add_widget_view, null);
+
                    CheckBox checkBox = (CheckBox) rowView.findViewById(R.id.checkBox);
                    checkBox.setVisibility(View.GONE);
+
                    TextView textView_name = (TextView) rowView.findViewById(R.id.textView_name);
                    textView_name.setText(Home_arrayList_widget.get(i).getName());
-                   rowView.setBackgroundColor(Color.parseColor(Home_arrayList_widget.get(i).getColor()));
+                   textView_name.setTextColor(getResources().getColor(R.color.white));
+
+                   RelativeLayout relativeLayout=(RelativeLayout)rowView.findViewById(R.id.SingleGrideView);
+                   relativeLayout.setBackgroundColor(Color.parseColor(Home_arrayList_widget.get(i).getColor()));
+                   relativeLayout.setPadding(5,0,5,0);
                    AddWigdetView.addView(rowView);
                }catch(Exception e)
                {
@@ -973,6 +985,16 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         }
 
     }
-
+private int getUserId()
+{
+    int int_userId=0;
+    String userId=Utils.getSharedPrefs(getApplicationContext(),"apiUserId");
+    try{
+        int_userId=Integer.parseInt(userId);
+        return int_userId;
+    }catch(Exception e)
+    { e.printStackTrace();   }
+    return int_userId;
+}
 
 }

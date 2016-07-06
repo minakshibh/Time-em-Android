@@ -112,10 +112,10 @@ public class UserSelectionActivity extends Activity {
 
                 if(selectedUserIds.contains(String.valueOf(user.getId()))){
                     selectedUserIds.remove(String.valueOf(user.getId()));
-                    Utils.showToast(UserSelectionActivity.this, user.getId()+" removed");
+                   // Utils.showToast(UserSelectionActivity.this, user.getId()+" removed");
                 }else{
                     selectedUserIds.add(String.valueOf(user.getId()));
-                    Utils.showToast(UserSelectionActivity.this, user.getId()+" added");
+                   // Utils.showToast(UserSelectionActivity.this, user.getId()+" added");
                 }
                 adapter.notifyDataSetChanged();
             }

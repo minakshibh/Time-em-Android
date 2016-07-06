@@ -74,7 +74,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
     private void initUI() {
 
         headerText=(TextView)findViewById(R.id.headerText);
-        headerText.setText("Scanned Codes");
+        headerText.setText("Scanned Users");
         back=(ImageView)findViewById(R.id.back);
         AddButton=(ImageView)findViewById(R.id.AddButton);
         AddButton.setVisibility(View.GONE);
@@ -455,10 +455,13 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         }
     private void goToCameraView()
     {
-            if(trigger.equalsIgnoreCase("barcode")) {
-            Intent mIntent = new Intent(BarcodeScanActivity.this, CameraOpenActivity.class);
-            startActivity(mIntent);
+         if(trigger.equalsIgnoreCase("barcode")) {
+            //Intent mIntent = new Intent(BarcodeScanActivity.this, CameraOpenActivity.class);
+            //startActivity(mIntent);
             finish();
+            }
+        else{
+                finish();
             }
         }
 

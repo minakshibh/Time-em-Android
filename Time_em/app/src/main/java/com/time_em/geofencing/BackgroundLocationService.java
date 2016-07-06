@@ -67,7 +67,7 @@ public class BackgroundLocationService extends Service implements
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1*60*1000); // Update location every 2 minute
+        mLocationRequest.setInterval(3*60*1000); // Update location every 3 minute
 
         int permission_finelocation = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);

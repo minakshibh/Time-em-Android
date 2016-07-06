@@ -69,13 +69,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center" />
-    </LinearLayout>
 
+    </LinearLayout>
+ <TextView
+        android:id="@+id/line"
+        android:layout_below="@+id/graphLayout"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/dullTextColor" />
     <LinearLayout
         android:id="@+id/lay_indicator"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_below="@+id/graphLayout"
+        android:layout_below="@+id/line"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
