@@ -155,7 +155,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
 
                 if (user == null) {
                     refresh = false;
-                    Toast.makeText(getApplicationContext(), "User not found " + barCode, Toast.LENGTH_LONG).show();
+                  //  Toast.makeText(getApplicationContext(), "User not found " + barCode, Toast.LENGTH_LONG).show();
                    if(trigger.equalsIgnoreCase("nfc"))
                    {
                        getUserDetailsNFC(nfcCode);
@@ -305,7 +305,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                 teamMembers = parser.getTeamList(output, methodName);
             }catch(Exception e)
             {
-                e.printStackTrace(); }
+                Toast.makeText(getApplicationContext(), "Invalid user,Please try again.", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
             boolean result=true;
             if(aL_UsersNotExistDb!=null && aL_UsersNotExistDb.size()>0) {
                 for(int i=0;i<aL_UsersNotExistDb.size();i++) {
@@ -369,7 +371,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                                  }
                              } catch (Exception e) {
                                  e.printStackTrace();
-                                 Toast.makeText(getApplicationContext(), "Try again..", Toast.LENGTH_LONG).show();
+                                 Toast.makeText(getApplicationContext(), "Invalid user,Please try again.", Toast.LENGTH_LONG).show();
                              }
 
                              if (user == null) {
@@ -418,7 +420,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                         }
                     }catch(Exception e){
                         e.printStackTrace();
-                        Toast.makeText(getApplicationContext(),"Try again..",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),"Invalid user,Please try again.",Toast.LENGTH_LONG).show();
                     }
 
                     if(user==null) {

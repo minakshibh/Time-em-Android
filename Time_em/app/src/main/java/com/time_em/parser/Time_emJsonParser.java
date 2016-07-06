@@ -100,8 +100,8 @@ public class Time_emJsonParser {
 			Utils.showToast(context, e.getMessage());
 		}
 
-		if(isError)
-			Utils.showToast(context, message);
+		//if(isError)
+			//Utils.showToast(context, message);
 
 		return teamList;
 	}

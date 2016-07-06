@@ -173,7 +173,9 @@
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"></activity>
 
-
+        <activity android:name="com.time_em.inappbilling.PurchaseActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

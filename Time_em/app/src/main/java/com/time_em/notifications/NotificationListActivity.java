@@ -2,13 +2,9 @@ package com.time_em.notifications;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,19 +22,14 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.Notification;
-import com.time_em.model.TaskEntry;
 import com.time_em.parser.Time_emJsonParser;
-import com.time_em.tasks.AddTaskActivity;
-import com.time_em.tasks.TaskDetailActivity;
 import com.time_em.utils.Utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 public class NotificationListActivity extends Activity implements AsyncResponseTimeEm{
 

@@ -29,9 +29,7 @@ import com.time_em.tasks.AddEditTaskEntry;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by minakshi on 08/06/16.

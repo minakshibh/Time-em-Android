@@ -1,22 +1,6 @@
 package com.time_em.tasks;
 
 
-import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
-
-import com.time_em.android.R;
-import com.time_em.asynctasks.AsyncResponseTimeEm;
-import com.time_em.asynctasks.AsyncTaskTimeEm;
-import com.time_em.dashboard.HomeActivity;
-import com.time_em.model.TaskEntry;
-import com.time_em.model.User;
-import com.time_em.parser.Time_emJsonParser;
-import com.time_em.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class AddTaskPresenter {
 
    /* private final IAddTaskView view;

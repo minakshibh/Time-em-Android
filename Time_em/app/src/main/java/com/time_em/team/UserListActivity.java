@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,10 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,7 +26,6 @@ import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
-import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.model.UserWorkSite;
 import com.time_em.parser.Time_emJsonParser;
@@ -87,15 +82,16 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 				array_position=position;
-				GetUserWorkSiteApi();
+				GetUserWorkSiteApi(""+team.get(position).getId());
 
 
 			}
+
 		});
 	}
-	private void GetUserWorkSiteApi() {
+	private void GetUserWorkSiteApi(String UserId) {
 
-		int UserId = HomeActivity.user.getId();
+		//int UserId = HomeActivity.user.getId();
 		HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
 		postDataParameters.put("userid", String.valueOf(UserId));

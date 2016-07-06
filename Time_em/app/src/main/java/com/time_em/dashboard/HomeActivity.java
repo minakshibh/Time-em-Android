@@ -1,14 +1,12 @@
 package com.time_em.dashboard;
 
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TimerTask;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,10 +16,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,13 +47,11 @@ import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.model.Widget;
 import com.time_em.parser.Time_emJsonParser;
-import com.time_em.tasks.TaskListActivity;
 import com.time_em.utils.FileUtils;
 import com.time_em.utils.GcmUtils;
 import com.time_em.utils.Utils;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, TabLayout.OnTabSelectedListener {
