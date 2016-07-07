@@ -15,10 +15,12 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -27,9 +29,15 @@ import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.tasks.AddEditTaskEntry;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 /**
  * Created by minakshi on 08/06/16.
@@ -226,7 +234,7 @@ public class FileUtils {
 
         String url = context.getResources().getString(R.string.baseUrl)+APIName;
         for(int i=0;i<data.size();i++) {
-            Log.e("Req Data" + url, data.get(i).key +" "+ data.get(i).value);
+            Log.e("Req Data", data.get(i).key +":"+ data.get(i).value);
         }
         MultipartRequest mCustomRequest = new MultipartRequest(url, data, new Response.ErrorListener() {
             @Override
@@ -239,23 +247,24 @@ public class FileUtils {
         }, new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
-                Log.e("volley","uploaded successfully");
+                Log.e("volley","uploaded successfully "+" "+response.statusCode+ " "+response);
 
                 try {
                     String responseString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
                     Log.e("volley response", ":::"+responseString);
 
                     pDialog.dismiss();
-                    if(APIName.contains("AddUpdateUserTaskActivity")) {
-                        Utils.alertMessage(context, "Task Added successfully.");
+                    if(response.statusCode==200) {
+                        if (APIName.contains("AddUpdateUserTaskActivity")) {
+                            Utils.alertMessage(context, "Task Added successfully.");
+                        } else if (APIName.contains("AddNotification")) {
+                            Utils.alertMessage(context, " Add Notification successfully.");
+                        } else {
+                            Utils.alertMessage(context, " Data Uploaded successfully.");
+                        }
                     }
-                    else if(APIName.contains("AddNotification"))
-                    {
-                        Utils.alertMessage(context, " Add Notification successfully.");
-                    }
-                    else
-                    {
-                        Utils.alertMessage(context, " Data Uploaded successfully.");
+                    else{
+                        Toast.makeText(context,"Something went wrong,Try again",Toast.LENGTH_LONG).show();
                     }
 
                 }catch (Exception e){

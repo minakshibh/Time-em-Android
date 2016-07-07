@@ -4,15 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -126,11 +121,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraphData();
         fetchDataGraphs(array_workSite);
 
-
-
-        //getScreenWidth(TaskListActivity.this);//get width of screen
-
-        //GetUserWorkSiteApi();
     }
 
     private void initScreen() {
@@ -382,6 +372,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
                     intent.putExtra("selectDate", selectedDate);
                     intent.putExtra("taskEntry", selectedTask);
+                    intent.putExtra("UserId", ""+UserId);
                     startActivity(intent);
                 }
             });
@@ -419,27 +410,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             }
         }
 
-       /* else if (methodName.contains(Utils.GetUserWorksiteActivity)) {
-            parser = new Time_emJsonParser(TaskListActivity.this);
-            ArrayList<UserWorkSite> array_worksite = parser.getUserWorkSite(output);
-            dbHandler.deleteGeoGraphs();
-            for(int i=0;i<array_worksite.size();i++) {
-                Gson gson = new Gson();
-                // This can be any object. Does not have to be an arraylist.
-                String allData = gson.toJson(array_worksite.get(i).getArraylist_WorkSiteList());
-                dbHandler.updateGeoGraphData(allData, array_worksite.get(i).getDate());
-            }
-            array_worksite=  dbHandler.getGeoGraphData();
-            fetchDataGraphs(array_worksite);
-           // array_worksite.clear();
-          //  array_worksite= dbHandler.getGeoGraphData("10");
-            //Log.e("UserWorkSite", "" + array_worksite.size());
-            //setColorWithModel(array_worksite);
-            //settingGraph(array_worksite); // setting graphs with bar
-
-
-
-        }*/
     }
     public static <WorkSiteList> List<com.time_em.model.WorkSiteList> stringToArray(String s, Class<com.time_em.model.WorkSiteList[]> clazz) {
         com.time_em.model.WorkSiteList[] arr = new Gson().fromJson(s, clazz);
@@ -521,28 +491,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             colorSiteId.setColor(backGroundColor_array.get(2));
             array_colorSiteId.add(colorSiteId);*/
 
-
-          //  ArrayList<ColorSiteId> array_ColorSiteIdDup= removeDuplicateValue(array_colorSiteId);
-           // setColor(removeDuplicateValue(array_ColorSiteIdDup));// set color to indicator
             setColor(array_colorSiteId);
         }
     }
 
-    /*private ArrayList<ColorSiteId> removeDuplicateValue(ArrayList<ColorSiteId> array_colorIds) {
-
-        ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
-
-
-      *//*  for(ColorSiteId user1 : array_colorIds) {
-            for (ColorSiteId user2 : array_colorIds) {
-                if (!user1.getSietId().equals(user2.getSietId())) {
-                    array_colorSiteId.add(user1);
-                }
-            }
-        }*//*
-      return array_colorSiteId;
-
-    }*/
 
     public class DateSliderAdapter extends RecyclerView.Adapter<DateSliderAdapter.ViewHolder> {
 
@@ -637,22 +589,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         }
 
     }
-
-    /*private void GetUserWorkSiteApi() {
-
-        UserId = HomeActivity.user.getId();
-        HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
-        postDataParameters.put("userid", String.valueOf(UserId));
-
-        Log.e("" + Utils.GetUserWorksiteActivity, "" + postDataParameters.toString());
-
-        AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                TaskListActivity.this, "get", Utils.GetUserWorksiteActivity,
-                postDataParameters, true, "Please wait...");
-        mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
-        mWebPageTask.execute();
-    }*/
 
     private void settingGraph(ArrayList<UserWorkSite> array_worksite) {
         lay_upperGraph = (LinearLayout) findViewById(R.id.lay_upperGraph);
@@ -833,21 +769,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
     }
 
-   /* private float getDifferenceTwoPointsHours(String startTime, String endTime) {
-        try {
-            float start = Float.parseFloat(startTime.replace(":", "."));
-            float end = Float.parseFloat(endTime.replace(":", "."));
-
-            Float totalTime = end - start;
-            Log.d("totalTime", "" + totalTime);
-            float totalWidth = totalTime;
-            return totalWidth;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-
-    }*/
 
     private void setColor(ArrayList<ColorSiteId> arrayList) {
            lay_colorIndicator.removeAllViews();

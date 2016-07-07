@@ -43,7 +43,7 @@
         android:fillViewport="false"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:tabSelectedTextColor="@color/white"
-        app:tabTextColor="@color/black" />
+        app:tabTextColor="@color/dullTextColor" />
 
     <TextView
         android:id="@+id/currentDate"

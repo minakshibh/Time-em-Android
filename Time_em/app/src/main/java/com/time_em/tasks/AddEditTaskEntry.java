@@ -206,7 +206,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
             if(v == back){
                 finish();
             }else if(v == uploadAttachment){
@@ -235,7 +235,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                             }
 
 
-                            dataModels.add(new MultipartDataModel("UserId", UserId, MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("UserId", ""+getSPrefsId, MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("Comments", comments.getText().toString(), MultipartDataModel.STRING_TYPE));
@@ -268,7 +268,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                     task.setTaskName(selectedSpinnerData.getName());
                                 }
 
-                                task.setUserId(Integer.parseInt(UserId));
+                                task.setUserId(getSPrefsId);
                                 task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
                                 task.setComments(comments.getText().toString());
                                 task.setSignedInHours(0.0);
