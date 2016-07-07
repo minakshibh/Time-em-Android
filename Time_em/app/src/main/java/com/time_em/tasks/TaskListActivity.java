@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -140,20 +142,24 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
         headerText = (TextView) findViewById(R.id.headerText);
-        try {
-            UserId = HomeActivity.user.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         currentDate = (TextView) findViewById(R.id.currentDate);
         currentDate.setVisibility(View.VISIBLE);
 
 
-        if (UserId == HomeActivity.user.getId()) {
-            headerText.setText("My Tasks");
-        } else if(getIntent().getStringExtra("UserName")!=null) {
+          if(getIntent().getStringExtra("UserName")!=null) {
             String username = getIntent().getStringExtra("UserName");
             headerText.setText(username + "'s Tasks");
+            addTaskButton.setVisibility(View.INVISIBLE);
+            try{
+                UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
+            }catch (Exception e){}
+        }
+        else{
+            headerText.setText("My Tasks");
+            try{
+            UserId =   Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
+            }catch (Exception e){}
         }
         footer = (LinearLayout) findViewById(R.id.footer);
         footer.setVisibility(View.GONE);
@@ -192,7 +198,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             public void onClick(View v) {
                 intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
                 intent.putExtra("selectDate", selectedDate);
-                intent.putExtra("UserId", HomeActivity.user.getId());
+                intent.putExtra("UserId", ""+UserId);
                 startActivity(intent);
             }
         });
@@ -474,25 +480,37 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
     private void setColorWithModel(ArrayList<UserWorkSite> array_worksite) {
         if (array_worksite != null && array_worksite.size() > 0) {
-           /* for (int i = 0; i < array_worksite.size(); i++) {
+            array_colorSiteId = new ArrayList<>();
+            for (int i = 0; i < array_worksite.size(); i++) {
 
                 for (int j = 0; j < array_worksite.get(i).getArraylist_WorkSiteList().size(); j++) {
                     String siteId = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkSiteName();
-                    array_colorSiteId = new ArrayList<>();
+
                     ColorSiteId colorSiteId = new ColorSiteId();
                     if(j>10) {
                         String position=i+""+j;
                         int pos=Integer.parseInt(position);
                         colorSiteId.setColor(backGroundColor_array.get(pos));
+                        Log.e("pos", "" + pos);
                     }else{
                         colorSiteId.setColor(backGroundColor_array.get(i + j));
+                        Log.e("pos", "" + i + j+backGroundColor_array.get(i + j));
                     }
                     colorSiteId.setSietId(siteId);
-                    array_colorSiteId.add(colorSiteId);
+                    boolean value=true;
+                    for(int k=0;k<array_colorSiteId.size();k++) {
+                       if(siteId.equalsIgnoreCase(array_colorSiteId.get(k).getSietId())) {
+                           value=false;
+                       }
+
+                    }
+                    if(value){
+                        array_colorSiteId.add(colorSiteId);
+                    }
                 }
                 Log.e("color size", "" + array_colorSiteId.size());
-            }*/
-            array_colorSiteId = new ArrayList<>();
+            }
+           /* array_colorSiteId = new ArrayList<>();
             ColorSiteId colorSiteId = new ColorSiteId();
             colorSiteId.setSietId("OSBORNE PARK");
             colorSiteId.setColor(backGroundColor_array.get(1));
@@ -501,25 +519,30 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             colorSiteId = new ColorSiteId();
             colorSiteId.setSietId("LCPL - GCSB");
             colorSiteId.setColor(backGroundColor_array.get(2));
-            array_colorSiteId.add(colorSiteId);
+            array_colorSiteId.add(colorSiteId);*/
 
 
-            //removeDuplicateValue(array_colorSiteId);
-            setColor(removeDuplicateValue(array_colorSiteId));// set color to indicator
+          //  ArrayList<ColorSiteId> array_ColorSiteIdDup= removeDuplicateValue(array_colorSiteId);
+           // setColor(removeDuplicateValue(array_ColorSiteIdDup));// set color to indicator
+            setColor(array_colorSiteId);
         }
     }
 
-    private ArrayList<ColorSiteId> removeDuplicateValue(ArrayList<ColorSiteId> array_colorIds) {
+    /*private ArrayList<ColorSiteId> removeDuplicateValue(ArrayList<ColorSiteId> array_colorIds) {
 
-        Set setObject = new HashSet(array_colorIds);
-        List listObject = new ArrayList(setObject);
+        ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
 
-        array_colorSiteId.clear();
-        array_colorSiteId.addAll(listObject);
-        /** Printing original list **/
-        System.out.println(array_colorSiteId);
-        return array_colorSiteId;
-    }
+
+      *//*  for(ColorSiteId user1 : array_colorIds) {
+            for (ColorSiteId user2 : array_colorIds) {
+                if (!user1.getSietId().equals(user2.getSietId())) {
+                    array_colorSiteId.add(user1);
+                }
+            }
+        }*//*
+      return array_colorSiteId;
+
+    }*/
 
     public class DateSliderAdapter extends RecyclerView.Adapter<DateSliderAdapter.ViewHolder> {
 
@@ -881,10 +904,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         backGroundColor_array.add("#B83F3A");
         backGroundColor_array.add("#51B3CE");
         backGroundColor_array.add("#63C070");
-        backGroundColor_array.add("#B83F3A");
         backGroundColor_array.add("#FFFAF0");
-        backGroundColor_array.add("#FFFFF0");
-        backGroundColor_array.add("#FFFAFA");
+        backGroundColor_array.add("#FF55F0");
         backGroundColor_array.add("#FFFF00");
         backGroundColor_array.add("#B0171F");
         backGroundColor_array.add("#FFB6C1");
@@ -916,7 +937,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
 
         backGroundColor_array.add("#63C070");
-        backGroundColor_array.add("#B83F3A");
         backGroundColor_array.add("#51B3CE");
         backGroundColor_array.add("#63C070");
         backGroundColor_array.add("#B83F3A");

@@ -273,7 +273,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	}
 	private void goToNext() {
 		Intent intent = new Intent(UserListActivity.this, TaskListActivity.class);
-		intent.putExtra("UserId", team.get(array_position).getId());
+		intent.putExtra("UserId", ""+team.get(array_position).getId());
 		intent.putExtra("UserName", team.get(array_position).getFirstName());
 		startActivity(intent);
 	}

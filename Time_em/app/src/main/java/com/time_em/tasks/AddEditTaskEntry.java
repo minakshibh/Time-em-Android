@@ -56,7 +56,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private VideoView uploadedVideo;
     TimeEmDbHandler dbHandler;
     public static String UniqueNumber="";
-    private String newTaskName="";
+    private String newTaskName="",UserId="";
    // private String addNewTask="0",taskName="";
     ArrayList<TaskEntry> taskEntries = new ArrayList<>();
 
@@ -97,6 +97,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         selectedDate = getIntent().getStringExtra("selectDate");
         taskEntry = getIntent().getParcelableExtra("taskEntry");
+        UserId=getIntent().getStringExtra("UserId");
 
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
@@ -224,32 +225,33 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
                       Double intHours=Double.parseDouble(hours.getText().toString().trim());
                     if(intHours<=24) {
-                        ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
+
+                        if (HomeActivity.user.isSignedIn()) {
+                            ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
                    /* ["ActivityId": "29644", "CreatedDate": "06-10-2016", "UserId": "8049", "TaskId": "16168", "ID": "0",
                             "TaskName": "Test Task May 3", "TimeSpent": "10", "Comments": "Test Parv 10 June"]*/
-                        if (fileUtils.getAttachmentPath() != null) {
-                             dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
-                             }
+                            if (fileUtils.getAttachmentPath() != null) {
+                                dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                            }
 
 
-                        dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
-                        dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
-                        dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
-                        dataModels.add(new MultipartDataModel("Comments", comments.getText().toString(), MultipartDataModel.STRING_TYPE));
-                        if(selectedSpinnerData.getId()==0) {
-                            dataModels.add(new MultipartDataModel("TaskId", String.valueOf(0), MultipartDataModel.STRING_TYPE));
-                            dataModels.add(new MultipartDataModel("TaskName", newTaskName, MultipartDataModel.STRING_TYPE));
-                        }else{
-                            dataModels.add(new MultipartDataModel("TaskId", String.valueOf(selectedSpinnerData.getId()), MultipartDataModel.STRING_TYPE));
-                            dataModels.add(new MultipartDataModel("TaskName", String.valueOf(selectedSpinnerData.getName()), MultipartDataModel.STRING_TYPE));
-                        }
-                        dataModels.add(new MultipartDataModel("CreatedDate", selectedDate, MultipartDataModel.STRING_TYPE));
-                        dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("UserId", UserId, MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("Comments", comments.getText().toString(), MultipartDataModel.STRING_TYPE));
+                            if (selectedSpinnerData.getId() == 0) {
+                                dataModels.add(new MultipartDataModel("TaskId", String.valueOf(0), MultipartDataModel.STRING_TYPE));
+                                dataModels.add(new MultipartDataModel("TaskName", newTaskName, MultipartDataModel.STRING_TYPE));
+                            } else {
+                                dataModels.add(new MultipartDataModel("TaskId", String.valueOf(selectedSpinnerData.getId()), MultipartDataModel.STRING_TYPE));
+                                dataModels.add(new MultipartDataModel("TaskName", String.valueOf(selectedSpinnerData.getName()), MultipartDataModel.STRING_TYPE));
+                            }
+                            dataModels.add(new MultipartDataModel("CreatedDate", selectedDate, MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));
 
-                        if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
-                            fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
-                        } else {
-                           // if (HomeActivity.user.isSignedIn()) {
+                            if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
+                                fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
+                            } else {
 
 
                                 TaskEntry task = new TaskEntry();
@@ -258,15 +260,15 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 task.setId(Integer.parseInt(taskEntryId));
                                 task.setActivityId(HomeActivity.user.getActivityId());
 
-                                if(selectedSpinnerData.getId()==0) {
+                                if (selectedSpinnerData.getId() == 0) {
                                     task.setTaskId(0);
                                     task.setTaskName(newTaskName);
-                                }else{
+                                } else {
                                     task.setTaskId(selectedSpinnerData.getId());
                                     task.setTaskName(selectedSpinnerData.getName());
                                 }
 
-                                task.setUserId(HomeActivity.user.getId());
+                                task.setUserId(Integer.parseInt(UserId));
                                 task.setTimeSpent(Double.parseDouble(hours.getText().toString()));
                                 task.setComments(comments.getText().toString());
                                 task.setSignedInHours(0.0);
@@ -297,14 +299,14 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
 
                                     Log.e("UniqueNumber", "" + UniqueNumber);
-                                   // Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
+                                    // Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
 
-                                    if(taskEntry.getId()==0) {
+                                    if (taskEntry.getId() == 0) {
                                         task.setUniqueNumber(taskEntry.getUniqueNumber());
                                         taskEntries.add(task);
                                         dbHandler.updateDeleteOffline(taskEntries, selectedDate);
                                         Utils.alertMessage(AddEditTaskEntry.this, "Task Updated Successfully.!");
-                                    }else{
+                                    } else {
 
                                         task.setUniqueNumber(UniqueNumber);
                                         taskEntries.add(task);
@@ -313,10 +315,11 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                     }
                                 }
 
-                           // }
-                       // else{
-                               // Utils.alertMessage(AddEditTaskEntry.this, "User is sign out, Please sign in first");
-                        //}
+                            }
+                        }
+                        else{
+                                Utils.alertMessage(AddEditTaskEntry.this, "User is sign out, Please sign in first");
+
                         }
                     }else{
                         Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 24");

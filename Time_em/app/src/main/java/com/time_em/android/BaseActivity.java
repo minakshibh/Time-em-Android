@@ -19,6 +19,7 @@ import com.time_em.authentication.LoginActivity;
 import com.time_em.barcode.CameraOpenActivity;
 import com.time_em.barcode.NFCReadActivity;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.dashboard.SettingActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.inappbilling.PurchaseActivity;
 import com.time_em.notifications.NotificationListActivity;
@@ -173,7 +174,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 				startActivity(intent);
 			} else if (v == settings) {
 				setSelection(false, false, false, true);
-				Intent intent = new Intent(BaseActivity.this, PurchaseActivity.class);
+				Intent intent = new Intent(BaseActivity.this, SettingActivity.class);
 				startActivity(intent);
 			}
 

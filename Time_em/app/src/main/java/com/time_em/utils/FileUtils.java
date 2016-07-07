@@ -225,7 +225,9 @@ public class FileUtils {
         pDialog.show();
 
         String url = context.getResources().getString(R.string.baseUrl)+APIName;
-        Log.e("Req Data"+url, ""+data.toString());
+        for(int i=0;i<data.size();i++) {
+            Log.e("Req Data" + url, data.get(i).key +" "+ data.get(i).value);
+        }
         MultipartRequest mCustomRequest = new MultipartRequest(url, data, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
