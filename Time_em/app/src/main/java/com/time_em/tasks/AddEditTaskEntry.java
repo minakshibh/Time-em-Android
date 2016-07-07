@@ -331,10 +331,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private void loadProjects() {
        // if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
-
+           int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
-            postDataParameters.put("userId", String.valueOf(HomeActivity.user.getId()));
+            postDataParameters.put("userId", String.valueOf(getSPrefsId));
 
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     AddEditTaskEntry.this, "get", Utils.GetAssignedTaskList,

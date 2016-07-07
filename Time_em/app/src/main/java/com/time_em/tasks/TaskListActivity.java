@@ -903,7 +903,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         backGroundColor_array.add("#63C070");
         backGroundColor_array.add("#B83F3A");
         backGroundColor_array.add("#51B3CE");
-        backGroundColor_array.add("#63C070");
         backGroundColor_array.add("#FFFAF0");
         backGroundColor_array.add("#FF55F0");
         backGroundColor_array.add("#FFFF00");
@@ -936,7 +935,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         backGroundColor_array.add("#7fff00");
 
 
-        backGroundColor_array.add("#63C070");
         backGroundColor_array.add("#51B3CE");
         backGroundColor_array.add("#63C070");
         backGroundColor_array.add("#B83F3A");

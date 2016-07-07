@@ -105,9 +105,25 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 			if(!isError){
 				if(output.contains("SignedOutUser")) {
 					HomeActivity.user.setSignedIn(false);
+
+					JSONArray jArray = jObject.getJSONArray("SignedOutUser");
+					//for (int i = 0; i < jArray.length(); i++) {
+						//JSONObject taskObject = jArray.getJSONObject(i);
+						//int	activeId = taskObject.getInt("Id");
+						//HomeActivity.user.setActivityId(0);
+						//Log.e("activeId","activeId="+0);
+					//}
+
 				}
 				else if(output.contains("SignedinUser")){
 					HomeActivity.user.setSignedIn(true);
+					JSONArray jArray = jObject.getJSONArray("SignedinUser");
+					for (int i = 0; i < jArray.length(); i++) {
+						JSONObject taskObject = jArray.getJSONObject(i);
+						int	activeId = taskObject.getInt("Id");
+						HomeActivity.user.setActivityId(activeId);
+						Log.e("activeId","activeId="+activeId);
+					}
 				}
 				else if(message.contains("already Signed out")){
 					HomeActivity.user.setSignedIn(false);
