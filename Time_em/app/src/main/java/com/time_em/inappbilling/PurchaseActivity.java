@@ -60,6 +60,7 @@ public class PurchaseActivity extends Activity {
         buyButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dissmiss(v);
                 buyClick(v);
             }
         });
@@ -96,19 +97,25 @@ public class PurchaseActivity extends Activity {
     IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase)
         {
-            if (result.isFailure()) {
+           if(result.getResponse()==IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED)
+            {
+                Log.d(TAG, "*****7*****"+purchase);
+                Intent in=new Intent(getApplicationContext(), SendNotification.class);
+                startActivity(in);
+            }
+           else if (result.isFailure()) {
                 // Handle error
-                Log.d(TAG, "*****failedpurchase*****");
+                Log.d(TAG, "*****Failure purchase*****"+purchase);
                 return;
             }
-            else if (purchase.getSku().equals(ITEM_SKU)) {
+           else if (purchase.getSku().equals(ITEM_SKU)) {
                 Intent in=new Intent(getApplicationContext(), SendNotification.class);
                 startActivity(in);
                 consumeItem();
                 cancel.setEnabled(false);
                 buyButton2.setEnabled(false);
             }else {
-                Log.d(TAG, "*****failedpurchase*****");
+                Log.d(TAG, "*****else failedpurchase*****"+purchase);
             }
         }
     };

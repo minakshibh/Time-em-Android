@@ -723,4 +723,26 @@ public class Time_emJsonParser {
 
 		return arrayUserWorkSite;
 	}
+
+	public String getTaskId(String webResponse){
+		String Id="0";
+		try{
+			jObject = new JSONObject(webResponse);
+			isError = jObject.getBoolean("isError");
+			message = jObject.getString("Message");
+			Id = jObject.getString("Id");
+
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+
+		if(!isError)
+		{
+			return Id;
+		}else{
+			return Id;
+		}
+	}
 }

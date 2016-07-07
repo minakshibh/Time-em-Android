@@ -44,7 +44,7 @@ import cz.msebera.android.httpclient.protocol.HTTP;
  */
 public class FileUtils {
     private String userChoosenTask;
-    private String attachmentPath;
+    public static String attachmentPath;
     private Context context;
     CharSequence[] items=null;
     public static int SELECT_FILE = 1, REQUEST_CAMERA = 2, VIDEO_CAMERA = 3;
@@ -69,7 +69,7 @@ public class FileUtils {
             items = new CharSequence[]{"Take Photo", "Choose from Library", "Cancel"};
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Add File!");
+        builder.setTitle("Add File !");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
@@ -230,7 +230,7 @@ public class FileUtils {
         pDialog.setTitle("Time'em");
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(false);
-        pDialog.show();
+        //pDialog.show();
 
         String url = context.getResources().getString(R.string.baseUrl)+APIName;
         for(int i=0;i<data.size();i++) {
@@ -249,27 +249,32 @@ public class FileUtils {
             public void onResponse(NetworkResponse response) {
                 Log.e("volley","uploaded successfully "+" "+response.statusCode+ " "+response);
 
+
                 try {
                     String responseString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
                     Log.e("volley response", ":::"+responseString);
 
-                    pDialog.dismiss();
+                   // pDialog.dismiss();
                     if(response.statusCode==200) {
-                        if (APIName.contains("AddUpdateUserTaskActivity")) {
+
+                        Utils.showToast(context, "File uploaded successfully.");
+
+                      /*  if (APIName.contains("AddUpdateUserTaskActivity")) {
                             Utils.alertMessage(context, "Task Added successfully.");
                         } else if (APIName.contains("AddNotification")) {
                             Utils.alertMessage(context, " Add Notification successfully.");
                         } else {
                             Utils.alertMessage(context, " Data Uploaded successfully.");
-                        }
+                        }*/
                     }
                     else{
-                        Toast.makeText(context,"Something went wrong,Try again",Toast.LENGTH_LONG).show();
+                        Utils.showToast(context, "Something went wrong,Try again");
+
                     }
 
                 }catch (Exception e){
                     e.printStackTrace();
-                    pDialog.dismiss();
+                    //pDialog.dismiss();
                     Utils.showToast(context, "Something went wrong, "+e.getMessage());
                     Log.e("volley response", "::: error , "+e.getMessage());
                 }

@@ -134,23 +134,47 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                     }
 
                 else {
-                    ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
 
-                    if(fileUtils.getAttachmentPath() !=null)
+
+
+               if(Utils.isNetworkAvailable(SendNotification.this)) {
+                    HashMap<String, String> postDataParameters = new HashMap<String, String>();
+
+                    postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
+                    postDataParameters.put("Subject", subject.getText().toString());
+                    postDataParameters.put("Message", message.getText().toString());
+                    postDataParameters.put("NotificationTypeId", selectedNotificationTypeId);
+                    postDataParameters.put("notifyto", selectedIds);
+
+
+                    Log.e(""+Utils.AddNotificationNew, ""+postDataParameters.toString());
+
+                    AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                            SendNotification.this, "post", Utils.AddNotificationNew,
+                            postDataParameters, true, "Please wait...");
+                    mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
+                    mWebPageTask.execute();
+
+
+
+
+
+                   /* ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
+
+                            if(fileUtils.getAttachmentPath() !=null)
                             dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
                             dataModels.add(new MultipartDataModel("UserId", String.valueOf(HomeActivity.user.getId()), MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("Subject", subject.getText().toString(), MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("Message", message.getText().toString(), MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("NotificationTypeId", selectedNotificationTypeId, MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("notifyto", selectedIds, MultipartDataModel.STRING_TYPE));
-                    if(Utils.isNetworkAvailable(SendNotification.this)) {
-                            fileUtils.sendMultipartRequest(sendNotificationAPI, dataModels);
+
+                            fileUtils.sendMultipartRequest(sendNotificationAPI, dataModels);*/
                         }
                     else {
                         // Insert the string into db.
 
                         Notification notification = new Notification();
-
                         notification.setAttachmentPath(fileUtils.getAttachmentPath());
                         notification.setUserId(HomeActivity.user.getId());
                         notification.setSubject(subject.getText().toString());
@@ -244,6 +268,17 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             spnNotificationType.setAdapter(adapter); // Set the custom adapter to the spinner
 
         }
+        else if(methodName.equalsIgnoreCase(Utils.AddNotificationNew)){
+            String Id = parser.getTaskId(output);
+            if(Id.equalsIgnoreCase("0")){
+                Utils.showToast(SendNotification.this,Utils.Api_error);
+            }
+            else {
+                finish();
+                syncUploadFile(Id);
+            }
+
+        }
     }
 
     private void showUserSelectionDropdown(){
@@ -297,5 +332,18 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm");
         String dateString = sdf.format(date);
         return dateString;
+    }
+    private void syncUploadFile(String Id) {
+
+        String  ImagePath = fileUtils.getAttachmentPath();
+        ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
+        dataModels.add(new MultipartDataModel("Id",Id, MultipartDataModel.STRING_TYPE));
+        dataModels.add(new MultipartDataModel("FileUploadFor", "notification", MultipartDataModel.STRING_TYPE));
+
+        if (ImagePath != null)
+            dataModels.add(new MultipartDataModel("profile_picture", ImagePath, MultipartDataModel.FILE_TYPE));
+        Log.e("send task", "send task" + ImagePath);
+
+        fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
     }
 }

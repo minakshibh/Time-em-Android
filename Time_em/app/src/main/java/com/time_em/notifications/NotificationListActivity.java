@@ -23,7 +23,6 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.inappbilling.PurchaseActivity;
-import com.time_em.inappbilling.PurchaseItem;
 import com.time_em.model.Notification;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
@@ -127,7 +126,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         }
     };
 
-    public void showPurchaseDialog(){
+   /* public void showPurchaseDialog(){
 
         final PurchaseItem pi=new PurchaseItem();
         pi.setup(getApplicationContext());
@@ -158,7 +157,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         // Showing Alert Message
         alertDialog.show();
 
-    }
+    }*/
 
     private void getNotificationList() {
 

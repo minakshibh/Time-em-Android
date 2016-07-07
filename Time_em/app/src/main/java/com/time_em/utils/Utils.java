@@ -65,6 +65,7 @@ import org.json.JSONObject;
 public class Utils {
 
     static public String network_error = "Please check your internet connection, try again";
+    static public String Api_error = "Something went wrong,please try again";
     static int statusCode;
     public static final String PREFS_NAME = "NKDROID_APP";
     public static final String Loation = "loation";
@@ -101,6 +102,10 @@ public class Utils {
     static public String GetUsersListByTagId = "/User/GetUsersListByTagId";
     static public String GetUserWorksiteActivity ="/Worksite/GetUserWorksiteActivity";
     static public String AddUsersTimeIn="/Worksite/AddUsersTimeIn";
+    static public String AddNotificationNew="notification/AddNotificationNew";
+    static public String AddUpdateUserTaskActivityNew="usertask/AddUpdateUserTaskActivityNew";
+
+
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

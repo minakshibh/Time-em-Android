@@ -61,12 +61,15 @@ public class AddWigdetActvity extends Activity {
         backGroundColor.add("#63C070");
         backGroundColor.add("#B83F3A");
         backGroundColor.add("#51B3CE");
-        backGroundColor.add("#63C070");
-        backGroundColor.add("#B83F3A");
-        backGroundColor.add("#FFFAF0");
-        backGroundColor.add("#FFFFF0");
-        backGroundColor.add("#FFFAFA");
+
+        backGroundColor.add("#DA70D6");
+        backGroundColor.add("#FF00FF");
+        backGroundColor.add("#912CEE");
+
+        backGroundColor.add("#FF33F0");
+        backGroundColor.add("#FF55F0");
         backGroundColor.add("#FFFF00");
+
 
 
         labelName = new ArrayList<>();
@@ -91,6 +94,7 @@ public class AddWigdetActvity extends Activity {
         AddButton.setVisibility(View.GONE);
         dateHeader=(TextView)findViewById(R.id.dateHeader);
         dateHeader.setText("Done");
+        dateHeader.setPadding(5,5,5,5);
         dateHeader.setVisibility(View.VISIBLE);
         gridView = (GridView) findViewById(R.id.addView_GrideView);
         selectViewAdapter = new SelectViewAdapter(this, backGroundColor);
@@ -182,15 +186,28 @@ public class AddWigdetActvity extends Activity {
                 holder.checkBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        View_arrayList_widget.clear();
+                        View_arrayList_widget=Utils.getWidget(AddWigdetActvity.this);
+
                           if (holder.checkBox.isChecked()) {
                             System.out.println("Checked");
                             Widget widget = new Widget();
                             widget.setColor(backGroundColor.get(position));
                             widget.setName(labelName.get(position));
                             widget.setPosition(position);
-                            Utils.addValues(AddWigdetActvity.this, widget);
+                              boolean value=true;
+                              for(int i=0;i<View_arrayList_widget.size();i++){
+                                  if(position==View_arrayList_widget.get(i).getPosition()){
+                                      value=false;
+                                  }
+                              }
+                              if(value) {
+                                  Utils.addValues(AddWigdetActvity.this, widget);
+                              }
                             //arrayList_widget.add(widget);
-                        } else {
+                        }
+                          else {
                             System.out.println("Un-Checked");
                             if (View_arrayList_widget != null && View_arrayList_widget.size() > 0) {
                                 //String name = holder.textView_name.getText().toString();
@@ -205,7 +222,7 @@ public class AddWigdetActvity extends Activity {
 
                                 }
                             }
-                            Log.e("size=", "" + View_arrayList_widget.size());
+
                         }
                     }
                 });

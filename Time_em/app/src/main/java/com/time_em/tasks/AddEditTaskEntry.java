@@ -25,10 +25,12 @@ import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
+import com.time_em.dashboard.AddWigdetActvity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.SpinnerData;
+import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.FileUtils;
@@ -207,6 +209,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         @Override
         public void onClick(View v) {
             int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
+            Double intHours=Double.parseDouble(hours.getText().toString().trim());
+
             if(v == back){
                 finish();
             }else if(v == uploadAttachment){
@@ -221,21 +225,41 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 else if(selectedSpinnerData.getId()==-1){
                     Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
                 }
+                else if(intHours>24){
+                    Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 24 hrs.");
+                }
+                else if(!HomeActivity.user.isSignedIn()){
+                   Utils.alertMessage(AddEditTaskEntry.this, "You are currently signed out. To continue Please sign in.");
+
+                }
               else {
 
-                      Double intHours=Double.parseDouble(hours.getText().toString().trim());
-                    if(intHours<=24) {
-
-                        if (HomeActivity.user.isSignedIn()) {
-                            ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
-                   /* ["ActivityId": "29644", "CreatedDate": "06-10-2016", "UserId": "8049", "TaskId": "16168", "ID": "0",
-                            "TaskName": "Test Task May 3", "TimeSpent": "10", "Comments": "Test Parv 10 June"]*/
-                            if (fileUtils.getAttachmentPath() != null) {
-                                dataModels.add(new MultipartDataModel("profile_picture", fileUtils.getAttachmentPath(), MultipartDataModel.FILE_TYPE));
+                      if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
+                            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+                            postDataParameters.put("UserId", String.valueOf(UserId));
+                            postDataParameters.put("ActivityId", String.valueOf(HomeActivity.user.getActivityId()));
+                            postDataParameters.put("TimeSpent", hours.getText().toString());
+                            postDataParameters.put("Comments", comments.getText().toString());
+                            if (selectedSpinnerData.getId() == 0) {
+                                postDataParameters.put("TaskId", String.valueOf(0));
+                                postDataParameters.put("TaskName", newTaskName);
+                            }else{
+                                postDataParameters.put("TaskId", String.valueOf(selectedSpinnerData.getId()));
+                                postDataParameters.put("TaskName", String.valueOf(selectedSpinnerData.getName()));
                             }
+                            postDataParameters.put("CreatedDate", selectedDate);
+                            postDataParameters.put("ID", taskEntryId);
 
+                            Log.e(""+Utils.AddUpdateUserTaskActivityNew,""+postDataParameters.toString());
+                            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                                    AddEditTaskEntry.this, "post", Utils.AddUpdateUserTaskActivityNew,
+                                    postDataParameters, true, "Please wait...");
+                            mWebPageTask.delegate = (AsyncResponseTimeEm) AddEditTaskEntry.this;
+                            mWebPageTask.execute();
+                              //  fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
+                            } else {
 
-                            dataModels.add(new MultipartDataModel("UserId", ""+getSPrefsId, MultipartDataModel.STRING_TYPE));
+                          /*  dataModels.add(new MultipartDataModel("UserId", ""+getSPrefsId, MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("ActivityId", String.valueOf(HomeActivity.user.getActivityId()), MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("TimeSpent", hours.getText().toString(), MultipartDataModel.STRING_TYPE));
                             dataModels.add(new MultipartDataModel("Comments", comments.getText().toString(), MultipartDataModel.STRING_TYPE));
@@ -247,11 +271,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 dataModels.add(new MultipartDataModel("TaskName", String.valueOf(selectedSpinnerData.getName()), MultipartDataModel.STRING_TYPE));
                             }
                             dataModels.add(new MultipartDataModel("CreatedDate", selectedDate, MultipartDataModel.STRING_TYPE));
-                            dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));
+                            dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));*/
 
-                            if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
-                                fileUtils.sendMultipartRequest(addUpdateTaskAPI, dataModels);
-                            } else {
+
 
 
                                 TaskEntry task = new TaskEntry();
@@ -316,15 +338,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 }
 
                             }
-                        }
-                        else{
-                                Utils.alertMessage(AddEditTaskEntry.this, "User is sign out, Please sign in first");
 
                         }
-                    }else{
-                        Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 24");
-                    }
-                }
             }
         }
     };
@@ -349,6 +364,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     @Override
     public void processFinish(String output, String methodName) {
+        Log.e("output",""+output);
         if(methodName.equals(Utils.GetAssignedTaskList)){
             assignedTasks = parser.parseAssignedProjects(output);
 
@@ -362,6 +378,16 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             {
                 selectedSpinnerValue(spnProject);
                 }
+        }
+        else if(methodName.equals(Utils.AddUpdateUserTaskActivityNew)){
+            String Id = parser.getTaskId(output);
+            if(Id.equalsIgnoreCase("0")){
+                Utils.showToast(AddEditTaskEntry.this,Utils.Api_error);
+            }
+            else {
+                finish();
+                syncUploadFile(Id);
+            }
         }
     }
 
@@ -442,4 +468,18 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         // show it
         alertDialog.show();
     }
+    private void syncUploadFile(String Id) {
+
+            String  ImagePath = fileUtils.getAttachmentPath();
+            ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
+            dataModels.add(new MultipartDataModel("Id",Id, MultipartDataModel.STRING_TYPE));
+            dataModels.add(new MultipartDataModel("FileUploadFor", "usertaskactivity", MultipartDataModel.STRING_TYPE));
+
+             if (ImagePath != null)
+                dataModels.add(new MultipartDataModel("profile_picture", ImagePath, MultipartDataModel.FILE_TYPE));
+                Log.e("send task", "send task" + ImagePath);
+
+            fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
+        }
+
 }
