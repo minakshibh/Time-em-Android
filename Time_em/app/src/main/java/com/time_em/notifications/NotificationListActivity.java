@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.time_em.android.R;
@@ -21,6 +22,8 @@ import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.inappbilling.PurchaseActivity;
+import com.time_em.inappbilling.PurchaseItem;
 import com.time_em.model.Notification;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
@@ -116,11 +119,46 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             }else if(v == back){
                 finish();
             }else if(v == sendNotification){
-                Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);
+                Intent intent = new Intent(NotificationListActivity.this, PurchaseActivity.class);
                 startActivity(intent);
+                //showPurchaseDialog();
+
             }
         }
     };
+
+    public void showPurchaseDialog(){
+
+        final PurchaseItem pi=new PurchaseItem();
+        pi.setup(getApplicationContext());
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(NotificationListActivity.this);
+        // Setting Dialog Title
+        alertDialog.setTitle("Want to send Notifications ?");
+        // Setting Dialog Message
+        alertDialog.setMessage("Buy notification access in just $50. ");
+        // Setting Icon to Dialog
+        // alertDialog.setIcon(R.drawable.icon);
+        // Setting Positive "Yes" Button
+        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int which) {
+
+                dialog.cancel();
+                pi.buyClick(NotificationListActivity.this);
+                //pi.consumeItem();
+
+            }
+        });
+        // Setting Negative "NO" Button
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        // Showing Alert Message
+        alertDialog.show();
+
+    }
 
     private void getNotificationList() {
 

@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
 import com.time_em.android.R;
 import com.time_em.inappbilling.util.IabHelper;
 import com.time_em.inappbilling.util.IabResult;
 import com.time_em.inappbilling.util.Inventory;
 import com.time_em.inappbilling.util.Purchase;
+import com.time_em.notifications.SendNotification;
 
 public class PurchaseActivity extends Activity {
 
@@ -18,6 +21,7 @@ public class PurchaseActivity extends Activity {
     IabHelper mHelper;
     private Button clickButton;
     private Button buyButton;
+    TextView buyButton2,cancel;
     //static final String ITEM_SKU = "truesecrets.inapp.ts1800";
     static final String ITEM_SKU = "android.test.purchased";
 
@@ -28,6 +32,8 @@ public class PurchaseActivity extends Activity {
 
         buyButton = (Button)findViewById(R.id.buyButton);
         clickButton = (Button)findViewById(R.id.clickButton);
+        buyButton2= (TextView) findViewById(R.id.buyButton2);
+        cancel=(TextView) findViewById(R.id.buyButton1);
         clickButton.setEnabled(false);
 
         String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyWaOjWjjsXoBiQfREc0BwLx844Wgg0Pm5ExCgEqsVuedBNPJlwomcag4v+/sjEfN9NuF0HMCvrA6GtbD55YgU8tQs2QdEIkkM6UkAFhH1V4g7kp61sDZI8MQcqutY8H/vYqjm13GxiDZOKIHEKwEffglOYlJh9enHc2Hs3HusipkuPHN215Beftt4WZuR2iPCb7kN8uuCYUaWL4a40Fa2OdUSPi+0efUyYfQDjuoQobtxxcBf9MgvgxiGiI91GPW2d8v79bnN6ID3BLE5Ia01f9SUiLyxsxrgLdcDqdvzdgEiXM9YZt0MffQPRnCpPh3VMlQ05xyJzGh87KXG9DIGwIDAQAB";
@@ -44,12 +50,30 @@ public class PurchaseActivity extends Activity {
             }
         });
 
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dissmiss(v);
+            }
+        });
+
+        buyButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buyClick(v);
+            }
+        });
+
     }
 
     public void buttonClicked (View view)
     {
         clickButton.setEnabled(false);
         buyButton.setEnabled(true);
+    }
+    public void dissmiss (View view)
+    {
+        this.finish();
     }
 
     public void buyClick(View view) {
@@ -78,8 +102,11 @@ public class PurchaseActivity extends Activity {
                 return;
             }
             else if (purchase.getSku().equals(ITEM_SKU)) {
+                Intent in=new Intent(getApplicationContext(), SendNotification.class);
+                startActivity(in);
                 consumeItem();
-                buyButton.setEnabled(false);
+                cancel.setEnabled(false);
+                buyButton2.setEnabled(false);
             }else {
                 Log.d(TAG, "*****failedpurchase*****");
             }
@@ -115,7 +142,9 @@ public class PurchaseActivity extends Activity {
                 public void onConsumeFinished(Purchase purchase, IabResult result) {
 
                     if (result.isSuccess()) {
-                        clickButton.setEnabled(true);
+                        finish();
+                        //clickButton.setEnabled(true);
+
                     } else {
                         // handle error
                     }
