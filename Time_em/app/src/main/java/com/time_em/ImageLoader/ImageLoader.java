@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.time_em.android.R;
 
@@ -46,6 +50,7 @@ public class ImageLoader {
             queuePhoto(url, imageView);
             imageView.setImageResource(loader);
         }
+
     }
 
     private void queuePhoto(String url, ImageView imageView)
@@ -79,6 +84,7 @@ public class ImageLoader {
             return bitmap;
         } catch (Exception ex){
             ex.printStackTrace();
+            Log.d("IMAGE EXCEPTION :",ex.getMessage());
             return null;
         }
     }
@@ -92,7 +98,7 @@ public class ImageLoader {
             BitmapFactory.decodeStream(new FileInputStream(f),null,o);
 
             //Find the correct scale value. It should be the power of 2.
-            final int REQUIRED_SIZE=70;
+            final int REQUIRED_SIZE=200;
             int width_tmp=o.outWidth, height_tmp=o.outHeight;
             int scale=1;
             while(true){

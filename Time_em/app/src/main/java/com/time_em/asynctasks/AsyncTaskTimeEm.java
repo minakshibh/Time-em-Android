@@ -2,6 +2,7 @@ package com.time_em.asynctasks;
 
 import java.util.HashMap;
 
+import com.time_em.android.R;
 import com.time_em.utils.Utils;
 
 import android.app.Activity;
@@ -11,7 +12,6 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import org.json.JSONObject;
-
 
 public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 
@@ -53,9 +53,9 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 
 		if(displayProgress){
 
-			pDialog = new ProgressDialog(activity);
-			pDialog.setTitle("Time'em");
-			pDialog.setMessage(message);
+			pDialog = new ProgressDialog(activity, R.style.MyTheme);
+			//pDialog.setTitle("Time'em");
+			//pDialog.setMessage(message);
 			pDialog.setCancelable(false);
 			pDialog.show();
 		}

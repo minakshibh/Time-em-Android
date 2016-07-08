@@ -176,7 +176,7 @@
         <activity android:name="com.time_em.inappbilling.PurchaseActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.UserDialog">
+            android:theme="@style/UserDialog">
 
         </activity>
     </application>
