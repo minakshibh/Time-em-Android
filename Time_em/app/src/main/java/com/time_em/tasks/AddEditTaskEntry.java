@@ -386,7 +386,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             }
             else {
                 finish();
-                syncUploadFile(Id);
+                if(fileUtils.getAttachmentPath() !=null) {
+                    syncUploadFile(Id);
+                }
             }
         }
     }
