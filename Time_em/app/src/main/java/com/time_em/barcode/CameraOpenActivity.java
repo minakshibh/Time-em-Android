@@ -239,4 +239,35 @@ public class CameraOpenActivity extends Activity {
             mCamera.autoFocus(autoFocusCB);
         }
     }
+    public void onPause() {
+        super.onPause();
+        releaseCamera();
+        FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
+        preview.removeView(mPreview);
+    }
+
+    public void onResume(){
+        super.onResume();
+
+        try {
+            if(mCamera==null){
+
+                //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                autoFocusHandler = new Handler();
+                mCamera = getCameraInstance();
+                this.getWindowManager().getDefaultDisplay().getRotation();
+
+                scanner = new ImageScanner();
+                scanner.setConfig(0, Config.X_DENSITY, 3);
+                scanner.setConfig(0, Config.Y_DENSITY, 3);
+
+                mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+                FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
+                preview.addView(mPreview);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+
+        }
+    }
 }

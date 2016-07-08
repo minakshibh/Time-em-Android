@@ -60,8 +60,8 @@ public class Time_emJsonParser {
 			//Utils.showToast(context, e.getMessage());
 		}
 
-		if(isError)
-			Utils.showToast(context, message);
+		//if(isError)
+			//Utils.showToast(context, message);
 
 		return user;
 	}
@@ -93,6 +93,11 @@ public class Time_emJsonParser {
 				teamList.add(user);
 			}
 			Utils.saveInSharedPrefs(context, HomeActivity.user.getId()+context.getResources().getString(R.string.teamTimeStampStr), timeStamp);
+			if(message!=null) {
+				if (message.contains("No Record")) {
+					Utils.showToast(context, "No Record Found");
+				}
+			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			teamList = new ArrayList<User>();

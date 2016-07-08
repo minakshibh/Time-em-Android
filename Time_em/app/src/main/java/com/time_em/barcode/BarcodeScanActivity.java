@@ -104,13 +104,21 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             }else if (v == btn_signIn) {
                 String Ids=getAllUsersIds(arrayListUsers);
                 Log.e("Ids=", Ids);
+             if(Ids!=null && !Ids.equals("")) {
                 Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"signIn");
+            }else{
+                Utils.showToast(getApplicationContext(),"No record for scanned users");
+            }
 
             }else if (v == btn_signOut) {
 
                 String Ids=getAllUsersIds(arrayListUsers);
                 Log.e("Ids=", Ids);
-                Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"SignOut");
+                if(Ids!=null && !Ids.equals("")) {
+                    Utils.ChangeStatus(BarcodeScanActivity.this, "" + Ids, "SignOut");
+                }else{
+                    Utils.showToast(getApplicationContext(),"No record for scanned users");
+                }
             }
 
         }
@@ -458,8 +466,8 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
     private void goToCameraView()
     {
          if(trigger.equalsIgnoreCase("barcode")) {
-            //Intent mIntent = new Intent(BarcodeScanActivity.this, CameraOpenActivity.class);
-            //startActivity(mIntent);
+           /* Intent mIntent = new Intent(BarcodeScanActivity.this, CameraOpenActivity.class);
+            startActivity(mIntent);*/
             finish();
             }
         else{

@@ -127,7 +127,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             hours.setText(String.valueOf(taskEntry.getTimeSpent()));
             String image_url = taskEntry.getAttachmentImageFile();
             Log.e("image_url",""+image_url);
-            int loader = R.drawable.add;
+            int loader = R.drawable.loader;
             // ImageLoader class instance
             if (image_url != null && !image_url.equalsIgnoreCase("null")) {
                 if(image_url.contains("http")) {
@@ -150,7 +150,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                         uploadedImage.setVisibility(View.VISIBLE);
                         uploadedVideo.setVisibility(View.GONE);
                         FileUtils fileUtils = new FileUtils(AddEditTaskEntry.this);
-                        uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 800, 800));
+                        uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 400, 400));
                     }
                     else{
                         uploadedImage.setVisibility(View.GONE);
@@ -208,8 +208,16 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
-            Double intHours=Double.parseDouble(hours.getText().toString().trim());
+            int getSPrefsId=0;
+            Double intHours=0.0;
+            try {
+                getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(), "apiUserId"));
+                 intHours=Double.parseDouble(hours.getText().toString().trim());
+            }catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
 
             if(v == back){
                 finish();

@@ -57,10 +57,8 @@ import org.json.JSONObject;
 public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, TabLayout.OnTabSelectedListener {
 
     private LinearLayout graphLayout, lay_indicator;
-    ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
     BarDataSet dataset;
     public DependencyResolver resolver;
-    ArrayList<String> labels = new ArrayList<String>();
     public static User user;
     private LinearLayout changeStatus;
     private String trigger;
@@ -68,24 +66,25 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private TextView txtUserStatus;
     private ViewPager viewPager;
     private RecyclerView recyclerView;
+    private TextView currentDate;
+    private LinearLayout AddWigdetView;
+    private TextView AddNewWidgetTextVew;
+
+    private Time_emJsonParser parser;
+    private Double maxValueTask = 0.0, maxValueSignInOut = 0.0;
+    private TabLayout tabLayout;
+    private int graphBarHeight = 140;
+    private TimeEmDbHandler dbHandler;
+    private FileUtils fileUtils;
+    private Intent intent;
     private Context context;
+
+    ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
+    ArrayList<String> labels = new ArrayList<String>();
     ArrayList<TaskEntry> arrayList = new ArrayList<>();
     ArrayList<TaskEntry> arrayList_SignInOut = new ArrayList<>();
     private ArrayList<Notification> notifications = new ArrayList<>();
     private ArrayList<TaskEntry> tasks = new ArrayList<>();
-    private Time_emJsonParser parser;
-    private Double maxValueTask = 0.0, maxValueSignInOut = 0.0;
-    private TextView currentDate;
-    private TabLayout tabLayout;
-    private int graphBarHeight = 140;
-
-    private LinearLayout AddWigdetView;
-    private TextView AddNewWidgetTextVew;
-
-    private TimeEmDbHandler dbHandler;
-    private FileUtils fileUtils;
-    private Intent intent;
-
     private ArrayList<Notification> notifications_delete = new ArrayList<>();
     private ArrayList<TaskEntry> tasks_delete = new ArrayList<>();
     public static ArrayList<String> deleteIds = new ArrayList<>();
@@ -788,7 +787,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         //for task
         tasks.clear();
         tasks.addAll(dbHandler.getTaskEnteries(int_userId, "true", true));
-        syncUploadAPI(tasks, deleteIds, notifications);
+        if(tasks.size()>0 | deleteIds.size()>0 | notifications.size()>0) {
+            syncUploadAPI(tasks, deleteIds, notifications);
+        }else{
+            Utils.showToast(HomeActivity.this,"No offline data to sync.");
+        }
         Log.e("task size", "" + tasks.size());
 
     }

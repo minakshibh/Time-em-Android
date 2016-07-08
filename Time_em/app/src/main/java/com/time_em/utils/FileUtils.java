@@ -309,14 +309,14 @@ public class FileUtils {
        // oldFile.renameTo(newFile);
         if(success)
         attachmentPath = "" + file2.getAbsolutePath();
-        imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
+        imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
 
     }
 
     public void onCaptureImageResult(Intent data, ImageView imageView) {
         try {
           Log.e("image path:",""+attachmentPath);
-          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 800, 800));
+          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -324,7 +324,7 @@ public class FileUtils {
 
     public void onRecordVideoResult(Activity Activity,Intent data, VideoView mVideoView) {
         Log.e("video path:",""+attachmentPath);
-      // Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(attachmentPath), 800,800);
+      // Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(attachmentPath), 500,500);
         try {
             mVideoView.setVideoPath(attachmentPath);
             mVideoView.setMediaController(new MediaController(Activity));
