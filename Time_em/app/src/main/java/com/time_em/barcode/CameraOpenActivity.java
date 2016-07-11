@@ -54,7 +54,7 @@ public class CameraOpenActivity extends Activity {
     private void initUI() {
 
         headerText=(TextView)findViewById(R.id.headerText);
-        headerText.setText("Scanned Codes");
+        headerText.setText("Barcode Scanning");
         back=(ImageView)findViewById(R.id.back);
         AddButton=(ImageView)findViewById(R.id.AddButton);
         AddButton.setVisibility(View.GONE);

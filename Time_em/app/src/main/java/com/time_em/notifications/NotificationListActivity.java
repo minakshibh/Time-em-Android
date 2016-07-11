@@ -118,8 +118,14 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             }else if(v == back){
                 finish();
             }else if(v == sendNotification){
+                String purchase=Utils.getSharedPrefs(getApplicationContext(),"notification_purchase");
+                if(purchase.equalsIgnoreCase("")){
                 Intent intent = new Intent(NotificationListActivity.this, PurchaseActivity.class);
                 startActivity(intent);
+                }else{
+                    Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);
+                    startActivity(intent);
+                }
                 //showPurchaseDialog();
 
             }

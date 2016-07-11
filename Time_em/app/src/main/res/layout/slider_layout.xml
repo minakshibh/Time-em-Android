@@ -109,9 +109,9 @@
          <ImageView
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:src="@drawable/offline"
-             android:layout_toRightOf="@+id/txt_sync"
+             android:src="@drawable/sync_green"
              android:padding="10dp"
+             android:layout_alignParentRight="true"
              android:layout_centerInParent="true"
              android:id="@+id/imageSync"/>
     <ImageView 

@@ -493,6 +493,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 }*/
                 if (screen) {
                     Double val = (graphBarHeight / maxValueTask) * item.getTimeSpent();
+
                     int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, val.floatValue(), getResources().getDisplayMetrics());
 
                     LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
@@ -632,12 +633,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 lay_indicator.setVisibility(View.INVISIBLE);
                 //tabLayout.getTabAt(position).select();
                 tabLayout.setScrollPosition(position, 0f, true);
+                if(maxValue>4)
                 maxValue = maxValue / 4;
                 maxValueTask = Double.valueOf(maxValue * 6);
 
                 firstGraphView();
             } else {
                 maxValue = maxValueSignInOut.intValue();
+                if(maxValue>4)
                 maxValue = maxValue / 4;
                 maxValueSignInOut = Double.valueOf(maxValue * 6);
             }
@@ -790,7 +793,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         if(tasks.size()>0 | deleteIds.size()>0 | notifications.size()>0) {
             syncUploadAPI(tasks, deleteIds, notifications);
         }else{
-            Utils.showToast(HomeActivity.this,"No offline data to sync.");
+            Utils.showToast(HomeActivity.this,"No offline data available to sync.");
         }
         Log.e("task size", "" + tasks.size());
 

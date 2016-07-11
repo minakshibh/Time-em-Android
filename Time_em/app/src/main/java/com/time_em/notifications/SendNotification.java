@@ -71,6 +71,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     }
 
     private void initScreen() {
+        Utils.saveInSharedPrefs(getApplicationContext(),"notification_purchase","yes");
         AddEditTaskEntry.UniqueNumber= FileUtils.getUniqueNumber();
         fileUtils = new FileUtils(SendNotification.this);
         dbHandler = new TimeEmDbHandler(SendNotification.this);
