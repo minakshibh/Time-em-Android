@@ -67,7 +67,7 @@ public class Utils {
     static public String network_error = "Please check your internet connection, try again";
     static public String Api_error = "Something went wrong,please try again";
     static int statusCode;
-    public static final String PREFS_NAME = "NKDROID_APP";
+
     public static final String Loation = "loation";
     private static SharedPreferences preferences;
     public static String PROJECT_ID = "554809123006";
@@ -417,7 +417,7 @@ public class Utils {
         SharedPreferences settings;
         Editor editor;
 
-        settings = context.getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
+        settings = context.getSharedPreferences(sharedPrefs,Context.MODE_PRIVATE);
         editor = settings.edit();
 
         Gson gson = new Gson();
@@ -447,7 +447,7 @@ public class Utils {
         SharedPreferences settings;
         List<Widget> loations;
 
-        settings = context.getSharedPreferences(PREFS_NAME,
+        settings = context.getSharedPreferences(sharedPrefs,
                 Context.MODE_PRIVATE);
 
         if (settings.contains(Loation)) {

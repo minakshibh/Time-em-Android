@@ -345,8 +345,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
             taskName.setText(selectedTask.getTaskName());
             taskComments.setText(selectedTask.getComments());
-            hours.setText("(" + String.valueOf(selectedTask.getTimeSpent()) + ") Hours");
-
+           // hours.setText("(" + String.valueOf(selectedTask.getTimeSpent()) + ") Hours");
+            hours.setText( String.valueOf(selectedTask.getTimeSpent()) + " hours");
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

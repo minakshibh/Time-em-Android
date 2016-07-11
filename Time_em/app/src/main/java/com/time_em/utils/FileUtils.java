@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -33,7 +34,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
@@ -288,31 +292,79 @@ public class FileUtils {
     }
 
     public void onSelectFromGalleryResult(Intent data, ImageView imageView) {
-        Uri selectedImage = data.getData();
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-        Cursor cursor = context.getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-        cursor.moveToFirst();
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        attachmentPath = cursor.getString(columnIndex);
-        cursor.close();
+        if (Build.VERSION.SDK_INT < 19) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            attachmentPath = cursor.getString(columnIndex);
+            cursor.close();
 
 
-     //   File sdcard = Environment.getExternalStorageDirectory();
-        //File oldFile = new File(attachmentPath,".png");
-        //File newFile = new File(attachmentPath,"to.png");
+            //   File sdcard = Environment.getExternalStorageDirectory();
+            //File oldFile = new File(attachmentPath,".png");
+            //File newFile = new File(attachmentPath,"to.png");
 
-        String imageFileName = "IMG_" + ""+AddEditTaskEntry.UniqueNumber;
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File file = new File(attachmentPath);
-        File file2 = new File(storageDir+File.separator+imageFileName+".png");
-        boolean success = file.renameTo(file2);
-       // oldFile.renameTo(newFile);
-        if(success)
-        attachmentPath = "" + file2.getAbsolutePath();
-        imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
+            String imageFileName = "IMG_" + "" + AddEditTaskEntry.UniqueNumber;
+            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File file = new File(attachmentPath);
+            File file2 = new File(storageDir + File.separator + imageFileName + ".png");
+            boolean success = file.renameTo(file2);
+            // oldFile.renameTo(newFile);
+            if (success)
+                attachmentPath = "" + file2.getAbsolutePath();
+            imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
+        }else{
+            try {
+                InputStream imInputStream = context.getContentResolver().openInputStream(data.getData());
+                Bitmap bitmap = BitmapFactory.decodeStream(imInputStream);
+                attachmentPath = saveGalaryImageOnLitkat(bitmap);
+
+
+                String imageFileName = "IMG_" + "" + AddEditTaskEntry.UniqueNumber;
+                File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                File file = new File(attachmentPath);
+                File file2 = new File(storageDir + File.separator + imageFileName + ".png");
+                boolean success = file.renameTo(file2);
+                // oldFile.renameTo(newFile);
+                if (success)
+                    attachmentPath = "" + file2.getAbsolutePath();
+                imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
+
+                //encodeImage();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
+    private String saveGalaryImageOnLitkat(Bitmap bitmap) {
+         File temp_path;
+         final int COMPRESS = 100;
+        try {
+            File cacheDir;
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+                cacheDir = new File(Environment.getExternalStorageDirectory(), context.getResources().getString(R.string.app_name));
+            else
+                cacheDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            if (!cacheDir.exists())
+                cacheDir.mkdirs();
+            String filename = System.currentTimeMillis() + ".jpg";
+            File file = new File(cacheDir, filename);
+            temp_path = file.getAbsoluteFile();
+            // if(!file.exists())
+            file.createNewFile();
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS, out);
+            return file.getAbsolutePath();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        return null;
+
+    }
     public void onCaptureImageResult(Intent data, ImageView imageView) {
         try {
           Log.e("image path:",""+attachmentPath);

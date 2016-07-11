@@ -44,12 +44,13 @@
                 android:text="@string/task_description" />
 
             <TextView
+                android:layout_marginLeft="15dp"
                 android:id="@+id/taskDesc"
-                style="@style/DescText"
+                android:textColor="@color/grey"
                 android:textSize="14sp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="" />
+                android:text="df" />
 
             <TextView style="@style/separator" />
 
@@ -64,9 +65,10 @@
 
             <TextView
                 android:id="@+id/taskComments"
-                style="@style/DescText"
+                android:textColor="@color/grey"
                 android:maxLines = "3"
                 android:textSize="14sp"
+                android:layout_marginLeft="15dp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="" />
@@ -84,7 +86,8 @@
 
             <TextView
                 android:id="@+id/hoursWorked"
-                style="@style/DescText"
+                android:textColor="@color/grey"
+                android:layout_marginLeft="15dp"
                 android:layout_width="fill_parent"
                 android:textSize="14sp"
                 android:layout_height="wrap_content"

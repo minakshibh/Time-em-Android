@@ -103,23 +103,24 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
-        txtProjectSelection.setText("Select Project or Task");
-        txtCommentsHeader.setText("Enter your Comments");
+        txtProjectSelection.setText("Select Project or Task:");
+        txtCommentsHeader.setText("Enter your Comments:");
         comments.setHint("Your comments goes here");
-        txtHoursHeader.setText("Specify number of hours");
+        txtHoursHeader.setText("Specify number of hours:");
         hours.setHint("No. of hours.(max 24hrs)");
         hours.setInputType(InputType.TYPE_CLASS_NUMBER);
         int maxLength = 2;
         hours.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         hoursIcon.setImageResource(R.drawable.user_icon);
         recipientSection.setVisibility(View.GONE);
-        addUpdateTask.setText("Add Task Entry");
+        addUpdateTask.setText("ADD");
+        addUpdateTask.setTextSize(20);
         assignedTasks = new ArrayList<>();
 
         if(taskEntry == null) {
-            headerInfo.setText("Add Task Details");
+            headerInfo.setText("Add Task");
         }else{
-            headerInfo.setText("Edit Task Details");
+            headerInfo.setText("Edit Task");
             taskEntryId = String.valueOf(taskEntry.getId());
             taskId=String.valueOf(taskEntry.getTaskId());
             comments.setText(taskEntry.getComments());

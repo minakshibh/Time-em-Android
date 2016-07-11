@@ -20,7 +20,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select Notification Type"
+                android:text="Select Notification Type:"
                 android:id="@+id/notificationTxt"
                 style="@style/TextStyle"/>
 
@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Enter Subject"
+                android:text="Enter Subject:"
                 android:id="@+id/SubjectTxt"
                 style="@style/TextStyle"/>
 
@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:id="@+id/MessageTxt"
-                android:text="Enter Message"
+                android:text="Enter Message:"
                 style="@style/TextStyle"/>
 
             <RelativeLayout
@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 style="@style/TextStyle"
-                android:text="Select Recipients"/>
+                android:text="Select Recipients:"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -226,7 +226,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="15dp"
                 style="@style/TextStyle"
-                android:text="Attachment"/>
+                android:text="Attachment:"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -270,10 +270,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/send"
-        android:text="Send Notification"
+        android:text="SEND"
         android:textColor="@color/textColor"
-        android:textSize="15sp"
-        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:layout_margin="6dp"
         android:background="@drawable/btn_bg"
         android:layout_alignParentBottom="true"/>
 </RelativeLayout>
