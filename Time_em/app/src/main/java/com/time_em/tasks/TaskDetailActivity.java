@@ -1,7 +1,9 @@
 package com.time_em.tasks;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -18,13 +20,17 @@ import com.time_em.utils.FileUtils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
+
+import static android.media.ThumbnailUtils.createVideoThumbnail;
+
 public class TaskDetailActivity extends Activity {
 
     private ImageView back, attachment;
     private TextView info, taskDesc, taskComments, hoursWorked, txtDate;
     private TaskEntry taskEntry;
     private TextView AttachementTxt;
-    private VideoView videoView;
+    private JCVideoPlayerStandard videoView;
     private String image_url=null;
     //JCVideoPlayerStandard videoView;
 
@@ -52,7 +58,7 @@ public class TaskDetailActivity extends Activity {
         AttachementTxt = (TextView) findViewById(R.id.AttachementTxt);
         attachment.setVisibility(View.GONE);
         AttachementTxt.setVisibility(View.GONE);
-        videoView = (VideoView) findViewById(R.id.videoView);
+        videoView = (JCVideoPlayerStandard) findViewById(R.id.videoView);
        // videoView=(VideoView)findViewById(R.id.videoView);
         //mVideoPlayer_2 = (VideoView)root.findViewById(R.id.videoView);
         taskEntry = (TaskEntry) getIntent().getParcelableExtra("taskEntry");
@@ -91,16 +97,30 @@ public class TaskDetailActivity extends Activity {
                     int loader = R.drawable.add;
                     if (image_url != null) {
 
+
                         ImageLoader imgLoader = new ImageLoader(getApplicationContext());
                         imgLoader.DisplayImage(image_url, loader, attachment);
                     }
                 } else {
+                   Bitmap bm = createVideoThumbnail(image_url, 11);
+                    attachment.setImageBitmap(bm);
+
+
                     videoView.setVisibility(View.VISIBLE);
                     attachment.setVisibility(View.GONE);
-                    videoView.setVideoPath(image_url);
+                    try {
+                        videoView.setUp(image_url , "video");
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                   // JCVideoPlayerStandard jcVideoPlayerStandard = (JCVideoPlayerStandard) findViewById(R.id.custom_videoplayer_standard);
+                   // videoView.setUp(image_url , "video");
+                    //videoView.thumbImageView.setThumbInCustomProject(image_url);
+                  /*  videoView.setVideoPath(image_url);
                     videoView.setMediaController(new MediaController(TaskDetailActivity.this));
                     videoView.requestFocus();
-                    videoView.seekTo(5);
+                    videoView.seekTo(5);*/
 
                 }/*MediaController mc = new MediaController(this);
                *//* MediaController mediaController = new MediaController(this);
@@ -145,10 +165,10 @@ public class TaskDetailActivity extends Activity {
                 else{
                     attachment.setVisibility(View.GONE);
                     videoView.setVisibility(View.VISIBLE);
-                    videoView.setVideoPath(image_url);
+                  /*  videoView.setVideoPath(image_url);
                     videoView.setMediaController(new MediaController(TaskDetailActivity.this));
                     videoView.requestFocus();
-                    videoView.seekTo(5);
+                    videoView.seekTo(5);*/
                 }
             }
 

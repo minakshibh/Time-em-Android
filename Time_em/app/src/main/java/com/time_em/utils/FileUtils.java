@@ -42,13 +42,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.protocol.HTTP;
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 /**
  * Created by minakshi on 08/06/16.
  */
 public class FileUtils {
     private String userChoosenTask;
-    public static String attachmentPath;
+    public  String attachmentPath;
     private Context context;
     CharSequence[] items=null;
     public static int SELECT_FILE = 1, REQUEST_CAMERA = 2, VIDEO_CAMERA = 3;
@@ -374,14 +375,15 @@ public class FileUtils {
         }
     }
 
-    public void onRecordVideoResult(Activity Activity,Intent data, VideoView mVideoView) {
+    public void onRecordVideoResult(Activity Activity,Intent data, JCVideoPlayerStandard uploadedVideo) {
         Log.e("video path:",""+attachmentPath);
       // Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(attachmentPath), 500,500);
         try {
-            mVideoView.setVideoPath(attachmentPath);
+            /*mVideoView.setVideoPath(attachmentPath);
             mVideoView.setMediaController(new MediaController(Activity));
             mVideoView.requestFocus();
-            mVideoView.seekTo(15);
+            mVideoView.seekTo(15);*/
+            uploadedVideo.setUp(attachmentPath , "video");
 
             } catch (Exception e) {
             e.printStackTrace();

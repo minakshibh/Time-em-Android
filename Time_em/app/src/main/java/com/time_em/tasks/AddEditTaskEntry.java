@@ -40,6 +40,8 @@ import com.time_em.utils.Utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
+
 public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader;
@@ -55,7 +57,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private FileUtils fileUtils;
     private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0",taskId="0";
     private TaskEntry taskEntry;
-    private VideoView uploadedVideo;
+    private JCVideoPlayerStandard uploadedVideo;
     TimeEmDbHandler dbHandler;
     public static String UniqueNumber="";
     private String newTaskName="",UserId="";
@@ -87,7 +89,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         spnProject = (Spinner) findViewById(R.id.spnNotificationType);
         hoursIcon = (ImageView) findViewById(R.id.messageIcon);
         uploadedImage = (ImageView) findViewById(R.id.uploadedImage);
-        uploadedVideo=(VideoView)findViewById(R.id.uploadedVideo);
+        uploadedVideo=(JCVideoPlayerStandard)findViewById(R.id.uploadedVideo);
         recipientSection =(LinearLayout)findViewById(R.id.recipientSection);
         uploadAttachment = (LinearLayout)findViewById(R.id.upload);
         addUpdateTask = (Button)findViewById(R.id.send);
@@ -140,10 +142,11 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     }else{
                         uploadedImage.setVisibility(View.GONE);
                         uploadedVideo.setVisibility(View.VISIBLE);
-                        uploadedVideo.setVideoPath(image_url);
+                        uploadedVideo.setUp(image_url , "video");
+                      /*  uploadedVideo.setVideoPath(image_url);
                         uploadedVideo.setMediaController(new MediaController(AddEditTaskEntry.this));
                         uploadedVideo.requestFocus();
-                        uploadedVideo.seekTo(5);
+                        uploadedVideo.seekTo(5);*/
                     }
                 }else{
 
@@ -156,10 +159,16 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     else{
                         uploadedImage.setVisibility(View.GONE);
                         uploadedVideo.setVisibility(View.VISIBLE);
-                        uploadedVideo.setVideoPath(image_url);
+                        try {
+                            uploadedVideo.setUp(image_url, "video");
+                        }catch (Exception e)
+                        {e.printStackTrace();
+
+                        }
+                      /*  uploadedVideo.setVideoPath(image_url);
                         uploadedVideo.setMediaController(new MediaController(AddEditTaskEntry.this));
                         uploadedVideo.requestFocus();
-                        uploadedVideo.seekTo(5);
+                        uploadedVideo.seekTo(5);*/
                     }
                 }
             }
@@ -479,6 +488,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         // show it
         alertDialog.show();
     }
+
     private void syncUploadFile(String Id) {
 
             String  ImagePath = fileUtils.getAttachmentPath();
@@ -493,4 +503,15 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
         }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+       // uploadedVideo.sta
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+       // uploadedVideo.setTop(0);
+    }
 }

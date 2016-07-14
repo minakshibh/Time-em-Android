@@ -67,6 +67,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.authentication.LoginActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.authentication.ChangeStatusActivity"

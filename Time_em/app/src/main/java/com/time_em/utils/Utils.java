@@ -71,7 +71,8 @@ public class Utils {
     public static final String Loation = "loation";
     private static SharedPreferences preferences;
     public static String PROJECT_ID = "554809123006";
-    public static String API_KEY = "AIzaSyBGO_uGOOR6YyW0qvENCw_vGX6BHQY--RA";
+    public static String API_ANDROID_KEY = "AIzaSyBGO_uGOOR6YyW0qvENCw_vGX6BHQY--RA";
+    public static String API_SEVER_KEY="AIzaSyBUAfBKPEsEBsUzxKDPnk_w5WEY7bXEdDs";
     public static String sharedPrefs = "Time'emPrefs";
 
     static public String loginAPI = "/User/GetValidateUser";

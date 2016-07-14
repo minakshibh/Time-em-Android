@@ -633,15 +633,17 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 lay_indicator.setVisibility(View.INVISIBLE);
                 //tabLayout.getTabAt(position).select();
                 tabLayout.setScrollPosition(position, 0f, true);
-                if(maxValue>4)
-                maxValue = maxValue / 4;
+                if(maxValue>4) {
+                    maxValue = maxValue / 4;
+                }
                 maxValueTask = Double.valueOf(maxValue * 6);
 
                 firstGraphView();
             } else {
                 maxValue = maxValueSignInOut.intValue();
-                if(maxValue>4)
-                maxValue = maxValue / 4;
+                if(maxValue>4) {
+                    maxValue = maxValue / 4;
+                }
                 maxValueSignInOut = Double.valueOf(maxValue * 6);
             }
 
