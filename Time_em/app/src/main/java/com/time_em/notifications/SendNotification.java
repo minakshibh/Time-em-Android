@@ -46,7 +46,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     private Time_emJsonParser parser;
     private SpinnerTypeAdapter adapter;
     private String selectedIds, selectedUsers, userChoosenTask, selectedNotificationTypeId, attachmentPath,selectedNotificationTypeName;
-    private ImageView uploadedImage, back, rightNavigation;
+    private ImageView uploadedImage, back, rightNavigation, imgdelete, videodelete;
     private Button sendNotification;
     private final String twoHyphens = "--";
     private final String lineEnd = "\r\n";
@@ -59,6 +59,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     private FileUtils fileUtils;
     String sendNotificationAPI = Utils.SendNotificationAPI;
     TimeEmDbHandler dbHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,8 +93,14 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         headerInfo.setText("Send Notification");
         parser = new Time_emJsonParser(SendNotification.this);
 
+        imgdelete=(ImageView) findViewById(R.id.imgdelete);
+        videodelete=(ImageView) findViewById(R.id.videodelete);
+        imgdelete.setVisibility(View.GONE);
+        videodelete.setVisibility(View.GONE);
+
         Utils.saveInSharedPrefs(SendNotification.this, "SelectedIds", "");
         Utils.saveInSharedPrefs(SendNotification.this, "SelectedUsers", "");
+
     }
 
     private void setListeners(){
@@ -101,6 +108,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         upload.setOnClickListener(listener);
         sendNotification.setOnClickListener(listener);
         back.setOnClickListener(listener);
+        imgdelete.setOnClickListener(listener);
         // You can create an anonymous listener to handle the event when is selected an spinner item
         spnNotificationType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -133,9 +141,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                 {
                     Utils.showToast(SendNotification.this, "Please select specify notification type");
                     }
-
                 else {
-
 
 
                if(Utils.isNetworkAvailable(SendNotification.this)) {
@@ -155,9 +161,6 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                             postDataParameters, true, "Please wait...");
                     mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
                     mWebPageTask.execute();
-
-
-
 
 
                    /* ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
@@ -198,6 +201,10 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                          }
 
                 }
+            }else if(v == imgdelete){
+                uploadedImage.setVisibility(View.GONE);
+                imgdelete.setVisibility(View.GONE);
+                fileUtils.setAttachmentPath(null);
             }
             else if(v == recipients){
                 showUserSelectionDropdown();
@@ -253,11 +260,9 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     @Override
     public void processFinish(String output, String methodName) {
 
-
         if (methodName.equals(Utils.getActiveUserList)) {
             userList = parser.parseActiveUsers(output);
             dbHandler.updateActiveUsers(userList);
-
             userList = dbHandler.getActiveUsers();
         }else if (methodName.equals(Utils.getNotificationType)) {
             notificationTypes = parser.parseNotificationType(output);
@@ -280,16 +285,13 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                     syncUploadFile(Id);
                 }
             }
-
         }
     }
 
     private void showUserSelectionDropdown(){
         Intent intent = new Intent(SendNotification.this, UserSelectionActivity.class);
-
         intent.putExtra("activeUsers", userList);
         intent.putExtra("selectedIds", selectedIds);
-
         startActivity(intent);
     }
 
@@ -321,23 +323,24 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == FileUtils.SELECT_FILE)
+            if (requestCode == FileUtils.SELECT_FILE){
                 fileUtils.onSelectFromGalleryResult(data, uploadedImage);
-            else if (requestCode == FileUtils.REQUEST_CAMERA)
+                imgdelete.setVisibility(View.VISIBLE); }
+            else if (requestCode == FileUtils.REQUEST_CAMERA){
                 fileUtils.onCaptureImageResult(data, uploadedImage);
+                imgdelete.setVisibility(View.VISIBLE); }
         }
     }
 
     private String getCurrentDate()
     {
         long date = System.currentTimeMillis();
-
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm");
         String dateString = sdf.format(date);
         return dateString;
     }
-    private void syncUploadFile(String Id) {
 
+    private void syncUploadFile(String Id) {
         String  ImagePath = fileUtils.getAttachmentPath();
         ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
         dataModels.add(new MultipartDataModel("Id",Id, MultipartDataModel.STRING_TYPE));
@@ -348,5 +351,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         Log.e("send task", "send task" + ImagePath);
 
         fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
+
     }
+
 }

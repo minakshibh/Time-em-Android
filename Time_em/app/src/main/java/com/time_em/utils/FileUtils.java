@@ -47,6 +47,7 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 /**
  * Created by minakshi on 08/06/16.
  */
+
 public class FileUtils {
     private String userChoosenTask;
     public  String attachmentPath;
@@ -64,6 +65,9 @@ public class FileUtils {
 
     public String getAttachmentPath() {
         return attachmentPath;
+    }
+    public void setAttachmentPath(String path) {
+        this.attachmentPath = path;
     }
 
     public void showChooserDialog(boolean video) {
@@ -142,6 +146,7 @@ public class FileUtils {
             }
         }
     }
+
     private File createImageFile(boolean video) throws IOException {
         // Create an image file name
        // String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -203,6 +208,7 @@ public class FileUtils {
         sizeOptions.inSampleSize = inSampleSize;
 
         return BitmapFactory.decodeFile(picturePath, sizeOptions);
+
     }
 
     private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -227,6 +233,7 @@ public class FileUtils {
 
         return inSampleSize;
     }
+
     public void sendMultipartRequest(final String APIName, ArrayList<MultipartDataModel> data){
 
         Log.e("multipart","Send calling");
@@ -261,7 +268,6 @@ public class FileUtils {
 
                    // pDialog.dismiss();
                     if(response.statusCode==200) {
-
                         Utils.showToast(context, "File uploaded successfully.");
 
                       /*  if (APIName.contains("AddUpdateUserTaskActivity")) {
@@ -302,8 +308,7 @@ public class FileUtils {
             attachmentPath = cursor.getString(columnIndex);
             cursor.close();
 
-
-            //   File sdcard = Environment.getExternalStorageDirectory();
+            //File sdcard = Environment.getExternalStorageDirectory();
             //File oldFile = new File(attachmentPath,".png");
             //File newFile = new File(attachmentPath,"to.png");
 
@@ -315,7 +320,8 @@ public class FileUtils {
             // oldFile.renameTo(newFile);
             if (success)
                 attachmentPath = "" + file2.getAbsolutePath();
-            imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
+          //  Bitmap bit= getScaledBitmap(attachmentPath, 300, 300);
+            imageView.setImageBitmap(getScaledBitmap(attachmentPath, 250, 200));
         }else{
             try {
                 InputStream imInputStream = context.getContentResolver().openInputStream(data.getData());
@@ -331,7 +337,7 @@ public class FileUtils {
                 // oldFile.renameTo(newFile);
                 if (success)
                     attachmentPath = "" + file2.getAbsolutePath();
-                imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
+                    imageView.setImageBitmap(getScaledBitmap(attachmentPath, 250, 200));
 
                 //encodeImage();
             } catch (FileNotFoundException e) {
@@ -364,12 +370,12 @@ public class FileUtils {
         }
 
         return null;
-
     }
+
     public void onCaptureImageResult(Intent data, ImageView imageView) {
         try {
           Log.e("image path:",""+attachmentPath);
-          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 400, 400));
+          imageView.setImageBitmap(getScaledBitmap(attachmentPath, 250, 200));
         } catch (Exception e) {
             e.printStackTrace();
         }

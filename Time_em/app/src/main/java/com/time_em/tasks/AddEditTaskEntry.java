@@ -20,7 +20,6 @@ import android.widget.MediaController;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.VideoView;
-
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
@@ -36,17 +35,15 @@ import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.FileUtils;
 import com.time_em.utils.SpinnerTypeAdapter;
 import com.time_em.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader;
     private Spinner spnProject;
-    private ImageView hoursIcon, uploadedImage, back, rightNavigation;
+    private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete;
     private LinearLayout recipientSection, uploadAttachment;
     private Button addUpdateTask;
     private EditText hours, comments;
@@ -61,20 +58,19 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     TimeEmDbHandler dbHandler;
     public static String UniqueNumber="";
     private String newTaskName="",UserId="";
-   // private String addNewTask="0",taskName="";
+    //private String addNewTask="0",taskName="";
     ArrayList<TaskEntry> taskEntries = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_send_notification);
-
         initScreen();
         loadProjects();
         setListeners();
         UniqueNumber= FileUtils.getUniqueNumber();
     }
-
 
     private void initScreen() {
         parser = new Time_emJsonParser(AddEditTaskEntry.this);
@@ -99,9 +95,15 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         rightNavigation.setVisibility(View.GONE);
         dateHeader = (TextView)findViewById(R.id.dateHeader);
 
+        imgdelete=(ImageView) findViewById(R.id.imgdelete);
+        videodelete=(ImageView) findViewById(R.id.videodelete);
+
         selectedDate = getIntent().getStringExtra("selectDate");
         taskEntry = getIntent().getParcelableExtra("taskEntry");
         UserId=getIntent().getStringExtra("UserId");
+
+        imgdelete.setVisibility(View.GONE);
+        videodelete.setVisibility(View.GONE);
 
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
@@ -137,13 +139,17 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     if(image_url.contains(".jpg") | image_url.contains(".png")) {
                         uploadedImage.setVisibility(View.VISIBLE);
                         uploadedVideo.setVisibility(View.GONE);
+                        imgdelete.setVisibility(View.VISIBLE);
+                        videodelete.setVisibility(View.GONE);
                         ImageLoader imgLoader = new ImageLoader(getApplicationContext());
                         imgLoader.DisplayImage(image_url, loader, uploadedImage);
                     }else{
                         uploadedImage.setVisibility(View.GONE);
                         uploadedVideo.setVisibility(View.VISIBLE);
+                        videodelete.setVisibility(View.VISIBLE);
+                        imgdelete.setVisibility(View.GONE);
                         uploadedVideo.setUp(image_url , "video");
-                      /*  uploadedVideo.setVideoPath(image_url);
+                      /*uploadedVideo.setVideoPath(image_url);
                         uploadedVideo.setMediaController(new MediaController(AddEditTaskEntry.this));
                         uploadedVideo.requestFocus();
                         uploadedVideo.seekTo(5);*/
@@ -153,19 +159,22 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     if(image_url.contains(".jpg") | image_url.contains(".png")) {
                         uploadedImage.setVisibility(View.VISIBLE);
                         uploadedVideo.setVisibility(View.GONE);
+                        imgdelete.setVisibility(View.VISIBLE);
+                        videodelete.setVisibility(View.GONE);
                         FileUtils fileUtils = new FileUtils(AddEditTaskEntry.this);
-                        uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 400, 400));
+                        uploadedImage.setImageBitmap(fileUtils.getScaledBitmap(image_url, 300, 250));
                     }
                     else{
                         uploadedImage.setVisibility(View.GONE);
                         uploadedVideo.setVisibility(View.VISIBLE);
+                        videodelete.setVisibility(View.VISIBLE);
+                        imgdelete.setVisibility(View.GONE);
                         try {
                             uploadedVideo.setUp(image_url, "video");
                         }catch (Exception e)
                         {e.printStackTrace();
-
                         }
-                      /*  uploadedVideo.setVideoPath(image_url);
+                      /*uploadedVideo.setVideoPath(image_url);
                         uploadedVideo.setMediaController(new MediaController(AddEditTaskEntry.this));
                         uploadedVideo.requestFocus();
                         uploadedVideo.seekTo(5);*/
@@ -186,7 +195,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                         sp.setSelection(i);
                        // return;
                     }
-                }
+            }
         }
     }
 
@@ -194,9 +203,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         uploadAttachment.setOnClickListener(listener);
         addUpdateTask.setOnClickListener(listener);
         back.setOnClickListener(listener);
+        imgdelete.setOnClickListener(listener);
+        videodelete.setOnClickListener(listener);
         // You can create an anonymous listener to handle the event when is selected an spinner item
         spnProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 // Here you get the current item (a User object) that is selected by its position
@@ -213,6 +223,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             public void onNothingSelected(AdapterView<?> adapter) {
             }
         });
+
     }
 
     private View.OnClickListener listener = new View.OnClickListener() {
@@ -222,22 +233,25 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             Double intHours=0.0;
             try {
                 getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(), "apiUserId"));
-                 intHours=Double.parseDouble(hours.getText().toString().trim());
+                intHours=Double.parseDouble(hours.getText().toString().trim());
             }catch(Exception e)
             {
                 e.printStackTrace();
             }
 
-
             if(v == back){
                 finish();
             }else if(v == uploadAttachment){
                 fileUtils.showChooserDialog(true);
+            }else if(v == imgdelete || v == videodelete){
+                uploadedImage.setVisibility(View.GONE);
+                uploadedVideo.setVisibility(View.GONE);
+                imgdelete.setVisibility(View.GONE);
+                videodelete.setVisibility(View.GONE);
+                fileUtils.setAttachmentPath(null);
             }else if(v == addUpdateTask){
 
-
-                if(comments.getText().toString().trim().equals("") || hours.getText().toString().trim().equals("")
-                        || selectedSpinnerData == null){
+                if(comments.getText().toString().trim().equals("") || hours.getText().toString().trim().equals("") || selectedSpinnerData == null){
                     Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
                 }
                 else if(selectedSpinnerData.getId()==-1){
@@ -248,7 +262,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 }
                 else if(!HomeActivity.user.isSignedIn()){
                    Utils.alertMessage(AddEditTaskEntry.this, "You are currently signed out. To continue Please sign in.");
-
                 }
               else {
 
@@ -292,8 +305,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                             dataModels.add(new MultipartDataModel("ID", taskEntryId, MultipartDataModel.STRING_TYPE));*/
 
 
-
-
                                 TaskEntry task = new TaskEntry();
                                 if (fileUtils.getAttachmentPath() != null)
                                     task.setAttachmentImageFile(fileUtils.getAttachmentPath());
@@ -325,7 +336,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
                                     // task.setStartTime(taskObject.getString("StartTime"));
 
-
                                     Log.e("UniqueNumber", "" + UniqueNumber);
 
                                     task.setToken("00");
@@ -336,7 +346,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 }
                                 //for edit delete old offline
                                 else {
-
 
                                     Log.e("UniqueNumber", "" + UniqueNumber);
                                     // Log.e("milliSecond +id", "" + HomeActivity.user.getId() + "" + timeStamp);
@@ -358,13 +367,14 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                             }
 
                         }
+
             }
         }
     };
 
     private void loadProjects() {
-       // if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
-           int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
+       //   if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
+            int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
             postDataParameters.put("userId", String.valueOf(getSPrefsId));
@@ -376,8 +386,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             mWebPageTask.execute();
 
        // } else {
-     //       Utils.alertMessage(AddEditTaskEntry.this, Utils.network_error);
-      //  }
+       //      Utils.alertMessage(AddEditTaskEntry.this, Utils.network_error);
+       //  }
     }
 
     @Override
@@ -434,24 +444,29 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == FileUtils.SELECT_FILE) {
-                fileUtils.onSelectFromGalleryResult(data, uploadedImage);
                 uploadedVideo.setVisibility(View.GONE);
+                videodelete.setVisibility(View.GONE);
                 uploadedImage.setVisibility(View.VISIBLE);
+                imgdelete.setVisibility(View.VISIBLE);
+                fileUtils.onSelectFromGalleryResult(data, uploadedImage);
             }
             else if (requestCode == FileUtils.REQUEST_CAMERA) {
-                fileUtils.onCaptureImageResult(data, uploadedImage);
                 uploadedVideo.setVisibility(View.GONE);
+                videodelete.setVisibility(View.GONE);
                 uploadedImage.setVisibility(View.VISIBLE);
+                imgdelete.setVisibility(View.VISIBLE);
+                fileUtils.onCaptureImageResult(data, uploadedImage);
             }
             else if (requestCode == FileUtils.VIDEO_CAMERA) {
-
-                fileUtils.onRecordVideoResult(AddEditTaskEntry.this,data, uploadedVideo);
                 uploadedImage.setVisibility(View.GONE);
+                imgdelete.setVisibility(View.GONE);
                 uploadedVideo.setVisibility(View.VISIBLE);
-
+                videodelete.setVisibility(View.VISIBLE);
+                fileUtils.onRecordVideoResult(AddEditTaskEntry.this, data, uploadedVideo);
             }
         }
     }
+
     private  void showAddNewTask()
     {
         // get prompts.xml view
@@ -473,9 +488,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 if (newTaskName.equals("")) {
                                     Utils.alertMessage(AddEditTaskEntry.this, "Please enter task name");
                                       }
-
                                 else {
-
                                     Utils.hideKeyboard(AddEditTaskEntry.this);
                                     }
                             }
@@ -483,25 +496,21 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 .setNegativeButton("Cancel",null);
 
         // create alert dialog
-
         AlertDialog alertDialog = alertDialogBuilder.create();
         // show it
         alertDialog.show();
     }
 
     private void syncUploadFile(String Id) {
-
-            String  ImagePath = fileUtils.getAttachmentPath();
+            String ImagePath = fileUtils.getAttachmentPath();
             ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
             dataModels.add(new MultipartDataModel("Id",Id, MultipartDataModel.STRING_TYPE));
             dataModels.add(new MultipartDataModel("FileUploadFor", "usertaskactivity", MultipartDataModel.STRING_TYPE));
-
              if (ImagePath != null)
                 dataModels.add(new MultipartDataModel("profile_picture", ImagePath, MultipartDataModel.FILE_TYPE));
                 Log.e("send task", "send task" + ImagePath);
-
             fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
-        }
+    }
 
     @Override
     protected void onResume() {
@@ -514,4 +523,5 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         super.onPause();
        // uploadedVideo.setTop(0);
     }
+
 }

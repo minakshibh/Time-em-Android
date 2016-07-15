@@ -2,9 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:orientation="vertical">
+
     <include android:id="@+id/headerLayout" layout="@layout/include_toolbar"></include>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:id="@+id/notTypeLayout">
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -108,8 +110,8 @@
                     android:src="@drawable/textarea"
                     android:layout_alignParentRight="true"/>
 
-            </RelativeLayout>
 
+</RelativeLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -241,6 +243,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/upload"/>
+
                 <TextView
                     android:id="@+id/txt_Image_Video"
                     android:layout_width="wrap_content"
@@ -249,24 +252,58 @@
                     android:textColor="@color/alphabeticalTextColor"
                     android:textSize="14sp"
                     android:text="Upload Image/Video"/>
+
             </LinearLayout>
-            <ImageView
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:id="@+id/uploadedImage"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/uploadedImage"/>
+
+                <ImageView
+                    android:id="@+id/imgdelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/deleteimg"
+                    android:layout_alignRight="@+id/uploadedImage"
+                    android:visibility="gone"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="15dp"/>
+
+            </RelativeLayout>
+
          <!--   <VideoView
                 android:layout_width="fill_parent"
                 android:layout_height="150dp"
                 android:layout_marginTop="10dp"
                 android:visibility="gone"
                 android:id="@+id/uploadedVideo"/>-->
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
             <fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard
                 android:id="@+id/uploadedVideo"
                 android:layout_width="match_parent"
                 android:visibility="gone"
                 android:layout_marginTop="10dp"
                 android:layout_height="200dp"/>
+                <ImageView
+                    android:id="@+id/videodelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/deleteimg"
+                    android:layout_alignParentRight="true"
+                    android:visibility="gone"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="15dp"/>
+
+            </RelativeLayout>
 
         </LinearLayout>
     </ScrollView>
@@ -281,4 +318,5 @@
         android:layout_margin="6dp"
         android:background="@drawable/btn_bg"
         android:layout_alignParentBottom="true"/>
+
 </RelativeLayout>
