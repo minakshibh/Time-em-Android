@@ -186,7 +186,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private void selectedSpinnerValue(Spinner sp) {
 
-        Log.e("taskEntryId",""+taskId);
+        Log.e("taskEntryId", "" + taskId);
         if(assignedTasks!=null && !assignedTasks.equals("null")){
             for(int i=0;i<assignedTasks.size();i++)
             {
@@ -215,6 +215,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 //                selectedProjectId = String.valueOf(project.getId());
                 //for add new task
                 if(selectedSpinnerData.getId()==0){
+                    if(taskEntry==null)
                     showAddNewTask();
                 }
             }
@@ -273,7 +274,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                             postDataParameters.put("Comments", comments.getText().toString());
                             if (selectedSpinnerData.getId() == 0) {
                                 postDataParameters.put("TaskId", String.valueOf(0));
+                                if(newTaskName != null)
                                 postDataParameters.put("TaskName", newTaskName);
+                                else
+                                Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
                             }else{
                                 postDataParameters.put("TaskId", String.valueOf(selectedSpinnerData.getId()));
                                 postDataParameters.put("TaskName", String.valueOf(selectedSpinnerData.getName()));
@@ -482,18 +486,17 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         // set dialog message
         alertDialogBuilder.setCancelable(false) .setPositiveButton("Add",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                newTaskName = userInput.getText().toString();
-                                if (newTaskName.equals("")) {
-                                    Utils.alertMessage(AddEditTaskEntry.this, "Please enter task name");
-                                      }
-                                else {
-                                    Utils.hideKeyboard(AddEditTaskEntry.this);
-                                    }
-                            }
-                        })
-                .setNegativeButton("Cancel",null);
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        newTaskName = userInput.getText().toString();
+                        if (newTaskName.equals("")) {
+                            Utils.alertMessage(AddEditTaskEntry.this, "Please enter task name");
+                        } else {
+                            Utils.hideKeyboard(AddEditTaskEntry.this);
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", null);
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();

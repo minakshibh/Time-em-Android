@@ -120,7 +120,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             }else if(v == sendNotification){
                 String purchase=Utils.getSharedPrefs(getApplicationContext(),"notification_purchase");
                 if(purchase.equalsIgnoreCase("")){
-                Intent intent = new Intent(NotificationListActivity.this, PurchaseActivity.class);
+                Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);
                 startActivity(intent);
                 }else{
                     Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);
@@ -293,7 +293,8 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
                         public void onClick(DialogInterface dialog, int which) {
                             dbHandler.deleteNotification(notifications.get(position).getNotificationId());
                             notifications.remove(position);
-                            notifyDataSetChanged();
+                             notifyDataSetChanged();
+                             notificationListView.setAdapter(new NotificationAdapter());
                         }
                     });
 
