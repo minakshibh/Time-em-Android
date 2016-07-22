@@ -102,13 +102,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 .inflate(R.layout.activity_home, null, false);
         contentFrame.addView(contentView, 0);
 
-//		addGraph();
-        //  populatRecyclerView();
-
-
-        registerDevice();
         fetchTaskGraphsData();
         fetchGraphsSignInOut();
+        registerDevice();
         initScreen();
         setClickListeners();
         setTapBar();
@@ -119,98 +115,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
 
-    private void addGraph() {
-        graphLayout = (LinearLayout) findViewById(R.id.graphLayout);
 
-        entries.add(new BarEntry(4f, 0));
-        entries.add(new BarEntry(8f, 1));
-        entries.add(new BarEntry(6f, 2));
-        entries.add(new BarEntry(12f, 3));
-        entries.add(new BarEntry(18f, 4));
-        entries.add(new BarEntry(9f, 5));
-        entries.add(new BarEntry(4f, 6));
-        entries.add(new BarEntry(8f, 7));
-        entries.add(new BarEntry(6f, 8));
-        entries.add(new BarEntry(12f, 9));
-        entries.add(new BarEntry(18f, 10));
-        entries.add(new BarEntry(9f, 11));
-        entries.add(new BarEntry(4f, 12));
-        entries.add(new BarEntry(8f, 13));
-        entries.add(new BarEntry(6f, 14));
-        entries.add(new BarEntry(12f, 15));
-        entries.add(new BarEntry(18f, 16));
-        entries.add(new BarEntry(9f, 17));
-        entries.add(new BarEntry(4f, 18));
-        entries.add(new BarEntry(8f, 19));
-        entries.add(new BarEntry(6f, 20));
-        entries.add(new BarEntry(12f, 21));
-        entries.add(new BarEntry(18f, 22));
-        entries.add(new BarEntry(9f, 23));
-
-        dataset = new BarDataSet(entries, "# of Calls");
-
-        labels.add("January");
-        labels.add("February");
-        labels.add("March");
-        labels.add("April");
-        labels.add("May");
-        labels.add("June");
-        labels.add("January1");
-        labels.add("February1");
-        labels.add("March1");
-        labels.add("April1");
-        labels.add("May1");
-        labels.add("June1");
-        labels.add("January2");
-        labels.add("February2");
-        labels.add("March2");
-        labels.add("April2");
-        labels.add("May2");
-        labels.add("June2");
-        labels.add("January3");
-        labels.add("February3");
-        labels.add("March3");
-        labels.add("April3");
-        labels.add("May3");
-        labels.add("June3");
-
-        BarChart chart = new BarChart(HomeActivity.this);
-
-        BarData data = new BarData(labels, dataset);
-        chart.setData(data);
-
-        chart.setDescription("# of times Alice called Bob");
-
-        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
-                RecyclerView.LayoutParams.MATCH_PARENT);
-        chart.setLayoutParams(params);
-        graphLayout.addView(chart);
-    }
-
-    /*private void populatRecyclerView(ArrayList<TaskEntry> arraylist) {
-
-        arrayList.addAll(arraylist);
-        Date myDate = new Date();
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
-
-        for (int i = 1; i <= 20; i++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(myDate);
-            calendar.add(Calendar.DAY_OF_YEAR, i);
-
-            TaskEntry taskEntry = new TaskEntry();
-            taskEntry.setTimeSpent(Double.valueOf(i));
-            taskEntry.setCreatedDate(dateFormatter.format(calendar.getTime()));
-
-            arrayList.add(taskEntry);
-        }
-//        for (int i = 0; i <= selectedPos; i++) {
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(myDate);
-//            calendar.add(Calendar.DAY_OF_YEAR, i);
-//            arrayList.add(calendar);
-//        }
-    }*/
 
     private void initScreen() {
         fileUtils=new FileUtils(HomeActivity.this);
@@ -325,7 +230,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             Log.e(Utils.RegisterUserDevice, postDataParameters.toString());
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     HomeActivity.this, "post", Utils.RegisterUserDevice,
-                    postDataParameters, true, "Please wait...");
+                    postDataParameters, false, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
 
@@ -686,6 +591,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         Log.e("" + methodName, "" + output);
         if (methodName.contains(Utils.UserTaskGraph)) {
             arrayList.addAll(parser.parseGraphsData(output));
+            dbHandler.updateUserTask(arrayList);
+            arrayList.clear();
+            arrayList.addAll(dbHandler.getUserTask());
+
             ArrayList<TaskEntry> arrayList_sort = new ArrayList<>();
             arrayList_sort.addAll(arrayList);
             Comparator<TaskEntry> cmp = new Comparator<TaskEntry>() {
@@ -702,7 +611,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 //            setViewPager();
         } else if (methodName.contains(Utils.UsersGraph)) {
             arrayList_SignInOut.addAll(parser.parseGraphsSignInOut(output));
-
+            dbHandler.updateUserSignInOut(arrayList_SignInOut);
+            arrayList_SignInOut.clear();
+            arrayList_SignInOut.addAll(dbHandler.getUserSignInOut());
             ArrayList<Double> signedInOutArray = new ArrayList<>();
 
             for (int i = 0; i < arrayList_SignInOut.size(); i++) {
@@ -1000,3 +911,95 @@ private int getUserId()
 }
 
 }
+ /*  private void addGraph() {
+        graphLayout = (LinearLayout) findViewById(R.id.graphLayout);
+
+        entries.add(new BarEntry(4f, 0));
+        entries.add(new BarEntry(8f, 1));
+        entries.add(new BarEntry(6f, 2));
+        entries.add(new BarEntry(12f, 3));
+        entries.add(new BarEntry(18f, 4));
+        entries.add(new BarEntry(9f, 5));
+        entries.add(new BarEntry(4f, 6));
+        entries.add(new BarEntry(8f, 7));
+        entries.add(new BarEntry(6f, 8));
+        entries.add(new BarEntry(12f, 9));
+        entries.add(new BarEntry(18f, 10));
+        entries.add(new BarEntry(9f, 11));
+        entries.add(new BarEntry(4f, 12));
+        entries.add(new BarEntry(8f, 13));
+        entries.add(new BarEntry(6f, 14));
+        entries.add(new BarEntry(12f, 15));
+        entries.add(new BarEntry(18f, 16));
+        entries.add(new BarEntry(9f, 17));
+        entries.add(new BarEntry(4f, 18));
+        entries.add(new BarEntry(8f, 19));
+        entries.add(new BarEntry(6f, 20));
+        entries.add(new BarEntry(12f, 21));
+        entries.add(new BarEntry(18f, 22));
+        entries.add(new BarEntry(9f, 23));
+
+        dataset = new BarDataSet(entries, "# of Calls");
+
+        labels.add("January");
+        labels.add("February");
+        labels.add("March");
+        labels.add("April");
+        labels.add("May");
+        labels.add("June");
+        labels.add("January1");
+        labels.add("February1");
+        labels.add("March1");
+        labels.add("April1");
+        labels.add("May1");
+        labels.add("June1");
+        labels.add("January2");
+        labels.add("February2");
+        labels.add("March2");
+        labels.add("April2");
+        labels.add("May2");
+        labels.add("June2");
+        labels.add("January3");
+        labels.add("February3");
+        labels.add("March3");
+        labels.add("April3");
+        labels.add("May3");
+        labels.add("June3");
+
+        BarChart chart = new BarChart(HomeActivity.this);
+
+        BarData data = new BarData(labels, dataset);
+        chart.setData(data);
+
+        chart.setDescription("# of times Alice called Bob");
+
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+                RecyclerView.LayoutParams.MATCH_PARENT);
+        chart.setLayoutParams(params);
+        graphLayout.addView(chart);
+    }*/
+
+    /*private void populatRecyclerView(ArrayList<TaskEntry> arraylist) {
+
+        arrayList.addAll(arraylist);
+        Date myDate = new Date();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
+
+        for (int i = 1; i <= 20; i++) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(myDate);
+            calendar.add(Calendar.DAY_OF_YEAR, i);
+
+            TaskEntry taskEntry = new TaskEntry();
+            taskEntry.setTimeSpent(Double.valueOf(i));
+            taskEntry.setCreatedDate(dateFormatter.format(calendar.getTime()));
+
+            arrayList.add(taskEntry);
+        }
+//        for (int i = 0; i <= selectedPos; i++) {
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTime(myDate);
+//            calendar.add(Calendar.DAY_OF_YEAR, i);
+//            arrayList.add(calendar);
+//        }
+    }*/

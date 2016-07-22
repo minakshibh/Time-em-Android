@@ -1,5 +1,6 @@
 package com.time_em.db;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
@@ -36,6 +37,10 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_NOTIFICATIONS_TYPE = "NotificationsType";
 	private String TABLE_PROJECT_TASK = "ProjectTask";
 	private String TABLE_GeoGraph = "GeoGraph";
+	private String TABLE_USERTASK = "UserTask";
+	private String TABLE_USER_SIGN_INOUT = "UserSignInOut";
+
+
 	// fields for task table
 	private String Id = "Id";
 	private String ActivityId = "ActivityId";
@@ -110,6 +115,11 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String DateData = "DateTime";
 	private String allData = "allData";
 
+	// fields for user Sign in Out type table
+	private String SignInTimeSpent = "SignInTimeSpent";
+	private String SignOutTimeSpent = "SignOutTimeSpent";
+
+
 	SQLiteCursor cursor;
 
 	/**
@@ -174,13 +184,23 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		String CREATE_GEO_GRAPHS = "CREATE TABLE if NOT Exists " + TABLE_GeoGraph
 				+ "(" + allData + " TEXT," + DateData + " TEXT)";
 
+		String CREATE_USERTASK = "CREATE TABLE if NOT Exists " + TABLE_USERTASK
+				+ "(" + CreatedDate + " TEXT," + TimeSpent + " TEXT)";
+
+		String CREATE_USER_SIGN_INOUT = "CREATE TABLE if NOT Exists " + TABLE_USER_SIGN_INOUT
+				+ "(" + CreatedDate + " TEXT," + SignInTimeSpent + " TEXT," + SignOutTimeSpent + " TEXT)";
+
 		db.execSQL(CREATE_TASK_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
+
+
 		db.execSQL(CREATE_ACTIVE_USERS_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TYPE_TABLE);
 		db.execSQL(CREATE_PROJECT_TASKS);
 		db.execSQL(CREATE_GEO_GRAPHS);
+		db.execSQL(CREATE_USERTASK);
+		db.execSQL(CREATE_USER_SIGN_INOUT);
 	}
 
 	@Override
@@ -224,6 +244,16 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	public void deleteGeoGraphs() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_GeoGraph, null, null);
+		db.close();
+	}
+	public void deleteUSERTASK() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_USERTASK, null, null);
+		db.close();
+	}
+	public void delete_USER_SIGNINOUT() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_USER_SIGN_INOUT, null, null);
 		db.close();
 	}
 	public void updateActiveUsers(ArrayList<User> activeUsers) {
@@ -1061,4 +1091,126 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			return types;
 		}
 }
+	public void updateUserTask(ArrayList<TaskEntry> arrayTaskEntry) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < arrayTaskEntry.size(); i++) {
+			TaskEntry taskEntry = arrayTaskEntry.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_USERTASK + " where "
+					+ CreatedDate +  "=\"" + taskEntry.getCreatedDate() + "\"";
+			try {
+				ContentValues values = new ContentValues();
+
+				values.put(CreatedDate, String.valueOf(taskEntry.getCreatedDate()));
+				values.put(TimeSpent, taskEntry.getTimeSpent());
+
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+					db.update(TABLE_USERTASK, values, CreatedDate + " = ?",new String[] { String.valueOf(taskEntry.getCreatedDate()) });
+				} else {
+					db.insert(TABLE_USERTASK, null, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
+	public ArrayList<TaskEntry> getUserTask() {
+		ArrayList<TaskEntry> types = new ArrayList<TaskEntry>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_USERTASK;
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					TaskEntry type = new TaskEntry();
+
+					type.setCreatedDate(cursor.getString(cursor.getColumnIndex(CreatedDate)));
+					type.setTimeSpent(Double.parseDouble(cursor.getString(cursor.getColumnIndex(TimeSpent))));
+					types.add(type);
+
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return types;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return types;
+		}
+	}
+
+	public void updateUserSignInOut(ArrayList<TaskEntry> arrayTaskEntry) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < arrayTaskEntry.size(); i++) {
+			TaskEntry taskEntry = arrayTaskEntry.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_USER_SIGN_INOUT + " where "
+					+ CreatedDate +  "=\"" + taskEntry.getCreatedDate() + "\"";
+			try {
+				ContentValues values = new ContentValues();
+
+				values.put(CreatedDate, String.valueOf(taskEntry.getCreatedDate()));
+				values.put(SignInTimeSpent, taskEntry.getSignedInHours());
+				values.put(SignOutTimeSpent, taskEntry.getSignedOutHours());
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+					db.update(TABLE_USER_SIGN_INOUT, values, CreatedDate + " = ?",new String[] { String.valueOf(taskEntry.getCreatedDate()) });
+				} else {
+					db.insert(TABLE_USER_SIGN_INOUT, null, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
+	public ArrayList<TaskEntry> getUserSignInOut() {
+		ArrayList<TaskEntry> types = new ArrayList<TaskEntry>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_USER_SIGN_INOUT;
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					TaskEntry type = new TaskEntry();
+
+					type.setCreatedDate(cursor.getString(cursor.getColumnIndex(CreatedDate)));
+					type.setSignedInHours(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SignInTimeSpent))));
+					type.setSignedOutHours(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SignOutTimeSpent))));
+					types.add(type);
+
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return types;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return types;
+		}
+	}
 }

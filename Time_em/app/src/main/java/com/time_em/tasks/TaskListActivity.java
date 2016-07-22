@@ -242,10 +242,11 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
         postDataParameters.put("userId", String.valueOf(UserId));
-        postDataParameters.put("createdDate", createdDate);
+        postDataParameters.put("createdDate",createdDate);
         postDataParameters.put("TimeStamp", timeStamp);
 
-        Log.e("values", "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
+        Log.e("values"+Utils.getTaskListAPI, "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
+        Log.e(""+Utils.getTaskListAPI, "" + postDataParameters.toString());
 
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                 TaskListActivity.this, "post", Utils.getTaskListAPI,
