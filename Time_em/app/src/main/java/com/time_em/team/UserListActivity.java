@@ -32,7 +32,7 @@ import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.utils.Utils;
 
-public class UserListActivity extends Activity implements AsyncResponseTimeEm{
+public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 
 	private ListView taskListview;
 	private ArrayList<User> team;
@@ -81,8 +81,8 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-				array_position=position;
-				GetUserWorkSiteApi(""+team.get(position).getId());
+				array_position = position;
+				GetUserWorkSiteApi("" + team.get(position).getId());
 
 
 			}
@@ -106,7 +106,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 	}
 	private void getUserList(int userId){
 		
-		if (Utils.isNetworkAvailable(UserListActivity.this)) {
+
 			String timeStamp = Utils.getSharedPrefs(UserListActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
 			if(timeStamp==null || timeStamp.equals(null) || timeStamp.equals("null"))
 				timeStamp="";
@@ -124,9 +124,6 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 			mWebPageTask.delegate = (AsyncResponseTimeEm) UserListActivity.this;
 			mWebPageTask.execute();
 
-		} else {
-			Utils.alertMessage(UserListActivity.this, Utils.network_error);
-		}
 	}
 
 	public class TeamAdapter extends BaseSwipeAdapter {
@@ -236,7 +233,6 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 
 			team = dbHandler.getTeam(HomeActivity.user.getId());
 
-
 			taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
 		}
 		else if (methodName.contains(Utils.GetUserWorksiteActivity)) {
@@ -255,17 +251,12 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm{
 			//fetchDataGraphs(array_worksite);
 
 
-					// array_worksite.clear();
-			//  array_worksite= dbHandler.getGeoGraphData("10");
+			// array_worksite.clear();
+			// array_worksite= dbHandler.getGeoGraphData("10");
 			//Log.e("UserWorkSite", "" + array_worksite.size());
 			//setColorWithModel(array_worksite);
 			//settingGraph(array_worksite); // setting graphs with bar
-
-
-
 		}
-
-
 		else{
 //			Utils.showToast(UserListActivity.this, output);
 			getUserList(HomeActivity.user.getId());

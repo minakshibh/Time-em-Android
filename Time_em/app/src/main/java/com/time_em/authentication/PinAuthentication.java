@@ -103,7 +103,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  btn8.setOnClickListener(pinButtonHandler);
 		  btn9.setOnClickListener(pinButtonHandler);
 		  btnDelete.setOnClickListener(pinButtonHandler);
-		forgotPin.setOnClickListener(pinButtonHandler);
+		  forgotPin.setOnClickListener(pinButtonHandler);
 	}
 	
 	View.OnClickListener pinButtonHandler = new View.OnClickListener() {

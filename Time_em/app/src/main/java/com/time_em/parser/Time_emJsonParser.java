@@ -4,16 +4,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimerTask;
-import java.util.concurrent.Exchanger;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.res.Resources;
-
 import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.Notification;
@@ -23,6 +18,7 @@ import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.model.UserWorkSite;
 import com.time_em.model.WorkSiteList;
+import com.time_em.model.mutiUserworkSiteList;
 import com.time_em.utils.Utils;
 
 public class Time_emJsonParser {
@@ -688,7 +684,6 @@ public class Time_emJsonParser {
 		ArrayList<WorkSiteList> arrayWorkSiteList= null;
 
 
-
 		try{
 
 			JSONArray mainArray = new JSONArray(webResponse);
@@ -728,6 +723,58 @@ public class Time_emJsonParser {
 
 		return arrayUserWorkSite;
 	}
+
+	public ArrayList<UserWorkSite> getUserListWorkSite(String webResponse){
+		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
+		//ArrayList<mutiUserworkSiteList> multiUserarrayUserWorkSite= null;
+		ArrayList<WorkSiteList> arrayWorkSiteList= null;
+
+		try{
+
+			JSONArray mainArray = new JSONArray(webResponse);
+			for(int j = 0; j<mainArray.length(); j++) {
+				UserWorkSite userWorkSite=new UserWorkSite();
+
+				jObject = mainArray.getJSONObject(j);
+				arrayWorkSiteList= new ArrayList<WorkSiteList>();
+				JSONArray jArray = jObject.getJSONArray("mutiUserworkSiteList");
+				userWorkSite.setUserId(jObject.getString("UserId"));
+
+				for (int i = 0; i < jArray.length(); i++) {
+
+					JSONObject userObject = jArray.getJSONObject(i);
+					JSONArray jArray2 = jObject.getJSONArray("workSiteList");
+					userWorkSite.setDate(userObject.getString("CreatedDate"));
+
+					for(int k =0; k < jArray2.length();k++){
+						JSONObject userObject2 = jArray2.getJSONObject(i);
+						WorkSiteList workSiteList = new WorkSiteList();
+						//workSiteList.setWorkSiteId(userObject2.getString("WorkSiteId"));
+						//workSiteList.setWorkSiteName(userObject2.getString("WorkSiteName"));
+						//workSiteList.setWorkingHour(userObject2.getString("WorkingHour"));
+						//workSiteList.setTimeIn(userObject2.getString("TimeIn"));
+						//workSiteList.setTimeOut(userObject2.getString("TimeOut"));
+						arrayWorkSiteList.add(workSiteList);
+
+					}
+				}
+				userWorkSite.setArraylist_WorkSiteList(arrayWorkSiteList);
+				userWorkSite.setDate(jObject.getString("CreatedDate"));
+				arrayUserWorkSite.add(userWorkSite);
+			}
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return arrayUserWorkSite;
+	}
+
 
 	public String getTaskId(String webResponse){
 		String Id="0";

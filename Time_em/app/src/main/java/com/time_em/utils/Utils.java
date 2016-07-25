@@ -102,6 +102,7 @@ public class Utils {
     static public String SyncFileUpload = "/UserActivity/SyncFileUpload";
     static public String GetUsersListByTagId = "/User/GetUsersListByTagId";
     static public String GetUserWorksiteActivity ="/Worksite/GetUserWorksiteActivity";
+    static public String GetUserListWorksiteActivity ="/worksite/GetUserlistWorksiteActivity";
     static public String AddUsersTimeIn="/Worksite/AddUsersTimeIn";
     static public String AddNotificationNew="notification/AddNotificationNew";
     static public String AddUpdateUserTaskActivityNew="usertask/AddUpdateUserTaskActivityNew";

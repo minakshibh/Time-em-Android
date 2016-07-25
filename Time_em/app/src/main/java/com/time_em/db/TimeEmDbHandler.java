@@ -1053,6 +1053,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			db.close();
 		//}
 	}
+
+
 		//for insert data Geo Graphs
 	public ArrayList<UserWorkSite> getGeoGraphData() {
 		// Fetch only records with selected Date

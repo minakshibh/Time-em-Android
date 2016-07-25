@@ -199,6 +199,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 finish();
             }
         });
+
         taskListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override

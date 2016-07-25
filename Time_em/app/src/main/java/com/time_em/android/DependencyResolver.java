@@ -1,8 +1,6 @@
 package com.time_em.android;
 
-
 import android.content.Context;
-
 import com.time_em.android.Interface.IDependencyResolver;
 import com.time_em.db.PreferenceData;
 

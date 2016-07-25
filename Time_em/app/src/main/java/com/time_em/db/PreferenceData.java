@@ -3,13 +3,13 @@ package com.time_em.db;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
 import com.time_em.db.Interface.IPreferenceData;
 
 public class PreferenceData implements IPreferenceData {
 
     private static final String USER_ID = "userid";
     private static final String ACTIVITY_ID = "activityid";
+    private static final String API_CHECK = "apicheck";
 
 
     SharedPreferences prefs;
@@ -51,4 +51,13 @@ public class PreferenceData implements IPreferenceData {
     public void SetActivityId(String ActivityId) {
         prefs.edit().putString(ACTIVITY_ID, ActivityId).commit();
     }
+
+    public boolean getApiCheck(){
+        return prefs.getBoolean(API_CHECK, true);
+    }
+
+    public void setApiCheck(boolean value) {
+        prefs.edit().putBoolean(API_CHECK, value).commit();
+    }
+
 }
