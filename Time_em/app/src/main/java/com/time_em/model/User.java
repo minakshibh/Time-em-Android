@@ -8,7 +8,7 @@ public class User implements Parcelable{
     int id = 0, supervisorId = 0, userTypeId = 0, departmentId = 0, companyId = 0, workSiteId = 0, projectId = 0, activityId = 0, taskActivityId = 0;
     String loginID = "", signOutAt = "", signInAt = "", firstName = "", lastName = "", fullName = "", loginCode = "",
             supervisor = "", userType = "", department = "", company = "", worksite = "", project = "", isSecurityPin = "",
-            nfcTagId = "", token = "",Email="",PhoneNumber="";
+            nfcTagId = "", token = "",Email="",PhoneNumber="",pin="1234";
     boolean referenceCount = false, isSignedIn = false, isNightShift = false, isActive;
     Double signedHours = Double.valueOf(0);
 
@@ -50,6 +50,7 @@ public class User implements Parcelable{
         isActive = in.readByte() != 0;
         Email=in.readString();
         PhoneNumber=in.readString();
+        pin=in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -322,6 +323,15 @@ public class User implements Parcelable{
         PhoneNumber = phoneNumber;
     }
 
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pinno) {
+        pin = pinno;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -360,5 +370,6 @@ public class User implements Parcelable{
         dest.writeByte((byte) (isActive ? 1 : 0));
         dest.writeString(Email);
         dest.writeString(PhoneNumber);
+        dest.writeString(pin);
     }
 }

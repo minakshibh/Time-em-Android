@@ -9,7 +9,6 @@ Deep Linking: 	Disabled*/
 
 
 import java.util.HashMap;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,10 +25,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
 
@@ -41,12 +42,13 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 	private TextView [] pinBoxArray;
 	private LinearLayout btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnDelete;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		userEntered = "";
-		
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_pin_authentication);
 		
@@ -178,7 +180,27 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 			mWebPageTask.execute();
 
 		} else {
-			Utils.alertMessage(PinAuthentication.this, Utils.network_error);
+
+			String json = Utils.getSharedPrefs(PinAuthentication.this, "user");
+			Gson gson = new Gson();
+			if(json != "")
+			HomeActivity.user = gson.fromJson(json, User.class);
+
+			if(HomeActivity.user != null && HomeActivity.user.getPin() !=""){
+				String _pin = HomeActivity.user.getPin();
+				if(pin.equals(_pin)){
+						Intent intent = new Intent(PinAuthentication.this, HomeActivity.class);
+						intent.putExtra("trigger", "pin");
+						startActivity(intent);
+						finish();
+
+				}else{
+				Utils.showToast(PinAuthentication.this, "Please enter a valid PIN");
+				}
+			}else{
+				Utils.alertMessage(PinAuthentication.this, Utils.network_error);
+
+			}
 		}
 	}
 	
@@ -193,8 +215,15 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		if(HomeActivity.user!=null)
 		{
 			Utils.saveInSharedPrefs(getApplicationContext(),"apiUserId",""+HomeActivity.user.getId());
-			}
-//		HomeActivity.user.setSignedIn(Boolean.valueOf((Utils.getSharedPrefs(PinAuthentication.this, "isSignedIn").equals(""))?"false":"true"));
+			Gson gson = new Gson();
+			String json = gson.toJson(HomeActivity.user);
+			Utils.saveInSharedPrefs(getApplicationContext(), "user" , json );
+			String json1 = Utils.getSharedPrefs(PinAuthentication.this, "user");
+			Gson gson1 = new Gson();
+			if(json != "")
+				HomeActivity.user = gson1.fromJson(json1, User.class);
+		}
+//		 HomeActivity.user.setSignedIn(Boolean.valueOf((Utils.getSharedPrefs(PinAuthentication.this, "isSignedIn").equals(""))?"false":"true"));
 //		 HomeActivity.user.setActivityId(Integer.parseInt((Utils.getSharedPrefs(PinAuthentication.this, "activityId").equals(""))?"0":Utils.getSharedPrefs(PinAuthentication.this, "activityId")));
 //		
 		if(HomeActivity.user != null){
@@ -204,6 +233,8 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 			 finish();
 		}else
 			Utils.showToast(PinAuthentication.this, "Please enter a valid PIN");
+
 	}
+
 }
 

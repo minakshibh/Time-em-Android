@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Locale;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -29,10 +32,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -56,7 +62,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private Time_emJsonParser parser;
     private int UserId;
     private ImageView addTaskButton, back;
-    private TextView headerText, currentDate;
+    private ImageButton calbutton;
+    private TextView headerText, currentDate,caldate;
     private Intent intent;
     private LinearLayout footer;
     private RecyclerView recyclerView;
@@ -75,6 +82,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
     //for graphs
     private LinearLayout mainLinearLayout, lay_date, lay_hours;
+
+    DatePickerDialog datePickerDialog;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -91,6 +101,24 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         context = getApplicationContext();
         // currentDate.setText(Utils.formatDateChange(selectedDate,"MM-dd-yyyy","EEE dd MMM, yyyy"));
         //  GetUserWorkSiteApi();
+
+        Calendar newCalendar = Calendar.getInstance();
+        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+
+                caldate.setVisibility(View.VISIBLE);
+                caldate.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+
+                apiDateFormater = new SimpleDateFormat("MM-dd-yyyy");
+                selectedDate = apiDateFormater.format(newDate.getTime());
+                getTaskList(selectedDate);
+
+            }
+
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
     }
 
     private void showTaskList() {
@@ -138,6 +166,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
         currentDate = (TextView) findViewById(R.id.currentDate);
         currentDate.setVisibility(View.VISIBLE);
+        caldate=(TextView) findViewById(R.id.caldate);
+        calbutton=(ImageButton) findViewById(R.id.calbutton);
 
 
           if(getIntent().getStringExtra("UserName")!=null) {
@@ -176,6 +206,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 // Utils.showToast(TaskListActivity.this, item.get(Calendar.DAY_OF_MONTH)+" "+weekDay+" Clicked");
 
                 selectedDate = apiDateFormater.format(item.getTime());
+                caldate.setVisibility(View.GONE);
                 getTaskList(selectedDate);
 
             }
@@ -204,13 +235,18 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         });
 
         taskListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
                 intent.putExtra("taskEntry", tasks.get(position));
                 startActivity(intent);
+            }
+        });
+
+        calbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.show();
             }
         });
     }
@@ -898,4 +934,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         backGroundColor_array.add("#7fff00");
 
     }
+
+
 }

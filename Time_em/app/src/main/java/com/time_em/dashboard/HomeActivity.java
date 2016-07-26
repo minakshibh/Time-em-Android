@@ -227,7 +227,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void registerDevice() {
-        if (Utils.isNetworkAvailable(HomeActivity.this)) {
+        //if (Utils.isNetworkAvailable(HomeActivity.this)) {
 
             String regId = GcmUtils.getRegistrationId(this);
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
@@ -242,13 +242,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
 
-        } else {
+       /* } else {
             Utils.alertMessage(HomeActivity.this, Utils.network_error);
-        }
+        }*/
     }
 
     private void fetchTaskGraphsData() {
-        if (Utils.isNetworkAvailable(HomeActivity.this)) {
+      //  if (Utils.isNetworkAvailable(HomeActivity.this)) {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("userid", "" + user.getId());
@@ -261,13 +261,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
 
-        } else {
+       /* } else {
             Utils.alertMessage(HomeActivity.this, Utils.network_error);
-        }
+        }*/
     }
 
     private void fetchGraphsSignInOut() {
-        if (Utils.isNetworkAvailable(HomeActivity.this)) {
+        //if (Utils.isNetworkAvailable(HomeActivity.this)) {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("userid", "" + user.getId());
@@ -280,9 +280,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
 
-        } else {
+       /* } else {
             Utils.alertMessage(HomeActivity.this, Utils.network_error);
-        }
+        }*/
     }
 
     private void firstGraphView() {
@@ -295,7 +295,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             public void onItemClick(TaskEntry item, int position) {
 
                // Utils.showToast(HomeActivity.this, item.getCreatedDate() + " Clicked");
-
             }
         });
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
