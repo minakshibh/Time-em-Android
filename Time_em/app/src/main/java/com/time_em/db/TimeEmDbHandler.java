@@ -1035,22 +1035,26 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	}
 
 	//for insert data Geo Graphs
-	public void updateGeoGraphData(String strUserId,String Alldata, String dateData) {
+	public void updateGeoGraphData(String strUserId,String Alldata, String str_dateData) {
 		// Fetch only records with selected Date
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
-				+ UserId +  "=\"" + strUserId + "\"";
+				+ UserId + "=" + strUserId + " AND " + DateData + "=\"" + str_dateData + "\"";
 
 				try {
 					ContentValues values = new ContentValues();
 					values.put(UserId, strUserId);
 					values.put(allData, String.valueOf(Alldata));
-					values.put(DateData, String.valueOf(dateData));
+					values.put(DateData, String.valueOf(str_dateData));
 
 					cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 					if (cursor.moveToFirst()) {
-						db.update(TABLE_GeoGraph, values, UserId + " = ?",new String[] { strUserId });
+						/*db.update(TABLE_NAME,
+								contentValues,
+								NAME + " = ? AND " + LASTNAME + " = ?",
+								new String[]{"Manas", "Bajaj"});*/
+						db.update(TABLE_GeoGraph, values, UserId + " = ? AND " + DateData + " = ?",new String[] { strUserId,str_dateData });
 					} else {
 						db.insert(TABLE_GeoGraph, null, values);
 					}

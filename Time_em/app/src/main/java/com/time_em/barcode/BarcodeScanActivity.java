@@ -197,7 +197,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
 
     private void getUserDetails(long userCode){
 
-        if (Utils.isNetworkAvailable(BarcodeScanActivity.this)) {
+       // if (Utils.isNetworkAvailable(BarcodeScanActivity.this)) {
         //http://timeemapi.azurewebsites.net/api/User/GetUsersListByLoginCode?Logincode=9105
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("Logincode", String.valueOf(userCode));
@@ -208,13 +208,13 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             mWebPageTask.delegate = (AsyncResponseTimeEm) BarcodeScanActivity.this;
             mWebPageTask.execute();
 
-        } else {
-            Utils.alertMessage(BarcodeScanActivity.this, Utils.network_error);
-        }
+        //} else {
+           // Utils.alertMessage(BarcodeScanActivity.this, Utils.network_error);
+       // }
     }
     private void getUserDetailsNFC(String nfcTagId){
 
-        if (Utils.isNetworkAvailable(BarcodeScanActivity.this)) {
+      //  if (Utils.isNetworkAvailable(BarcodeScanActivity.this)) {
            // http://timeemapi.azurewebsites.net/api/User/GetUsersListByTagId
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("NFCTagId",nfcTagId);//"0404b672973c81"
@@ -226,9 +226,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
             mWebPageTask.delegate = (AsyncResponseTimeEm) BarcodeScanActivity.this;
             mWebPageTask.execute();
 
-        } else {
+       /* } else {
             Utils.alertMessage(BarcodeScanActivity.this, Utils.network_error);
-        }
+        }*/
     }
 
     public class ListAdapter extends BaseAdapter {
