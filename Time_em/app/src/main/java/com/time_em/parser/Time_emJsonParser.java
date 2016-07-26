@@ -99,7 +99,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			teamList = new ArrayList<User>();
 			e.printStackTrace();
-			Utils.showToast(context, e.getMessage());
+			//Utils.showToast(context, e.getMessage());
 		}
 
 		//if(isError)
@@ -180,7 +180,7 @@ public class Time_emJsonParser {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		Utils.showToast(context, message);
+		//Utils.showToast(context, message);
 		return isError;
 	}
 
@@ -279,8 +279,8 @@ public class Time_emJsonParser {
 			//Utils.showToast(context, e.getMessage());
 		}
 
-		if(isError)
-			Utils.showToast(context, message);
+		//if(isError)
+			//Utils.showToast(context, message);
 
 		return taskList;
 	}
@@ -347,8 +347,8 @@ public class Time_emJsonParser {
 			//Utils.showToast(context, e.getMessage());
 		}
 
-		if(isError)
-			Utils.showToast(context, message);
+		//if(isError)
+		//	Utils.showToast(context, message);
 
 		return userList;
 	}

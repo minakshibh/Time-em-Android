@@ -331,7 +331,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 task.setIsActive(true);
                                 task.setAttachmentImageFile(fileUtils.getAttachmentPath());
                                 task.setIsoffline("true");
-                                task.setCreatedDate(selectedDate);
+                                String taskDate=selectedDate;
+                                  try {
+                                      taskDate = Utils.formatDateChange(selectedDate,"MM-dd-yyyy", "dd/MM/yyyy hh:mm:ss");
+                                  }catch (Exception e)
+                                  {e.printStackTrace();}
+                                task.setCreatedDate(taskDate);
                                 task.setToken("00");
                                 // task.setEndTime(taskObject.getString("EndTime"));
                                 // task.setStartTime(taskObject.getString("StartTime"));

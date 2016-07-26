@@ -946,7 +946,12 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         ArrayList<HashMap<String, String>> arrayHashMap = new ArrayList<>();
         for (int i = 0; i < tasks.size(); i++) {
             HashMap<String, String> parameters = new HashMap<String, String>();
-            parameters.put("CreatedDate", tasks.get(i).getCreatedDate());
+            String taskDate="";
+            try {
+                taskDate = Utils.formatDateChange(tasks.get(i).getCreatedDate(),"dd/MM/yyyy hh:mm:ss","MM-dd-yyyy");
+            }catch (Exception e)
+            {e.printStackTrace();}
+            parameters.put("CreatedDate", taskDate);
             parameters.put("Comments", "" + tasks.get(i).getComments());
             parameters.put("UserId", "" + tasks.get(i).getUserId());
             parameters.put("TaskId", "" + tasks.get(i).getTaskId());
@@ -1005,7 +1010,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 jsonObject.put("notifications", jsonArray_NotificationData);
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(HomeActivity.this, "Someting Wrong, try again", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Somthing Wrong, try again", Toast.LENGTH_LONG).show();
             }
 
 
