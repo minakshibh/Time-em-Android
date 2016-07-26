@@ -17,6 +17,7 @@ import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.model.WorkSiteList;
+import com.time_em.utils.Utils;
 
 public class TimeEmDbHandler extends SQLiteOpenHelper {
 
@@ -182,7 +183,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
 
 		String CREATE_GEO_GRAPHS = "CREATE TABLE if NOT Exists " + TABLE_GeoGraph
-				+ "(" + allData + " TEXT," + DateData + " TEXT)";
+				+ "(" + UserId + " TEXT,"+ allData + " TEXT," + DateData + " TEXT)";
 
 		String CREATE_USERTASK = "CREATE TABLE if NOT Exists " + TABLE_USERTASK
 				+ "(" + CreatedDate + " TEXT," + TimeSpent + " TEXT)";
@@ -298,14 +299,21 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(TaskName, taskEntry.getTaskName());
 				values.put(Comments, taskEntry.getComments());
 				values.put(StartTime, taskEntry.getStartTime());
-				values.put(CreatedDate, taskEntry.getCreatedDate());
-				values.put(EndTime, taskEntry.getEndTime());
+				values.put(CreatedDate,taskEntry.getCreatedDate());
+			    values.put(EndTime, taskEntry.getEndTime());
 				values.put(SelectedDate, taskEntry.getSelectedDate());
 				values.put(Token, taskEntry.getToken());
 				values.put(AttachmentImageFile, taskEntry.getAttachmentImageFile());
 				values.put(TimeSpent, String.valueOf(taskEntry.getTimeSpent()));
 				values.put(SignedInHours,String.valueOf(taskEntry.getSignedInHours()));
-				values.put(TaskDate,taskDate);
+				String taskDate1="";
+				//CreateDate//27/06/2016 00:00:00
+				try {
+					taskDate1 = Utils.formatDateChange(taskEntry.getCreatedDate(), "dd/MM/yyyy hh:mm:ss", "MM-dd-yyyy");
+				}catch (Exception e)
+				{e.printStackTrace();}
+
+				values.put(TaskDate,taskDate1);
 				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
 				values.put(UniqueNumber,String.valueOf(taskEntry.getUniqueNumber()));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
@@ -1027,41 +1035,44 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	}
 
 	//for insert data Geo Graphs
-	public void updateGeoGraphData(String Alldata, String dateData) {
+	public void updateGeoGraphData(String strUserId,String Alldata, String dateData) {
 		// Fetch only records with selected Date
 
 		SQLiteDatabase db = this.getWritableDatabase();
-		//for (int i = 0; i < taskList.size(); i++) {
-		//	for (int j = 0; j < taskList.get(i).getArraylist_WorkSiteList().size(); j++) {
-				//UserWorkSite taskEntry = taskList.get(i).getArraylist_WorkSiteList().get(j);
+		String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
+				+ UserId +  "=\"" + strUserId + "\"";
 
 				try {
 					ContentValues values = new ContentValues();
+					values.put(UserId, strUserId);
 					values.put(allData, String.valueOf(Alldata));
-				/*	values.put(workSiteName, String.valueOf(taskList.get(i).getArraylist_WorkSiteList().get(j).getWorkSiteName()));
-					values.put(UserId, String.valueOf(userId));
-					values.put(hoursCount, String.valueOf(taskList.get(i).getArraylist_WorkSiteList().get(j).getWorkingHour()));
-					values.put(InTime, String.valueOf(taskList.get(i).getArraylist_WorkSiteList().get(j).getTimeIn()));
-					values.put(OutTime, String.valueOf(taskList.get(i).getArraylist_WorkSiteList().get(j).getTimeOut()));*/
 					values.put(DateData, String.valueOf(dateData));
-					db.insert(TABLE_GeoGraph, null, values);
+
+					cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+					if (cursor.moveToFirst()) {
+						db.update(TABLE_GeoGraph, values, UserId + " = ?",new String[] { strUserId });
+					} else {
+						db.insert(TABLE_GeoGraph, null, values);
+					}
+
 
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			//}
+
 			db.close();
-		//}
+
 	}
 
 
 		//for insert data Geo Graphs
-	public ArrayList<UserWorkSite> getGeoGraphData() {
+	public ArrayList<UserWorkSite> getGeoGraphData(String strUserId) {
 		// Fetch only records with selected Date
 
 		ArrayList<UserWorkSite> types = new ArrayList<UserWorkSite>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph;
+		String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
+				+ UserId +  "=\"" + strUserId + "\"";
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
@@ -1069,6 +1080,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			if (cursor.moveToFirst()) {
 				do {
 					UserWorkSite type = new UserWorkSite();
+					type.setUserId(cursor.getString(cursor.getColumnIndex(UserId)));
 					type.setDate(cursor.getString(cursor.getColumnIndex(DateData)));
   				    type.setAllData(cursor.getString(cursor.getColumnIndex(allData)));
 					types.add(type);

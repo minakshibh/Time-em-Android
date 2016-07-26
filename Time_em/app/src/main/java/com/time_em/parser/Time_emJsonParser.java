@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.SyncData;
@@ -726,7 +727,7 @@ public class Time_emJsonParser {
 
 	public ArrayList<UserWorkSite> getUserListWorkSite(String webResponse){
 		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
-		//ArrayList<mutiUserworkSiteList> multiUserarrayUserWorkSite= null;
+		ArrayList<mutiUserworkSiteList> multiUserarrayUserWorkSite= null;
 		ArrayList<WorkSiteList> arrayWorkSiteList= null;
 
 		try{
@@ -735,32 +736,46 @@ public class Time_emJsonParser {
 			for(int j = 0; j<mainArray.length(); j++) {
 				UserWorkSite userWorkSite=new UserWorkSite();
 
+
 				jObject = mainArray.getJSONObject(j);
-				arrayWorkSiteList= new ArrayList<WorkSiteList>();
+
+				multiUserarrayUserWorkSite=new ArrayList<>();
 				JSONArray jArray = jObject.getJSONArray("mutiUserworkSiteList");
-				userWorkSite.setUserId(jObject.getString("UserId"));
+
 
 				for (int i = 0; i < jArray.length(); i++) {
 
+
+
 					JSONObject userObject = jArray.getJSONObject(i);
-					JSONArray jArray2 = jObject.getJSONArray("workSiteList");
-					userWorkSite.setDate(userObject.getString("CreatedDate"));
+
+					JSONArray jArray2 = userObject.getJSONArray("workSiteList");
+
+					arrayWorkSiteList= new ArrayList<WorkSiteList>();
 
 					for(int k =0; k < jArray2.length();k++){
 						JSONObject userObject2 = jArray2.getJSONObject(i);
 						WorkSiteList workSiteList = new WorkSiteList();
-						//workSiteList.setWorkSiteId(userObject2.getString("WorkSiteId"));
-						//workSiteList.setWorkSiteName(userObject2.getString("WorkSiteName"));
-						//workSiteList.setWorkingHour(userObject2.getString("WorkingHour"));
-						//workSiteList.setTimeIn(userObject2.getString("TimeIn"));
-						//workSiteList.setTimeOut(userObject2.getString("TimeOut"));
+						workSiteList.setWorkSiteId(userObject2.getString("WorkSiteId"));
+						workSiteList.setWorkSiteName(userObject2.getString("WorkSiteName"));
+						workSiteList.setWorkingHour(userObject2.getString("WorkingHour"));
+						workSiteList.setTimeIn(userObject2.getString("TimeIn"));
+						workSiteList.setTimeOut(userObject2.getString("TimeOut"));
 						arrayWorkSiteList.add(workSiteList);
 
 					}
+					mutiUserworkSiteList userworkSiteList=new mutiUserworkSiteList();
+					userworkSiteList.setDate(userObject.getString("CreatedDate"));
+					userworkSiteList.setArraylist_WorkSiteList(arrayWorkSiteList);
+					multiUserarrayUserWorkSite.add(userworkSiteList);
+
 				}
-				userWorkSite.setArraylist_WorkSiteList(arrayWorkSiteList);
-				userWorkSite.setDate(jObject.getString("CreatedDate"));
+				//userWorkSite.setArraylist_WorkSiteList(arrayWorkSiteList);
+				userWorkSite.setArraylist_multiUserWorkSiteList(multiUserarrayUserWorkSite);
+				userWorkSite.setUserId(jObject.getString("UserId"));
+				//userWorkSite.setDate(jObject.getString("CreatedDate"));
 				arrayUserWorkSite.add(userWorkSite);
+
 			}
 
 		}catch (Exception e) {

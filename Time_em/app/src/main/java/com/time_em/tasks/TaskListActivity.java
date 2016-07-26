@@ -116,9 +116,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         addButton.setVisibility(View.GONE);
 
 
+        try{
+            UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
+        }catch (Exception e){}
         //fetch from data base
         dbHandler = new TimeEmDbHandler(TaskListActivity.this);
-        ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraphData();
+        ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraphData(""+UserId);
         fetchDataGraphs(array_workSite);
 
     }
@@ -409,6 +412,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             boolean error = parser.parseDeleteTaskResponse(output);
             if (!error) {
                 getTaskList(selectedDate);
+
             }
         }
 

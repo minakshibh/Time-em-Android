@@ -43,6 +43,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 	private RecyclerView recyclerView;
 	private TimeEmDbHandler dbHandler;
 	private int array_position=0;
+	private String SelectedUserId="";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+				SelectedUserId="" + team.get(position).getId();
 				array_position = position;
 				GetUserWorkSiteApi("" + team.get(position).getId());
 
@@ -238,12 +240,12 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		else if (methodName.contains(Utils.GetUserWorksiteActivity)) {
 			parser = new Time_emJsonParser(UserListActivity.this);
 			ArrayList<UserWorkSite> array_worksite = parser.getUserWorkSite(output);
-			dbHandler.deleteGeoGraphs();
+
 			for(int i=0;i<array_worksite.size();i++) {
 				Gson gson = new Gson();
 				// This can be any object. Does not have to be an arraylist.
 				String allData = gson.toJson(array_worksite.get(i).getArraylist_WorkSiteList());
-				dbHandler.updateGeoGraphData(allData, array_worksite.get(i).getDate());
+				dbHandler.updateGeoGraphData(SelectedUserId,allData, array_worksite.get(i).getDate());
 
 			}
 			goToNext();

@@ -70,6 +70,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private LinearLayout AddWigdetView;
     private TextView AddNewWidgetTextVew;
 
+
     private Time_emJsonParser parser;
     private Double maxValueTask = 0.0, maxValueSignInOut = 0.0;
     private TabLayout tabLayout;
@@ -118,6 +119,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             loadNotificationTypes();
             loadRecipients();
             getUserList(user.getId());
+            getNotificationList();
             resolver.pref().setApiCheck(false);
         }
 
@@ -399,7 +401,30 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         // Utils.alertMessage(SendNotification.this, Utils.network_error);
         //}
     }
+    private void getNotificationList() {
 
+        // if (Utils.isNetworkAvailable(NotificationListActivity.this)) {
+
+        String timeStamp = Utils.getSharedPrefs(HomeActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.notificationTimeStampStr));
+        if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
+            timeStamp = "";
+
+        HashMap<String, String> postDataParameters = new HashMap<String, String>();
+
+        postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
+        postDataParameters.put("timeStamp", timeStamp);
+
+        Log.e("ss","ss"+postDataParameters.toString());
+        AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                HomeActivity.this, "post", Utils.GetNotificationAPI,
+                postDataParameters, true, "Please wait...");
+        mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
+        mWebPageTask.execute();
+
+        //} else {
+        //  Utils.alertMessage(NotificationListActivity.this, Utils.network_error);
+        // }
+    }
     private void getUserList(int userId){
 
             String timeStamp = Utils.getSharedPrefs(HomeActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
@@ -798,7 +823,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 selectedSpinnerValue(spnProject);
             }*/
         } else if (methodName.equals(Utils.getTaskListAPI)) {
-            ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, Integer.parseInt(resolver.pref().GetUserId()), "");
+            String  UserId =   Utils.getSharedPrefs(getApplicationContext(),"apiUserId");
+            ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, Integer.parseInt(UserId), "0");
 
             dbHandler.updateTask(taskEntries, "", false);
 
@@ -817,16 +843,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         } else if (methodName.equals(Utils.getActiveUserList)) {
             ArrayList<User> userList = parser.parseActiveUsers(output);
 
-            String userid="";
-            for(int i=0;i<userList.size();i++) {
-                userid=userid+userList.get(i).getId();
-                if(i != userList.size()-1){
-                    userid=userid+",";
-                }
-            }
-            Log.e("StringGeneration",userid);
-            GetUserListWorkSite(userid);
-
             dbHandler.updateActiveUsers(userList);
             //userList = dbHandler.getActiveUsers();
         } else if(methodName.equals(Utils.getTeamAPI)) {
@@ -834,6 +850,16 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             ArrayList<User> teamMembers = parser.getTeamList(output, methodName);
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
             dbHandler.updateTeam(teamMembers);
+
+            String userid="";
+            for(int i=0;i<teamMembers.size();i++) {
+                userid=userid+teamMembers.get(i).getId();
+                if(i != teamMembers.size()-1){
+                    userid=userid+",";
+                }
+            }
+            Log.e("StringGeneration",userid);
+            GetUserListWorkSite(userid);
 
            // team = dbHandler.getTeam(HomeActivity.user.getId());
            // taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
@@ -844,14 +870,25 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             Log.e("Array_Worksite",array_worksite.toString());
 
             dbHandler.deleteGeoGraphs();
-            for(int i=0;i<array_worksite.size();i++) {
-                Gson gson = new Gson();
-                // This can be any object. Does not have to be an arraylist.
-                String allData = gson.toJson(array_worksite.get(i).getArraylist_WorkSiteList());
-               // dbHandler.updateGeoGraphData2(allData, array_worksite.get(i).getDate());
+            String userId="";
+            for(int k=0;k<array_worksite.size();k++) {
+                userId = array_worksite.get(k).getUserId();
 
+                for (int i = 0; i < array_worksite.get(k).getArraylist_multiUserWorkSiteList().size(); i++) {
+                    Gson gson = new Gson();
+                    // This can be any object. Does not have to be an arraylist.
+                    String allData = gson.toJson(array_worksite.get(k).getArraylist_multiUserWorkSiteList().get(i).getArraylist_WorkSiteList());
+                    String str_Date=array_worksite.get(k).getArraylist_multiUserWorkSiteList().get(i).getDate();
+                    dbHandler.updateGeoGraphData(userId, allData,str_Date );
+
+                }
             }
 
+        }
+        else if(methodName.equalsIgnoreCase(Utils.GetNotificationAPI))
+        {
+            notifications = parser.parseNotificationList(output);
+            dbHandler.updateNotifications(notifications);
         }
 
     }
