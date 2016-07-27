@@ -186,7 +186,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 			if(json != "")
 			HomeActivity.user = gson.fromJson(json, User.class);
 
-			if(HomeActivity.user != null && HomeActivity.user.getPin() !=""){
+			if(HomeActivity.user != null && HomeActivity.user.getPin() != null){
 				String _pin = HomeActivity.user.getPin();
 				if(pin.equals(_pin)){
 						Intent intent = new Intent(PinAuthentication.this, HomeActivity.class);
@@ -215,13 +215,10 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		if(HomeActivity.user!=null)
 		{
 			Utils.saveInSharedPrefs(getApplicationContext(),"apiUserId",""+HomeActivity.user.getId());
-			Gson gson = new Gson();
-			String json = gson.toJson(HomeActivity.user);
-			Utils.saveInSharedPrefs(getApplicationContext(), "user" , json );
-			String json1 = Utils.getSharedPrefs(PinAuthentication.this, "user");
-			Gson gson1 = new Gson();
-			if(json != "")
-				HomeActivity.user = gson1.fromJson(json1, User.class);
+			//Gson gson = new Gson();
+			//String json = gson.toJson(HomeActivity.user);
+			//Utils.saveInSharedPrefs(getApplicationContext(), "user" , json );
+
 		}
 //		 HomeActivity.user.setSignedIn(Boolean.valueOf((Utils.getSharedPrefs(PinAuthentication.this, "isSignedIn").equals(""))?"false":"true"));
 //		 HomeActivity.user.setActivityId(Integer.parseInt((Utils.getSharedPrefs(PinAuthentication.this, "activityId").equals(""))?"0":Utils.getSharedPrefs(PinAuthentication.this, "activityId")));

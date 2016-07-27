@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
@@ -110,6 +111,9 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 
 			 //saved userId into SharedPrefs
 			 Utils.saveInSharedPrefs(getApplicationContext(),"apiUserId",""+HomeActivity.user.getId());
+			 Gson gson = new Gson();
+			 String json = gson.toJson(HomeActivity.user);
+			 Utils.saveInSharedPrefs(getApplicationContext(), "user" , json );
 
 			 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
 			 intent.putExtra("trigger", "login");

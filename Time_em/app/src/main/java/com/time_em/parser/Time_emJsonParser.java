@@ -140,6 +140,7 @@ public class Time_emJsonParser {
 				user.setSignedIn(jObject.getBoolean("IsSignIn"));
 				user.setEmail(jObject.getString("Email"));
 				user.setPhoneNumber(jObject.getString("PhoneNumber"));
+				user.setPin(jObject.getString("Pin"));
 
 			}else{
 				user.setActive(jObject.getBoolean("isActive"));

@@ -74,11 +74,11 @@ public class GcmIntentService extends IntentService {
 
         ComponentName componentInfo = taskInfo.get(0).topActivity;
 
-        if (componentInfo.getPackageName().equalsIgnoreCase("com.time_em.android")) {
+        /*if (componentInfo.getPackageName().equalsIgnoreCase("com.time_em.android")) {
             Log.e(TAG, "app open");
-        } else {
+        } else {*/
             generateNotification(getApplicationContext(),message);
-        }
+     //   }
     }
 
     private void generateNotification(Context context, String message) {

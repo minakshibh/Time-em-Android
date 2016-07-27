@@ -39,7 +39,7 @@
                     android:src="@drawable/envelope_outline"
                     android:layout_alignParentLeft="true"/>
 
-                <Spinner
+                <com.time_em.tasks.MySpinner
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/notTypeIcon"

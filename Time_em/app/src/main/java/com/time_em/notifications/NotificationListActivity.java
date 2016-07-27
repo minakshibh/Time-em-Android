@@ -23,6 +23,7 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.inappbilling.PurchaseActivity;
+import com.time_em.inappbilling.util.Purchase;
 import com.time_em.model.Notification;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
@@ -120,7 +121,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             }else if(v == sendNotification){
                 String purchase=Utils.getSharedPrefs(getApplicationContext(),"notification_purchase");
                 if(purchase.equalsIgnoreCase("")){
-                Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);
+                Intent intent = new Intent(NotificationListActivity.this, PurchaseActivity.class);
                 startActivity(intent);
                 }else{
                     Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);

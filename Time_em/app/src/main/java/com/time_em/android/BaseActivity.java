@@ -134,6 +134,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 					mDrawerLayout.closeDrawers();
 				}
 				Utils.clearPreferences(BaseActivity.this);
+				new DependencyResolver(getApplicationContext()).pref().setApiCheck(true);
 
 				TimeEmDbHandler dbHandler = new TimeEmDbHandler(BaseActivity.this);
 

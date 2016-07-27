@@ -1,13 +1,16 @@
 package com.time_em.tasks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.preference.DialogPreference;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
@@ -42,7 +46,7 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader;
-    private Spinner spnProject;
+    private MySpinner spnProject;
     private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete;
     private LinearLayout recipientSection, uploadAttachment;
     private Button addUpdateTask;
@@ -82,7 +86,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         comments = (EditText) findViewById(R.id.subject);
         txtHoursHeader = (TextView) findViewById(R.id.MessageTxt);
         hours = (EditText) findViewById(R.id.message);
-        spnProject = (Spinner) findViewById(R.id.spnNotificationType);
+        spnProject = (MySpinner) findViewById(R.id.spnNotificationType);
         hoursIcon = (ImageView) findViewById(R.id.messageIcon);
         uploadedImage = (ImageView) findViewById(R.id.uploadedImage);
         uploadedVideo=(JCVideoPlayerStandard)findViewById(R.id.uploadedVideo);
@@ -100,7 +104,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         selectedDate = getIntent().getStringExtra("selectDate");
         taskEntry = getIntent().getParcelableExtra("taskEntry");
-        UserId=getIntent().getStringExtra("UserId");
+        UserId = getIntent().getStringExtra("UserId");
 
         imgdelete.setVisibility(View.GONE);
         videodelete.setVisibility(View.GONE);
@@ -192,8 +196,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             {
                String value=""+assignedTasks.get(i).getId();
                     if(taskId.equalsIgnoreCase(value)) {
+                        if(assignedTasks.get(i).getId() != 0)
                         sp.setSelection(i);
-                       // return;
+                        // return;
                     }
             }
         }
@@ -206,16 +211,16 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         imgdelete.setOnClickListener(listener);
         videodelete.setOnClickListener(listener);
         // You can create an anonymous listener to handle the event when is selected an spinner item
-        spnProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        spnProject.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 // Here you get the current item (a User object) that is selected by its position
                 selectedSpinnerData = adapter.getItem(position);
                 // Here you can do the action you want to...
-//                selectedProjectId = String.valueOf(project.getId());
+                // selectedProjectId = String.valueOf(project.getId());
                 //for add new task
-                if(selectedSpinnerData.getId()==0){
-                    if(taskEntry==null)
+                if (selectedSpinnerData.getId() == 0) {
                     showAddNewTask();
                 }
             }
@@ -501,7 +506,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                         }
                     }
                 })
-                .setNegativeButton("Cancel", null);
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        newTaskName = taskEntry.getTaskName();
+
+                    }
+                });
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -531,5 +541,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         super.onPause();
        // uploadedVideo.setTop(0);
     }
+
 
 }

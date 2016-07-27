@@ -8,7 +8,7 @@ public class User implements Parcelable{
     int id = 0, supervisorId = 0, userTypeId = 0, departmentId = 0, companyId = 0, workSiteId = 0, projectId = 0, activityId = 0, taskActivityId = 0;
     String loginID = "", signOutAt = "", signInAt = "", firstName = "", lastName = "", fullName = "", loginCode = "",
             supervisor = "", userType = "", department = "", company = "", worksite = "", project = "", isSecurityPin = "",
-            nfcTagId = "", token = "",Email="",PhoneNumber="",pin="1234";
+            nfcTagId = "", token = "",Email="",PhoneNumber="",pin="";
     boolean referenceCount = false, isSignedIn = false, isNightShift = false, isActive;
     Double signedHours = Double.valueOf(0);
 
