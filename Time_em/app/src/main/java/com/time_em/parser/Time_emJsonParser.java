@@ -82,9 +82,9 @@ public class Time_emJsonParser {
 			isError = jObject.getBoolean("IsError");
 			message = jObject.getString("Message");
 			timeStamp = jObject.getString("TimeStamp");
-			
+
 			JSONArray teamArray = jObject.getJSONArray("AppUserViewModel");
-			
+
 			for(int i = 0; i<teamArray.length(); i++){
 				User user = parseJson(teamArray.getJSONObject(i), method);
 				teamList.add(user);
@@ -201,7 +201,7 @@ public class Time_emJsonParser {
 				JSONObject taskObject = jArray.getJSONObject(i);
 				Notification notification = new Notification();
 				notification.setNotificationId(taskObject.getInt("NotificationId"));
-				notification.setSenderId(taskObject.getInt("Senderid"));
+				notification.setSenderId(taskObject.getString("Senderid"));
 				notification.setNotificationType(taskObject.getString("NotificationTypeName"));
 				notification.setAttachmentPath(taskObject.getString("AttachmentFullPath"));
 				notification.setSubject(taskObject.getString("Subject"));
@@ -223,7 +223,7 @@ public class Time_emJsonParser {
 		}
 
 		//if(isError)
-			//Utils.showToast(context, message);
+		//Utils.showToast(context, message);
 
 		return notificationList;
 	}

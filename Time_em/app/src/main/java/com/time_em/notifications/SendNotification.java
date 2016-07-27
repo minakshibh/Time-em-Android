@@ -176,7 +176,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                             fileUtils.sendMultipartRequest(sendNotificationAPI, dataModels);*/
                         }
                     else {
-                        // Insert the string into db.
+                        // Insert the string into db .
 
                         Notification notification = new Notification();
                         notification.setAttachmentPath(fileUtils.getAttachmentPath());
@@ -185,7 +185,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                         notification.setMessage(message.getText().toString());
                         notification.setNotificationId(0);
                         notification.setNotificationTypeId(Integer.parseInt(selectedNotificationTypeId));
-                        notification.setSenderId(Integer.parseInt(selectedIds));
+                        notification.setSenderId(selectedIds);
                         notification.setNotificationType(selectedNotificationTypeName);
                         notification.setCreatedDate(getCurrentDate());
                         notification.setSenderFullName(selectedUsers);

@@ -440,8 +440,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 					Notification notification = new Notification();
 					notification.setNotificationId(Integer.valueOf(cursor.getString(cursor
 							.getColumnIndex(NotificationId))));
-					notification.setSenderId(Integer.valueOf(cursor
-							.getString(cursor.getColumnIndex(SenderId))));
+					notification.setSenderId(cursor
+							.getString(cursor.getColumnIndex(SenderId)));
 					notification.setNotificationType(cursor.getString(cursor
 							.getColumnIndex(NotificationType)));
 					notification.setAttachmentPath(cursor.getString(cursor

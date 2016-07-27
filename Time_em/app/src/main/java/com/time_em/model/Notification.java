@@ -5,15 +5,15 @@ import android.os.Parcelable;
 
 public class Notification  implements Parcelable{
 
-    int notificationId, senderId,UserId,notificationTypeId;
-    String notificationType, attachmentPath, subject, message, createdDate, senderFullName,TimeZone,IsOffline,UniqueNumber;
+    int notificationId,UserId,notificationTypeId;
+    String notificationType, attachmentPath, subject, message, createdDate, senderFullName,TimeZone,IsOffline,UniqueNumber,senderId;
 
     public Notification(){
 
     }
     protected Notification(Parcel in) {
         notificationId = in.readInt();
-        senderId = in.readInt();
+        senderId = in.readString();
         notificationType = in.readString();
         attachmentPath = in.readString();
         subject = in.readString();
@@ -30,7 +30,7 @@ public class Notification  implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(notificationId);
-        dest.writeInt(senderId);
+        dest.writeString(senderId);
         dest.writeString(notificationType);
         dest.writeString(attachmentPath);
         dest.writeString(subject);
@@ -110,11 +110,11 @@ public class Notification  implements Parcelable{
         this.notificationId = notificationId;
     }
 
-    public int getSenderId() {
+    public String getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(int senderId) {
+    public void setSenderId(String senderId) {
         this.senderId = senderId;
     }
 

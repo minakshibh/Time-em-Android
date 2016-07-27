@@ -94,7 +94,7 @@ public class UserSelectionActivity extends Activity {
                             selectedUsers = selectedUsers + userList.get(i).getFullName();
                         }else {
                             _users = _users + "," +  userList.get(i).getId();
-                            selectedUsers = "," + selectedUsers + userList.get(i).getFullName();
+                            selectedUsers =   selectedUsers + "," + userList.get(i).getFullName();
                         }
                     }
                 }
