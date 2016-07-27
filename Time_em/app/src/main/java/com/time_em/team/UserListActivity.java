@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 	private TimeEmDbHandler dbHandler;
 	private int array_position=0;
 	private String SelectedUserId="";
+	private ImageButton calbutton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,8 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		back = (ImageView)findViewById(R.id.back);
 		addTask = (ImageView) findViewById(R.id.AddButton);
 		headerText = (TextView)findViewById(R.id.headerText);
+		calbutton = (ImageButton) findViewById(R.id.calbutton);
+		calbutton.setVisibility(View.GONE);
 		recyclerView.setVisibility(View.GONE);
 		swipeInfo.setText("Swipe left to Sign In/ Out some user");
 		addTask.setVisibility(View.GONE);

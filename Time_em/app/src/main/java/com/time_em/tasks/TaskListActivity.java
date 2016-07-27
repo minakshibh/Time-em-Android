@@ -82,7 +82,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
     //for graphs
     private LinearLayout mainLinearLayout, lay_date, lay_hours;
-
+    DateSliderAdapter adapter;
     DatePickerDialog datePickerDialog;
 
     /**
@@ -115,6 +115,18 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 apiDateFormater = new SimpleDateFormat("MM-dd-yyyy");
                 selectedDate = apiDateFormater.format(newDate.getTime());
                 getTaskList(selectedDate);
+
+                for(int i=0;i<arrayList.size()-1;i++){
+                    Calendar cal1 = arrayList.get(i);
+                    if(cal1.get(Calendar.YEAR) == newDate.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.DAY_OF_YEAR) == newDate.get(Calendar.DAY_OF_YEAR))
+                    {
+                        selectedPos = i;
+                        adapter.notifyDataSetChanged();
+                        recyclerView.scrollToPosition(i);
+
+                    }
+                }
 
             }
 
@@ -177,6 +189,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             try{
                 UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
             }catch (Exception e){}
+              calbutton.setVisibility(View.GONE);
         }
         else{
             headerText.setText("My Tasks");
@@ -197,7 +210,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         dayFormatter = new SimpleDateFormat("E", Locale.US);
 
 
-        DateSliderAdapter adapter = new DateSliderAdapter(arrayList, new OnItemClickListener() {
+         adapter = new DateSliderAdapter(arrayList, new OnItemClickListener() {
             @Override
             public void onItemClick(Calendar item, int position) {
                 String weekDay;
@@ -268,6 +281,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             calendar.add(Calendar.DAY_OF_YEAR, i);
             arrayList.add(calendar);
         }
+
     }
 
     private void getTaskList(String createdDate) {
@@ -664,8 +678,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     String value=null,valueIn=null,valueOut=null;
                     value = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkingHour();
 
-                     valueIn = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeIn();
-                     valueOut = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeOut();
+                    valueIn = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeIn();
+                    valueOut = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeOut();
                     Log.e("hours", "hours=" + value+" valueIn=" + valueIn+" valueOut=" + valueOut);
 
 
