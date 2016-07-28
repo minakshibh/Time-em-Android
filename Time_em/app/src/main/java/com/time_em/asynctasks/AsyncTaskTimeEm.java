@@ -95,7 +95,7 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 			
 			Toast.makeText(activity, "Something went wrong. Please try again..", Toast.LENGTH_LONG).show();	
 		}else{
-			Toast.makeText(activity, result, Toast.LENGTH_LONG).show();
+			//Toast.makeText(activity, result, Toast.LENGTH_LONG).show();
 			delegate.processFinish(result, methodName);
 		}
 			
