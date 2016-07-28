@@ -1041,7 +1041,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     String.valueOf(syncData.getArray_taks().get(i).getId()), MultipartDataModel.STRING_TYPE));
             dataModels.add(new MultipartDataModel("FileUploadFor", "usertaskactivity", MultipartDataModel.STRING_TYPE));
 
-            ImagePath = "";
             for (int j = 0; j < tasks.size(); j++) {
 
                 //   Log.e("parser un",""+syncData.getArray_taks().get(i).getUniqueNumber());
@@ -1052,8 +1051,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     ImagePath = tasks.get(j).getAttachmentImageFile();
                 }
             }
-            if (ImagePath != null)
+            if (ImagePath != null) {
                 dataModels.add(new MultipartDataModel("profile_picture", ImagePath, MultipartDataModel.FILE_TYPE));
+            }
             Log.e("send task", "send task" + ImagePath);
 
             fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
@@ -1076,9 +1076,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     ImagePath = notifications.get(j).getAttachmentPath();
                 }
             }
-            if
-                    (ImagePath != null)
+                 if(ImagePath != null) {
                 dataModels.add(new MultipartDataModel("profile_picture", ImagePath, MultipartDataModel.FILE_TYPE));
+            }
 
             Log.e("send notification", "send notification" + ImagePath);
             fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
