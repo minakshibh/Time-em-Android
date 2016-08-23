@@ -37,6 +37,7 @@ import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.FileUtils;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.SpinnerTypeAdapter;
 import com.time_em.utils.Utils;
 import java.util.ArrayList;
@@ -238,7 +239,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             int getSPrefsId=0;
             Double intHours=0.0;
             try {
-                getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(), "apiUserId"));
+                getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID));
                 intHours=Double.parseDouble(hours.getText().toString().trim());
             }catch(Exception e)
             {
@@ -388,7 +389,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private void loadProjects() {
        //   if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
-            int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
+            int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID));
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
             postDataParameters.put("userId", String.valueOf(getSPrefsId));

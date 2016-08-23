@@ -49,6 +49,7 @@ import com.time_em.model.Widget;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.FileUtils;
 import com.time_em.utils.GcmUtils;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.SpinnerTypeAdapter;
 import com.time_em.utils.Utils;
 import org.json.JSONArray;
@@ -61,7 +62,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     public DependencyResolver resolver;
     public static User user;
     private LinearLayout changeStatus;
-    private String trigger;
+    private String trigger="";
     private ImageView userStatus, imgStatus;
     private TextView txtUserStatus;
     private ViewPager viewPager;
@@ -123,8 +124,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             resolver.pref().setApiCheck(false);
         }
 
-        if (trigger.equals("login"))
-            openChangeStatusDialog();
+
+        if(trigger!=null) {
+            if (trigger.equals("login"))
+                openChangeStatusDialog();
+        }
 
     }
 
@@ -317,7 +321,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     private void loadProjects() {
         //   if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
-        int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
+        int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID));
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
         postDataParameters.put("userId", String.valueOf(getSPrefsId));
@@ -822,7 +826,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 selectedSpinnerValue(spnProject);
             }*/
         } else if (methodName.equals(Utils.getTaskListAPI)) {
-            String  UserId =   Utils.getSharedPrefs(getApplicationContext(),"apiUserId");
+            String  UserId =   Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, Integer.parseInt(UserId), "0");
 
             dbHandler.updateTask(taskEntries, "", false);
@@ -1133,7 +1137,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 private int getUserId()
 {
     int int_userId=0;
-    String userId=Utils.getSharedPrefs(getApplicationContext(),"apiUserId");
+    String userId=Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID);
     try{
         int_userId=Integer.parseInt(userId);
         return int_userId;

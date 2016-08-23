@@ -32,6 +32,7 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
@@ -214,7 +215,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		HomeActivity.user = parser.getUserDetails(output , methodName);
 		if(HomeActivity.user!=null)
 		{
-			Utils.saveInSharedPrefs(getApplicationContext(),"apiUserId",""+HomeActivity.user.getId());
+			Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID,""+HomeActivity.user.getId());
 			//Gson gson = new Gson();
 			//String json = gson.toJson(HomeActivity.user);
 			//Utils.saveInSharedPrefs(getApplicationContext(), "user" , json );

@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 import org.json.JSONObject;
 
@@ -101,7 +102,7 @@ public class BackgroundLocationService extends Service implements
        // Parameter : UserId,points(latitude,longitude)
 
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-        String userId=Utils.getSharedPrefs(getApplicationContext(),"apiUserId");
+        String userId=Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID);
         postDataParameters.put("UserId", userId);
         postDataParameters.put("points", location.getLatitude() + "," + location.getLongitude());
         //postDataParameters.put("points", "19.225842" + "," + "72.9766845");

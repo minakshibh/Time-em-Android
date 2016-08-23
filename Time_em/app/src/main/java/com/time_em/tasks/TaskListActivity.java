@@ -53,6 +53,7 @@ import com.time_em.model.TaskEntry;
 import com.time_em.model.UserWorkSite;
 import com.time_em.model.WorkSiteList;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
@@ -194,7 +195,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         else{
             headerText.setText("My Tasks");
             try{
-            UserId =   Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),"apiUserId"));
+            UserId =   Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID));
             }catch (Exception e){}
         }
         footer = (LinearLayout) findViewById(R.id.footer);

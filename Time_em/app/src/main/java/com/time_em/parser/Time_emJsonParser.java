@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.Company;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
@@ -822,5 +823,46 @@ public class Time_emJsonParser {
 		}else{
 			return Id;
 		}
+	}
+	public ArrayList<Company> parseCompanyList(String webResponse){
+		ArrayList<Company> arrayTaskEntry = new ArrayList<Company>();
+
+		Resources res = context.getResources();
+
+		try{
+			//jObject = new JSONObject(webResponse);
+			//isError = jObject.getBoolean("IsError");
+			//message = jObject.getString("Message");
+
+
+			JSONArray jArray = new JSONArray(webResponse);
+
+			for(int i = 0; i<jArray.length(); i++){
+				JSONObject userObject = jArray.getJSONObject(i);
+
+				Company timerTask = new Company();
+				timerTask.setId(userObject.getString("Id"));
+				timerTask.setKey(userObject.getString("Key"));
+				timerTask.setValue(userObject.getString("Value"));
+				timerTask.setStrKey(userObject.getString("strKey"));
+				timerTask.setRefrenceCount(userObject.getString("RefrenceCount"));
+				timerTask.setToken(userObject.getString("Token"));
+
+				arrayTaskEntry.add(timerTask);
+			}
+
+
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			arrayTaskEntry = new ArrayList<Company>();
+			e.printStackTrace();
+
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return arrayTaskEntry;
 	}
 }

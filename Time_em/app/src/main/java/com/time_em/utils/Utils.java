@@ -106,7 +106,7 @@ public class Utils {
     static public String AddUsersTimeIn="/Worksite/AddUsersTimeIn";
     static public String AddNotificationNew="notification/AddNotificationNew";
     static public String AddUpdateUserTaskActivityNew="usertask/AddUpdateUserTaskActivityNew";
-
+    static public String GetUserCompaniesList="User/GetUserCompaniesList";
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -153,7 +153,7 @@ public class Utils {
         editor.commit();
     }
 
-    public static String getSharedPrefs(Context context, String key) {
+   public static String getSharedPrefs(Context context, String key) {
         preferences = context.getSharedPreferences(sharedPrefs, Context.MODE_PRIVATE);
         String value = preferences.getString(key, "");
         return value;

@@ -23,6 +23,7 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 public class LoginActivity extends Activity implements AsyncResponseTimeEm {
@@ -110,12 +111,12 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 		 if(HomeActivity.user != null){
 
 			 //saved userId into SharedPrefs
-			 Utils.saveInSharedPrefs(getApplicationContext(),"apiUserId",""+HomeActivity.user.getId());
+			 Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID,""+HomeActivity.user.getId());
 			 Gson gson = new Gson();
 			 String json = gson.toJson(HomeActivity.user);
 			 Utils.saveInSharedPrefs(getApplicationContext(), "user" , json );
 
-			 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+			 Intent intent = new Intent(LoginActivity.this, CompanyListActivity.class);
 			 intent.putExtra("trigger", "login");
 			 startActivity(intent);
 			 finish();
