@@ -38,14 +38,15 @@ public class Time_emJsonParser {
 
 		try {
 			jObject = new JSONObject(webResponse);
-			user = parseJson(jObject, method);
-
 			isError = jObject.getBoolean("isError");
 			message = jObject.getString("ReturnMessage");
 			
-			if(isError)
+			if(isError) {
 				user = null;
+				Utils.showToast(context,message);
+			}
 			else{
+				user = parseJson(jObject, method);
 				Utils.saveInSharedPrefs(context, "loginId", user.getLoginID());
 				Utils.saveInSharedPrefs(context, "webResponse", webResponse);
 			}
@@ -85,15 +86,19 @@ public class Time_emJsonParser {
 
 			JSONArray teamArray = jObject.getJSONArray("AppUserViewModel");
 
-			for(int i = 0; i<teamArray.length(); i++){
-				User user = parseJson(teamArray.getJSONObject(i), method);
-				teamList.add(user);
-			}
-			Utils.saveInSharedPrefs(context, HomeActivity.user.getId()+context.getResources().getString(R.string.teamTimeStampStr), timeStamp);
-			if(message!=null) {
-				if (message.contains("No Record")) {
-					Utils.showToast(context, "No Record Found");
+			if(!isError) {
+				for (int i = 0; i < teamArray.length(); i++) {
+					User user = parseJson(teamArray.getJSONObject(i), method);
+					teamList.add(user);
 				}
+				Utils.saveInSharedPrefs(context, HomeActivity.user.getId() + context.getResources().getString(R.string.teamTimeStampStr), timeStamp);
+				if (message != null) {
+					if (message.contains("No Record")) {
+						Utils.showToast(context, "No Record Found");
+					}
+				}
+			}else{
+				Utils.showToast(context, message);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -140,7 +145,12 @@ public class Time_emJsonParser {
 				user.setSignedIn(jObject.getBoolean("IsSignIn"));
 				user.setEmail(jObject.getString("Email"));
 				user.setPhoneNumber(jObject.getString("PhoneNumber"));
-				user.setPin(jObject.getString("Pin"));
+				try {
+					user.setPin(jObject.getString("Pin"));
+				}catch(Exception e)
+				{e.printStackTrace();
+
+				}
 
 			}else{
 				user.setActive(jObject.getBoolean("isActive"));

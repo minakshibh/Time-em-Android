@@ -8,13 +8,13 @@
     <string name="action_settings">Settings</string>
 
     <!-- live url client-->
-  <string name="baseUrl">http://timeemapi.azurewebsites.net/api</string>
+ <!-- <string name="baseUrl">http://timeemapi.azurewebsites.net/api</string>-->
 
 
     <!-- Testing url local-->
-    <!--<string name="baseUrl">http://112.196.24.202:8080/api</string>-->
-   <!-- <string name="baseUrl">http://112.196.24.205:804/api/</string>-->
-
+<!--  <string name="baseUrl">http://112.196.24.202:8080/api</string>-->
+  <!-- <string name="baseUrl">http://112.196.24.205:804/api/</string>-->
+    <string name="baseUrl">http://timeem-staging.azurewebsites.net/api/</string>
     <string name="comments">Comments :</string>
     <string name="enter_your_comments">Enter your Comments</string>
     <string name="hello_world">Hello world!</string>

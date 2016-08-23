@@ -508,7 +508,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        newTaskName = taskEntry.getTaskName();
+                        try {
+                            newTaskName = taskEntry.getTaskName();
+                        }catch(Exception e)
+                        {
+                            e.printStackTrace();
+                        }
 
                     }
                 });
