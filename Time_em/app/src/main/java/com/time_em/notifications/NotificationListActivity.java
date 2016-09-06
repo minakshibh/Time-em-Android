@@ -133,42 +133,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         }
     };
 
-   /* public void showPurchaseDialog(){
-
-        final PurchaseItem pi=new PurchaseItem();
-        pi.setup(getApplicationContext());
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(NotificationListActivity.this);
-        // Setting Dialog Title
-        alertDialog.setTitle("Want to send Notifications ?");
-        // Setting Dialog Message
-        alertDialog.setMessage("Buy notification access in just $50. ");
-        // Setting Icon to Dialog
-        // alertDialog.setIcon(R.drawable.icon);
-        // Setting Positive "Yes" Button
-        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
-
-                dialog.cancel();
-                pi.buyClick(NotificationListActivity.this);
-                //pi.consumeItem();
-
-            }
-        });
-        // Setting Negative "NO" Button
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        // Showing Alert Message
-        alertDialog.show();
-
-    }*/
-
     private void getNotificationList() {
-
-       // if (Utils.isNetworkAvailable(NotificationListActivity.this)) {
 
             String timeStamp = Utils.getSharedPrefs(NotificationListActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.notificationTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
@@ -186,10 +151,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             mWebPageTask.delegate = (AsyncResponseTimeEm) NotificationListActivity.this;
             mWebPageTask.execute();
 
-        //} else {
-          //  Utils.alertMessage(NotificationListActivity.this, Utils.network_error);
-       // }
-    }
+          }
 
    /* private void deleteTask(int taskEntryId) {
 

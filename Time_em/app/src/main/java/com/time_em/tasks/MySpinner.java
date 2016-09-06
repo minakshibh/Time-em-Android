@@ -4,9 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Spinner;
 
-/**
- * Created by admin on 7/27/2016.
- */
 public class MySpinner extends Spinner {
     OnItemSelectedListener listener;
 

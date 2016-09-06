@@ -37,7 +37,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_NOTIFICATIONS = "Notifications";
 	private String TABLE_NOTIFICATIONS_TYPE = "NotificationsType";
 	private String TABLE_PROJECT_TASK = "ProjectTask";
-	private String TABLE_GeoGraph = "GeoGraph";
+	private String TABLE_GEOGRAPH = "GeoGraph";
 	private String TABLE_USERTASK = "UserTask";
 	private String TABLE_USER_SIGN_INOUT = "UserSignInOut";
 
@@ -102,6 +102,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TimeZone = "TimeZone";
 	private String IsOffline = "IsOffline";
 
+
 	// fields for message type table
 	private String MessageId = "MessageId";
 	private String MessageType = "MessageType";
@@ -149,7 +150,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ " TEXT," + StartTime + " TEXT," + CreatedDate + " TEXT,"
 				+ EndTime + " TEXT," + SelectedDate + " TEXT," + Token
 				+ " TEXT," + TimeSpent + " TEXT," + SignedInHours + " TEXT," + AttachmentImageFile + " TEXT," + TaskDate
-				+ " TEXT," + IsOffline + " TEXT,"+ UniqueNumber + " TEXT)";
+				+ " TEXT," + IsOffline + " TEXT,"+ CompanyId + " TEXT,"+UniqueNumber + " TEXT)";
 
 
 		String CREATE_USER_TABLE = "CREATE TABLE if NOT Exists " + TABLE_TEAM
@@ -173,7 +174,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ "(" + NotificationId + " TEXT," + SenderId + " TEXT," + NotificationType + " TEXT,"
 				+ AttachmentPath + " TEXT," + Subject + " TEXT," + Msg + " TEXT," + CreatedDate + " TEXT,"
 				+ SenderFullName + " TEXT,"+ TimeZone + " TEXT,"+ notificationTypeId + " TEXT,"
-				+ IsOffline + " TEXT," + UserId + " TEXT,"+ UniqueNumber + " TEXT)";
+				+ IsOffline + " TEXT," + UserId + " TEXT,"+ CompanyId + " TEXT,"+UniqueNumber + " TEXT)";
 
 
 		String CREATE_NOTIFICATION_TYPE_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS_TYPE
@@ -182,7 +183,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		String CREATE_PROJECT_TASKS = "CREATE TABLE if NOT Exists " + TABLE_PROJECT_TASK
 				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
 
-		String CREATE_GEO_GRAPHS = "CREATE TABLE if NOT Exists " + TABLE_GeoGraph
+		String CREATE_GEO_GRAPHS = "CREATE TABLE if NOT Exists " + TABLE_GEOGRAPH
 				+ "(" + UserId + " TEXT,"+ allData + " TEXT," + DateData + " TEXT)";
 
 		String CREATE_USERTASK = "CREATE TABLE if NOT Exists " + TABLE_USERTASK
@@ -244,7 +245,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	}
 	public void deleteGeoGraphs() {
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(TABLE_GeoGraph, null, null);
+		db.delete(TABLE_GEOGRAPH, null, null);
 		db.close();
 	}
 	public void deleteUSERTASK() {
@@ -316,6 +317,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(TaskDate,taskDate1);
 				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
 				values.put(UniqueNumber,String.valueOf(taskEntry.getUniqueNumber()));
+				values.put(CompanyId,String.valueOf(taskEntry.getCompanyId()));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if(insert)
 				{
@@ -366,6 +368,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(TaskDate,taskDate);
 				values.put(IsOffline,String.valueOf(taskEntry.getIsoffline()));
 				values.put(UniqueNumber,String.valueOf(taskEntry.getUniqueNumber()));
+				values.put(CompanyId,String.valueOf(taskEntry.getCompanyId()));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 
 				if (cursor.moveToFirst()) {
@@ -409,6 +412,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 				values.put(UserId, notification.getUserId());
 				values.put(UniqueNumber, notification.getUniqueNumber());
+				values.put(CompanyId, notification.getCompanyId());
 
 				db.insert(TABLE_NOTIFICATIONS, null, values);
 			} catch (Exception e) {
@@ -465,6 +469,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 							.getColumnIndex(UserId)));
 					notification.setUniqueNumber(cursor.getString(cursor
 							.getColumnIndex(UniqueNumber)));
+					notification.setCompanyId(cursor.getString(cursor
+							.getColumnIndex(CompanyId)));
 					notifications.add(notification);
 				} while (cursor.moveToNext());
 			}
@@ -681,6 +687,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 					}
 					taskEntry.setIsoffline(cursor.getString(cursor.getColumnIndex(IsOffline)));
 					taskEntry.setUniqueNumber(cursor.getString(cursor.getColumnIndex(UniqueNumber)));
+					taskEntry.setCompanyId(cursor.getString(cursor.getColumnIndex(CompanyId)));
 					taskEntryList.add(taskEntry);
 				} while (cursor.moveToNext());
 			}
@@ -766,13 +773,13 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			return team;
 		}
 	}
-	public User getTeamByLoginCode(long loginCode,String nfcCode,String type) {
+	public User getTeamByLoginCode(String loginCode,String nfcCode,String type) {
 		//ArrayList<User> team = new ArrayList<User>();
 		User user = null;
 		String selectQuery=null;
 		// Select All Query
 		if(type.equalsIgnoreCase("barcode")) {
-			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + LoginCode + " = " + loginCode;
+			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + LoginCode +"=\"" + loginCode + "\"";
 		}
 		else{
 			 selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + NfcTagId + "=\"" + nfcCode + "\"";
@@ -1039,7 +1046,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		// Fetch only records with selected Date
 
 		SQLiteDatabase db = this.getWritableDatabase();
-		String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
+		String selectQuery = "SELECT  * FROM " + TABLE_GEOGRAPH + " where "
 				+ UserId + "=" + strUserId + " AND " + DateData + "=\"" + str_dateData + "\"";
 
 				try {
@@ -1054,9 +1061,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 								contentValues,
 								NAME + " = ? AND " + LASTNAME + " = ?",
 								new String[]{"Manas", "Bajaj"});*/
-						db.update(TABLE_GeoGraph, values, UserId + " = ? AND " + DateData + " = ?",new String[] { strUserId,str_dateData });
+						db.update(TABLE_GEOGRAPH, values, UserId + " = ? AND " + DateData + " = ?",new String[] { strUserId,str_dateData });
 					} else {
-						db.insert(TABLE_GeoGraph, null, values);
+						db.insert(TABLE_GEOGRAPH, null, values);
 					}
 
 
@@ -1075,7 +1082,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 		ArrayList<UserWorkSite> types = new ArrayList<UserWorkSite>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_GeoGraph + " where "
+		String selectQuery = "SELECT  * FROM " + TABLE_GEOGRAPH + " where "
 				+ UserId +  "=\"" + strUserId + "\"";
 		SQLiteDatabase db = this.getReadableDatabase();
 

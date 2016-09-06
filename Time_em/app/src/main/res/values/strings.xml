@@ -18,7 +18,7 @@
     <string name="comments">Comments :</string>
     <string name="enter_your_comments">Enter your Comments</string>
     <string name="hello_world">Hello world!</string>
-    <string name="hours_worked">Hours Worked: </string>
+    <string name="hours_worked">Hours worked: </string>
     <string name="trackEmUrl">http://10.saleemserver.com/TrackemMobileInitiateApi</string>
     <string name="taskTimeStampStr">_taskTimeStamp</string>
     <string name="teamTimeStampStr">_teamTimeStamp</string>

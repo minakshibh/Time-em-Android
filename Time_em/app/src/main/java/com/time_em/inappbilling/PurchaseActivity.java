@@ -163,6 +163,7 @@ public class PurchaseActivity extends Activity {
         super.onDestroy();
         if (mHelper != null)
             try {
+
                 mHelper.dispose();
             } catch (IabHelper.IabAsyncInProgressException e) {
                 e.printStackTrace();

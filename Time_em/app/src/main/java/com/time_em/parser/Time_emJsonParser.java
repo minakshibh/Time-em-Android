@@ -56,7 +56,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			user = null;
 			e.printStackTrace();
-			//Utils.showToast(context, e.getMessage());
+			Utils.showToast(context, "Something went wrong. Try again");
 		}
 
 		//if(isError)
@@ -67,17 +67,6 @@ public class Time_emJsonParser {
 	
 	public ArrayList<User> getTeamList(String webResponse, String method) {
 		ArrayList<User> teamList = new ArrayList<User>();
-//		{"KeyValueViewModel":null,
-//		"ReturnKeyValueViewModel":null,
-//		"UserTaskActivityViewModel":null,
-//		"AppUserViewModel":
-//			[{"Id":10,
-//			"LoginId":"mark","FirstName":"Mark","LastName":"Petersen","FullName":"Mark Petersen",
-//			"LoginCode":"1006","SupervisorId":2,"UserTypeId":3,"Department":null,"DepartmentId":0,
-//			"Company":null,"CompanyId":2,"Worksite":null,"WorksiteId":0,"Project":null,
-//			"ProjectId":0,"IsSecurityPin":null,"SignInAt":null,"SignOutAt":null,"ActivityId":0,
-//			"TaskActivityId":0,"SignedInHours":0.0,"NFCTagId":null,"IsNightShift":false,
-//			"IsSignedIn":false}
 		String timeStamp="";
 		try {
 			jObject = new JSONObject(webResponse);
@@ -582,14 +571,10 @@ public class Time_emJsonParser {
 	}
 	public ArrayList<TaskEntry> parseGraphsSignInOut(String webResponse){
 		ArrayList<TaskEntry> arrayTaskEntry = new ArrayList<TaskEntry>();
-
-		Resources res = context.getResources();
-
 		try{
 			jObject = new JSONObject(webResponse);
 			isError = jObject.getBoolean("IsError");
 			message = jObject.getString("Message");
-
 
 			JSONArray jArray = jObject.getJSONArray("UsersList");
 

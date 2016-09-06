@@ -1,17 +1,12 @@
 package com.time_em.authentication;
 
 import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.http.message.BasicNameValuePair;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;

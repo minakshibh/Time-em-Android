@@ -16,8 +16,8 @@
             android:id="@+id/info"
             android:text="Request Password"
             android:layout_centerInParent="true"
+            android:textStyle="bold"
             android:textColor="@color/white"
-
             android:textSize="18sp"/>
 
         <ImageView

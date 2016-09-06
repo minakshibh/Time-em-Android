@@ -1,7 +1,6 @@
 package com.time_em.barcode;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +19,7 @@ import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 import net.sourceforge.zbar.ImageScanner;
 import java.util.ArrayList;
@@ -30,14 +30,13 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
 
 
     private boolean refresh;
-    private long barCode=0;
+    private String barCode="";
     private String nfcCode="";
 
     public static ArrayList<String> arrayList_scanCode = new ArrayList<>();
     private ArrayList<User> arrayListUsers = new ArrayList<>();
     private ArrayList<User> aL_UsersExistDb = new ArrayList<>();
     private ArrayList<User> aL_UsersNotExistDb = new ArrayList<>();
-    //private ArrayList<User> refreshArrayListUsers = new ArrayList<>();
 
     private TimeEmDbHandler dbHandler;
     private User user = new User();
@@ -149,9 +148,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                     if(trigger.equalsIgnoreCase("nfc")) {
 
                         nfcCode=arrayList_scanCode.get(i).trim();
-                        user = dbHandler.getTeamByLoginCode(0,nfcCode,"nfc");
+                        user = dbHandler.getTeamByLoginCode("",nfcCode,"nfc");
                     }else{
-                        barCode = Long.parseLong(arrayList_scanCode.get(i).trim());
+                        barCode = arrayList_scanCode.get(i).trim();
                         user = dbHandler.getTeamByLoginCode(barCode,null,"barcode");
                     }
 
@@ -195,27 +194,19 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         return strUserIds;
     }
 
-    private void getUserDetails(long userCode){
+    private void getUserDetails(String userCode){
 
-       // if (Utils.isNetworkAvailable(BarcodeScanActivity.this)) {
-        //http://timeemapi.azurewebsites.net/api/User/GetUsersListByLoginCode?Logincode=9105
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("Logincode", String.valueOf(userCode));
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(BarcodeScanActivity.this,PrefUtils.KEY_COMPANY));
 
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     BarcodeScanActivity.this, "get", Utils.GetUsersListByLoginCode,
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) BarcodeScanActivity.this;
             mWebPageTask.execute();
-
-        //} else {
-           // Utils.alertMessage(BarcodeScanActivity.this, Utils.network_error);
-       // }
     }
     private void getUserDetailsNFC(String nfcTagId){
-
-      //  if (Utils.isNetworkAvailable(BarcodeScanActivity.this)) {
-           // http://timeemapi.azurewebsites.net/api/User/GetUsersListByTagId
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("NFCTagId",nfcTagId);//"0404b672973c81"
 
@@ -225,10 +216,6 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) BarcodeScanActivity.this;
             mWebPageTask.execute();
-
-       /* } else {
-            Utils.alertMessage(BarcodeScanActivity.this, Utils.network_error);
-        }*/
     }
 
     public class ListAdapter extends BaseAdapter {
@@ -308,6 +295,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
 
 
         if(methodName.contains(Utils.GetUsersListByLoginCode)) {
+            Log.e("GetUsersListByLoginCode",""+output);
             ArrayList<User> teamMembers=new ArrayList<>();
             try {
                 teamMembers = parser.getTeamList(output, methodName);
@@ -372,9 +360,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                              try {
                                  if(trigger.equalsIgnoreCase("nfc")) {
                                      nfcCode = arrayListUsers.get(i).getNfcTagId();
-                                     user = dbHandler.getTeamByLoginCode(0,nfcCode, "nfc");
+                                     user = dbHandler.getTeamByLoginCode("",nfcCode, "nfc");
                                  }else {
-                                     barCode = Long.parseLong(arrayListUsers.get(i).getLoginCode());
+                                     barCode = arrayListUsers.get(i).getLoginCode();
                                      user = dbHandler.getTeamByLoginCode(barCode, null, "barcode");
                                  }
                              } catch (Exception e) {
@@ -421,9 +409,9 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                     try {
                         if(trigger.equalsIgnoreCase("nfc")) {
                             nfcCode = arrayListUsers.get(i).getNfcTagId();
-                            user = dbHandler.getTeamByLoginCode(0,nfcCode, "nfc");
+                            user = dbHandler.getTeamByLoginCode("",nfcCode, "nfc");
                         }else {
-                            barCode = Long.parseLong(arrayListUsers.get(i).getLoginCode());
+                            barCode = arrayListUsers.get(i).getLoginCode();
                             user = dbHandler.getTeamByLoginCode(barCode, null, "barcode");
                         }
                     }catch(Exception e){

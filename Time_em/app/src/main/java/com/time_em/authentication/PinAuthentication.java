@@ -10,21 +10,13 @@ Deep Linking: 	Disabled*/
 
 import java.util.HashMap;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
@@ -190,10 +182,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 			if(HomeActivity.user != null && HomeActivity.user.getPin() != null){
 				String _pin = HomeActivity.user.getPin();
 				if(pin.equals(_pin)){
-						Intent intent = new Intent(PinAuthentication.this, HomeActivity.class);
-						intent.putExtra("trigger", "pin");
-						startActivity(intent);
-						finish();
+					gotoHomeScreen();
 
 				}else{
 				Utils.showToast(PinAuthentication.this, "Please enter a valid PIN");
@@ -225,14 +214,19 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 //		 HomeActivity.user.setActivityId(Integer.parseInt((Utils.getSharedPrefs(PinAuthentication.this, "activityId").equals(""))?"0":Utils.getSharedPrefs(PinAuthentication.this, "activityId")));
 //		
 		if(HomeActivity.user != null){
-			 Intent intent = new Intent(PinAuthentication.this, HomeActivity.class);
-			 intent.putExtra("trigger", "pin");
-			 startActivity(intent);
-			 finish();
-		}else
-			Utils.showToast(PinAuthentication.this, "Please enter a valid PIN");
+			gotoHomeScreen();
+		}
+		//else
+			//Utils.showToast(PinAuthentication.this, "Please enter a valid PIN");
 
 	}
 
+	private void gotoHomeScreen()
+	{
+		Intent intent = new Intent(PinAuthentication.this, CompanyListActivity.class);
+		intent.putExtra("trigger", "pin");
+		startActivity(intent);
+		finish();
+	}
 }
 

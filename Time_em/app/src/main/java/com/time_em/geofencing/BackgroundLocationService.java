@@ -37,8 +37,6 @@ public class BackgroundLocationService extends Service implements
 
     @Override
     public void onCreate() {
-
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API).addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this).build();
@@ -68,7 +66,7 @@ public class BackgroundLocationService extends Service implements
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(5*60*1000); // Update location every 5 minute
+        mLocationRequest.setInterval(1*60*1000); // Update location every 5 second
 
         int permission_finelocation = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -97,20 +95,15 @@ public class BackgroundLocationService extends Service implements
         String msg = "" + location.getLatitude() + "," + "" + location.getLongitude();
         System.err.println("User current location=" + msg);
 
-      //  Path : http://timeemapi.azurewebsites.net/api/Worksite/AddUsersTimeIn
-      //  Type : Post
-       // Parameter : UserId,points(latitude,longitude)
-
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
         String userId=Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID);
         postDataParameters.put("UserId", userId);
         postDataParameters.put("points", location.getLatitude() + "," + location.getLongitude());
-        //postDataParameters.put("points", "19.225842" + "," + "72.9766845");
+
         Log.e(""+ Utils.AddUsersTimeIn,""+postDataParameters.toString());
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm("post", Utils.AddUsersTimeIn, postDataParameters,"Update...");
         mWebPageTask.execute();
 
-        //System.err.println("current location=" + msg);
 
     }
 

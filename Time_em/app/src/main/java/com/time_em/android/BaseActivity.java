@@ -145,6 +145,8 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 				dbHandler.deleteTeamTable();
 				dbHandler.deleteTABLE_NOTIFICATIONS_TYPE();
 				dbHandler.deleteProjectTask();
+				dbHandler.deleteUSERTASK();
+				dbHandler.delete_USER_SIGNINOUT();
 
 				HomeActivity.stopLocationService(BaseActivity.this);// stop service
 				Intent intent = new Intent(BaseActivity.this, LoginActivity.class);

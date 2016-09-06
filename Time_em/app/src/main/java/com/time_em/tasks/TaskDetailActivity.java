@@ -69,7 +69,7 @@ public class TaskDetailActivity extends Activity {
         try {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
             Date newDate = format.parse(date);
-            format = new SimpleDateFormat("EEE dd MMM,yyyy");
+            format = new SimpleDateFormat("EEE dd MMM, yyyy");
             String datestr = format.format(newDate);
             txtDate.setText(datestr);
         } catch (Exception e) {

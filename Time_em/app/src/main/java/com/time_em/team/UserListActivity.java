@@ -31,6 +31,7 @@ import com.time_em.model.User;
 import com.time_em.model.UserWorkSite;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 public class UserListActivity extends Activity implements AsyncResponseTimeEm {
@@ -121,7 +122,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 
 			postDataParameters.put("TimeStamp",timeStamp);
 			postDataParameters.put("UserId", String.valueOf(userId));
-
+			postDataParameters.put("CompanyId", PrefUtils.getStringPreference(UserListActivity.this,PrefUtils.KEY_COMPANY));
 			Log.e("values","userid: "+String.valueOf(userId)+", TimeStamp: "+timeStamp);
 			
 			AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(

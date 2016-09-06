@@ -6,7 +6,8 @@ import android.os.Parcelable;
 public class Notification  implements Parcelable{
 
     int notificationId,UserId,notificationTypeId;
-    String notificationType, attachmentPath, subject, message, createdDate, senderFullName,TimeZone,IsOffline,UniqueNumber,senderId;
+    String notificationType, attachmentPath, subject, message, createdDate, senderFullName,TimeZone,
+            IsOffline,UniqueNumber,senderId,companyId;
 
     public Notification(){
 
@@ -25,6 +26,7 @@ public class Notification  implements Parcelable{
         IsOffline = in.readString();
         UserId = in.readInt();
         UniqueNumber =in.readString();
+        companyId =in.readString();
     }
 
     @Override
@@ -42,6 +44,7 @@ public class Notification  implements Parcelable{
         dest.writeString(IsOffline);
         dest.writeInt(UserId);
         dest.writeString(UniqueNumber);
+        dest.writeString(companyId);
     }
 
     @Override
@@ -164,5 +167,17 @@ public class Notification  implements Parcelable{
 
     public void setSenderFullName(String senderFullName) {
         this.senderFullName = senderFullName;
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public static Creator<Notification> getCREATOR() {
+        return CREATOR;
     }
 }

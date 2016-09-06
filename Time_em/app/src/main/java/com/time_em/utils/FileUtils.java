@@ -44,9 +44,6 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.protocol.HTTP;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
-/**
- * Created by minakshi on 08/06/16.
- */
 
 public class FileUtils {
     private String userChoosenTask;

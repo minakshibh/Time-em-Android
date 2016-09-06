@@ -11,7 +11,6 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,7 +19,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -38,8 +36,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
@@ -59,40 +55,38 @@ import com.time_em.utils.Utils;
 public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
     private ListView taskListview;
-    private ArrayList<TaskEntry> tasks;
-    private Time_emJsonParser parser;
-    private int UserId;
     private ImageView addTaskButton, back;
     private ImageButton calbutton;
     private TextView headerText, currentDate,caldate;
-    private Intent intent;
     private LinearLayout footer;
     private RecyclerView recyclerView;
-    private SimpleDateFormat apiDateFormater, dateFormatter, dayFormatter;
-    ArrayList<Calendar> arrayList;
+    private ImageView addButton;
+    private LinearLayout lay_upperGraph, lay_colorIndicator;
+    private TimeEmDbHandler dbHandler;
+    private TextView headerInfo;
+
+    private int UserId;
     private int selectedPos = 14;
     private String selectedDate;
-    TimeEmDbHandler dbHandler;
-    TextView headerInfo;
+    private int first_time = 1, totalWidth = 0;
+    private float oneMin, stratPoint, endPoint;
+
+    private Intent intent;
+    private SimpleDateFormat apiDateFormater, dateFormatter, dayFormatter;
+    private Time_emJsonParser parser;
     private Context context;
-    int first_time = 1, totalWidth = 0;
-    float oneMin, stratPoint, endPoint;
-    ImageView addButton;
-    LinearLayout lay_upperGraph, lay_colorIndicator;
-    ArrayList<String> backGroundColor_array = new ArrayList<>();
-    ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
+
+    private ArrayList<TaskEntry> tasks;
+    private ArrayList<Calendar> arrayList;
+    private ArrayList<String> backGroundColor_array = new ArrayList<>();
+    private ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
     //for graphs
     private LinearLayout mainLinearLayout, lay_date, lay_hours;
-    DateSliderAdapter adapter;
-    DatePickerDialog datePickerDialog;
+    private DateSliderAdapter adapter;
+    private DatePickerDialog datePickerDialog;
+    private TextView bottom_side;
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-
-    @Override
+     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
@@ -135,6 +129,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     }
 
     private void showTaskList() {
+        // todo for user tasks layout
         populatRecyclerView();
         initScreen();
         setUpClickListeners();
@@ -142,6 +137,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     }
 
     private void showGraphs() {
+    // todo for user graphs layout
         setContentView(R.layout.activity_graph);
         setColorArray();
         lay_colorIndicator = (LinearLayout) findViewById(R.id.lay_colorIndicator);
@@ -150,9 +146,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
         lay_hours.setVisibility(View.GONE);
         headerInfo = (TextView) findViewById(R.id.headerText);
-        headerInfo.setText("Graphs");
+        bottom_side=(TextView)findViewById(R.id.bottom_side);
+        if(getIntent().getStringExtra("UserName")!=null) {
+            String username = getIntent().getStringExtra("UserName");
+            headerInfo.setText(username + "'s Graphs");
+            }
         back = (ImageView) findViewById(R.id.back);
-        back.setVisibility(View.INVISIBLE);
         addButton = (ImageView) findViewById(R.id.AddButton);
         addButton.setVisibility(View.GONE);
 
@@ -160,10 +159,18 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         try{
             UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
         }catch (Exception e){}
-        //fetch from data base
+        // todo fetch from data base
+
         dbHandler = new TimeEmDbHandler(TaskListActivity.this);
         ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraphData(""+UserId);
         fetchDataGraphs(array_workSite);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
 
@@ -225,8 +232,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
             }
         });
-        recyclerView.setAdapter(adapter);// set adapter on recyclerview
-        adapter.notifyDataSetChanged();// Notify the adapter
+        recyclerView.setAdapter(adapter);// // todo set adapter on recyclerview
+        adapter.notifyDataSetChanged();// // todo Notify the adapter
     }
 
 
@@ -288,7 +295,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private void getTaskList(String createdDate) {
 
         currentDate.setText(Utils.formatDateChange(selectedDate, "MM-dd-yyyy", "EEE dd MMM, yyyy"));
-        //if (Utils.isNetworkAvailable(TaskListActivity.this)) {
 
         String timeStamp = Utils.getSharedPrefs(TaskListActivity.this, UserId + "-" + selectedDate + "-" + getResources().getString(R.string.taskTimeStampStr));
         if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
@@ -309,9 +315,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
         mWebPageTask.execute();
 
-        // } else {
-        //    Utils.alertMessage(TaskListActivity.this, Utils.network_error);
-        //    }
+
     }
 
     private void deleteTask(TaskEntry taskEntry) {
@@ -694,7 +698,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                         View view = new TextView(this);
                         view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
                         view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
-                        view.setBackgroundColor(getResources().getColor(R.color.white));
+                        view.setBackgroundColor(getResources().getColor(R.color.editBg));
                         linearLayout.addView(view);
                     }
                     if (endPoint != getStartTime(valueIn) &&  endPoint!=0) {
@@ -716,7 +720,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                             View view = new TextView(this);
                             view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
                             view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
-                            view.setBackgroundColor(getResources().getColor(R.color.white));
+                            view.setBackgroundColor(getResources().getColor(R.color.editBg));
                             linearLayout.addView(view);
                         }
                     }
@@ -789,12 +793,21 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             TextView textView = new TextView(this);
             textView.setLayoutParams(new LinearLayout.LayoutParams(60, 66));
             textView.setGravity(Gravity.CENTER);
-            textView.setTextColor(getResources().getColor(R.color.black));
+           // textView.setTextColor(getResources().getColor(R.color.black));
             textView.setText(array_worksite.get(i).getDate().substring(0, 5));
+            textView.setTextColor(getResources().getColor(R.color.white));
             textView.setTextSize(12);
             textView.setPadding(0, 10, 0, 10);
             lay_date.addView(textView);
+         /*   LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(textView.getWidth(), 0, 0, 0);9o
+            bottom_side.setLayoutParams(params);
+            mainLinearLayout.addView(bottom_side);*/
         }
+
 
     }
 

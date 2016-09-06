@@ -17,11 +17,8 @@ import java.util.concurrent.Semaphore;
 
 
 public class SettingActivity extends Activity{
-    private TextView headerInfo,txtHeader,txtBuildVersion,txtBuildVersionOutput,txtBuildSize,txtBuildSizeOutput;
+    private TextView headerInfo,txtHeader,txtBuildVersion,txtBuildVersionOutput,txtBuildSizeOutput;
     private ImageView back,AddButton;
-    private ResolveInfo ri;
-    private String size = null;
-    private PackageManager packageManager;
     private Semaphore codeSizeSemaphore = new Semaphore(1, true);
 
 
@@ -64,7 +61,7 @@ private void initUIComponents() {
 
         txtBuildVersion=(TextView)findViewById(R.id.txtBuildVersion);
         txtBuildVersionOutput=(TextView)findViewById(R.id.txtBuildVersionOutput);
-        txtBuildSize=(TextView)findViewById(R.id.txtBuildSize);
+        //txtBuildSize=(TextView)findViewById(R.id.txtBuildSize);
         txtBuildSizeOutput=(TextView)findViewById(R.id.txtBuildSizeOutput);
 
         }

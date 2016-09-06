@@ -1,16 +1,13 @@
 package com.time_em.tasks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.preference.DialogPreference;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,21 +16,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
-import com.time_em.dashboard.AddWigdetActvity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.SpinnerData;
-import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.FileUtils;
@@ -58,7 +50,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private SpinnerData selectedSpinnerData;
     private FileUtils fileUtils;
     private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0",taskId="0";
-    private TaskEntry taskEntry;
+    private TaskEntry taskEntry=null;
     private JCVideoPlayerStandard uploadedVideo;
     TimeEmDbHandler dbHandler;
     public static String UniqueNumber="";
@@ -71,6 +63,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_send_notification);
+
         initScreen();
         loadProjects();
         setListeners();
@@ -191,7 +184,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private void selectedSpinnerValue(Spinner sp) {
 
-        Log.e("taskEntryId", "" + taskId);
+        Log.e("taskId", "" + taskId);
         if(assignedTasks!=null && !assignedTasks.equals("null")){
             for(int i=0;i<assignedTasks.size();i++)
             {
@@ -336,6 +329,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 task.setSelectedDate(selectedDate);
                                 task.setIsActive(true);
                                 task.setAttachmentImageFile(fileUtils.getAttachmentPath());
+                                task.setCompanyId(PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY));
                                 task.setIsoffline("true");
                                 String taskDate=selectedDate;
                                   try {
@@ -388,7 +382,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     };
 
     private void loadProjects() {
-       //   if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
+
             int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID));
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
@@ -400,9 +394,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             mWebPageTask.delegate = (AsyncResponseTimeEm) AddEditTaskEntry.this;
             mWebPageTask.execute();
 
-       // } else {
-       //      Utils.alertMessage(AddEditTaskEntry.this, Utils.network_error);
-       //  }
+
     }
 
     @Override
@@ -411,7 +403,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         if(methodName.equals(Utils.GetAssignedTaskList)){
             assignedTasks = parser.parseAssignedProjects(output);
 
-            dbHandler.updateProjectTasks(assignedTasks);//update data for notification type
+            dbHandler.updateProjectTasks(assignedTasks);// // todo update data for notification type
 
             assignedTasks=dbHandler.getProjectTasksData();
             adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this, R.layout.spinner_row_layout, assignedTasks);
@@ -484,7 +476,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     private  void showAddNewTask()
     {
-        // get prompts.xml view
+        //todo  get prompts.xml view
         LayoutInflater li = LayoutInflater.from(AddEditTaskEntry.this);
         View promptsView = li.inflate(R.layout.layout_addnewtask, null);
 

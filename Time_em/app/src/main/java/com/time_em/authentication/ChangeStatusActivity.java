@@ -9,11 +9,9 @@ import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.dashboard.HomeActivity;
-import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.Utils;
 
@@ -105,15 +103,6 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 			if(!isError){
 				if(output.contains("SignedOutUser")) {
 					HomeActivity.user.setSignedIn(false);
-
-					JSONArray jArray = jObject.getJSONArray("SignedOutUser");
-					//for (int i = 0; i < jArray.length(); i++) {
-						//JSONObject taskObject = jArray.getJSONObject(i);
-						//int	activeId = taskObject.getInt("Id");
-						//HomeActivity.user.setActivityId(0);
-						//Log.e("activeId","activeId="+0);
-					//}
-
 				}
 				else if(output.contains("SignedinUser")){
 					HomeActivity.user.setSignedIn(true);

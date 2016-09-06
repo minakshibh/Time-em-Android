@@ -82,13 +82,28 @@ public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
         mUser= HomeActivity.user;
         edt_Name.setText(mUser.getFullName());
         txtName.setText(mUser.getFirstName()+" "+mUser.getLastName());
-        edt_Email.setText(mUser.getEmail());
-      //  edt_pass.setText(mUser.getLastName());
-        edt_Phone.setText(mUser.getPhoneNumber());
-        Image_path="";
+
+        if(mUser.getEmail()!=null && !mUser.getEmail().equalsIgnoreCase("null")) {
+            edt_Email.setText(mUser.getEmail());
+        }
+        else {
+            edt_Email.setText("");
+        }
+
+
+        if(mUser.getPhoneNumber()!=null && !mUser.getPhoneNumber().equalsIgnoreCase("null")) {
+            edt_Phone.setText(mUser.getPhoneNumber());
+        }
+        else {
+            edt_Phone.setText("");
+        }
+
+        Image_path=null;
+
         int loader = R.drawable.user_profile;
         ImageLoader imgLoader = new ImageLoader(getApplicationContext());
         imgLoader.DisplayImage(Image_path, loader, circularImageView);
+
 
     }
     private void disableAll()

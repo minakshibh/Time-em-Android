@@ -25,10 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.google.gson.Gson;
 import com.time_em.android.BaseActivity;
 import com.time_em.android.DependencyResolver;
@@ -50,15 +46,13 @@ import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.FileUtils;
 import com.time_em.utils.GcmUtils;
 import com.time_em.utils.PrefUtils;
-import com.time_em.utils.SpinnerTypeAdapter;
 import com.time_em.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, TabLayout.OnTabSelectedListener {
 
-    private LinearLayout graphLayout, lay_indicator;
-    BarDataSet dataset;
+    private LinearLayout lay_indicator;
     public DependencyResolver resolver;
     public static User user;
     private LinearLayout changeStatus;
@@ -81,16 +75,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private Intent intent;
     private Context context;
 
-    ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-    ArrayList<String> labels = new ArrayList<String>();
-    ArrayList<TaskEntry> arrayList = new ArrayList<>();
-    ArrayList<TaskEntry> arrayList_SignInOut = new ArrayList<>();
+    private ArrayList<TaskEntry> arrayList = new ArrayList<>();
+    private ArrayList<TaskEntry> arrayList_SignInOut = new ArrayList<>();
     private ArrayList<Notification> notifications = new ArrayList<>();
     private ArrayList<TaskEntry> tasks = new ArrayList<>();
     private ArrayList<Notification> notifications_delete = new ArrayList<>();
     private ArrayList<TaskEntry> tasks_delete = new ArrayList<>();
     public static ArrayList<String> deleteIds = new ArrayList<>();
-    private  ArrayList<Widget> Home_arrayList_widget = new ArrayList<Widget>();
+    private ArrayList<Widget> Home_arrayList_widget = new ArrayList<Widget>();
 
 
     @Override
@@ -166,16 +158,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void setTapBar() {
-        //Initializing the tablayout
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        //Adding the tabs using addTab() method
         tabLayout.addTab(tabLayout.newTab().setText("UserGraph"));
         tabLayout.addTab(tabLayout.newTab().setText("UserLoginGraph"));
-        // tabLayout.addTab(tabLayout.newTab().setText("Tab3"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        //Adding onTabSelectedListener to swipe views
         tabLayout.setOnTabSelectedListener(this);
-
     }
 
     private void setClickListeners() {
@@ -231,8 +218,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void registerDevice() {
-        //if (Utils.isNetworkAvailable(HomeActivity.this)) {
-
             String regId = GcmUtils.getRegistrationId(this);
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("UserID", "" + user.getId());
@@ -246,18 +231,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
 
-       /* } else {
-            Utils.alertMessage(HomeActivity.this, Utils.network_error);
-        }*/
     }
 
     private void fetchTaskGraphsData() {
-      //  if (Utils.isNetworkAvailable(HomeActivity.this)) {
-
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("userid", "" + user.getId());
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
 
-            //http://timeemapi.azurewebsites.net/api/usertask/UserTaskGraph?userid=2
             Log.e(Utils.UserTaskGraph, postDataParameters.toString());
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     HomeActivity.this, "get", Utils.UserTaskGraph,
@@ -265,17 +245,12 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
 
-       /* } else {
-            Utils.alertMessage(HomeActivity.this, Utils.network_error);
-        }*/
     }
 
     private void fetchGraphsSignInOut() {
-        //if (Utils.isNetworkAvailable(HomeActivity.this)) {
-
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("userid", "" + user.getId());
-
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
             // http://timeemapi.azurewebsites.net/api/usertask/UsersGraph?userid=2
             Log.e(Utils.UsersGraph, postDataParameters.toString());
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
@@ -283,22 +258,16 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
-
-       /* } else {
-            Utils.alertMessage(HomeActivity.this, Utils.network_error);
-        }*/
     }
 
     private void firstGraphView() {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
         GraphAdapter adapter = new GraphAdapter(true, arrayList, new OnItemClickListener() {
             @Override
             public void onItemClick(TaskEntry item, int position) {
 
-               // Utils.showToast(HomeActivity.this, item.getCreatedDate() + " Clicked");
             }
         });
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
@@ -308,11 +277,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private void secondGraphView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
         GraphAdapter adapter = new GraphAdapter(false, arrayList_SignInOut, new OnItemClickListener() {
             @Override
             public void onItemClick(TaskEntry item, int position) {
-                //Utils.showToast(HomeActivity.this, item.getCreatedDate() + " Clicked");
+
             }
         });
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
@@ -320,40 +288,22 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void loadProjects() {
-        //   if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
         int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID));
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
         postDataParameters.put("userId", String.valueOf(getSPrefsId));
-
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                 HomeActivity.this, "get", Utils.GetAssignedTaskList,
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
-        // } else {
-        //      Utils.alertMessage(AddEditTaskEntry.this, Utils.network_error);
-        //  }
     }
 
     private void getTaskList() {
-        //currentDate.setText(Utils.formatDateChange(selectedDate, "MM-dd-yyyy", "EEE dd MMM, yyyy"));
-        //if (Utils.isNetworkAvailable(TaskListActivity.this)) {
-
-        //String timeStamp = Utils.getSharedPrefs(HomeActivity.this, UserId + "-" + selectedDate + "-" + getResources().getString(R.string.taskTimeStampStr));
-       // if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
-        //    timeStamp = "";
-
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
-        //postDataParameters.put("userId", String.valueOf(UserId));
         postDataParameters.put("userId",String.valueOf(user.getId()));
         postDataParameters.put("createdDate","");
         postDataParameters.put("TimeStamp", "");
-
-       // Log.e("values"+Utils.getTaskListAPI, "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
-       // Log.e("" + Utils.getTaskListAPI, "" + postDataParameters.toString());
 
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                 HomeActivity.this, "post", Utils.getTaskListAPI,
@@ -361,54 +311,40 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
-        // } else {
-        //    Utils.alertMessage(TaskListActivity.this, Utils.network_error);
-        //    }
     }
 
     private void loadNotificationTypes() {
-        // if (Utils.isNetworkAvailable(SendNotification.this)) {
-
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
+        postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                 HomeActivity.this, "get", Utils.getNotificationType,
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
-        //} else {
-        //   Utils.alertMessage(SendNotification.this, Utils.network_error);
-        // }
+
     }
 
     private void loadRecipients() {
-        //if (Utils.isNetworkAvailable(SendNotification.this)) {
 
         String timeStamp = Utils.getSharedPrefs(HomeActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.activeUsersTimeStampStr));
         if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
             timeStamp = "";
 
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
         postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
         postDataParameters.put("timeStamp", timeStamp);
-
+        postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                 HomeActivity.this, "post", Utils.getActiveUserList,
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
-        // } else {
-        // Utils.alertMessage(SendNotification.this, Utils.network_error);
-        //}
     }
     private void getNotificationList() {
 
-        // if (Utils.isNetworkAvailable(NotificationListActivity.this)) {
-
-        String timeStamp = Utils.getSharedPrefs(HomeActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.notificationTimeStampStr));
+       String timeStamp = Utils.getSharedPrefs(HomeActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.notificationTimeStampStr));
         if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
             timeStamp = "";
 
@@ -424,10 +360,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
-        //} else {
-        //  Utils.alertMessage(NotificationListActivity.this, Utils.network_error);
-        // }
-    }
+      }
     private void getUserList(int userId){
 
             String timeStamp = Utils.getSharedPrefs(HomeActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
@@ -438,7 +371,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
             postDataParameters.put("TimeStamp",timeStamp);
             postDataParameters.put("UserId", String.valueOf(userId));
-
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
             Log.e("values", "userid: " + String.valueOf(userId) + ", TimeStamp: " + timeStamp);
 
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
@@ -451,17 +384,18 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     private void GetUserListWorkSite(String userId){
 
-        //int UserId = HomeActivity.user.getId();
-        HashMap<String, String> postDataParameters = new HashMap<String, String>();
-        postDataParameters.put("userid", userId);
+        if(userId.length()>0) {
+            HashMap<String, String> postDataParameters = new HashMap<String, String>();
+            postDataParameters.put("userid", userId);
 
-        Log.e("" + Utils.GetUserListWorksiteActivity, "" + postDataParameters.toString());
+            Log.e("" + Utils.GetUserListWorksiteActivity, "" + postDataParameters.toString());
 
-        AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                HomeActivity.this, "get", Utils.GetUserListWorksiteActivity,
-                postDataParameters, true, "Please wait...");
-        mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
-        mWebPageTask.execute();
+            AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
+                    HomeActivity.this, "get", Utils.GetUserListWorksiteActivity,
+                    postDataParameters, true, "Please wait...");
+            mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
+            mWebPageTask.execute();
+        }
 
     }
 
@@ -478,11 +412,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             tab.setText("UserLoginGraph");
             lay_indicator.setVisibility(View.VISIBLE);
         }
-       /* else if(tab.getPosition()==3)
-        {
-           // tab.setText("Tab3");
-        }*/
-    }
+      }
 
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
@@ -586,16 +516,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     graphBar_signOut.setLayoutParams(paramOut);
 
                     date.setText(item.getCreatedDate());
-                   /* itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            *//*notifyItemChanged(pos);
-                            selectedPos = pos;
-                            notifyItemChanged(selectedPos);*//*
 
-                            listener.onItemClick(item, pos);
-                        }
-                    });*/
                 }
             }
         }
@@ -716,20 +637,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             ((ViewPager) container).addView(itemView);
 
             return itemView;
-           /* }
-            if(position==1) {
-                inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View itemView = inflater.inflate(R.layout.viewpager_signinout, container, false);
-                recyclerView = (RecyclerView)itemView.findViewById(R.id.task_graph);
-                recyclerView.setHasFixedSize(true);
-               // lay_indicator.setVisibility(View.VISIBLE);
-                ((ViewPager) container).addView(itemView);
-
-                return itemView;
-            }
-
-            return null;*/
-        }
+           }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
@@ -787,23 +695,17 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             setViewPager();
         } else if (methodName.contains(Utils.Sync)) {
 
-
             SyncData syncData = parser.getSynOfflineData(output);
             syncUploadFile(syncData);// upload file
-
             // for delete offline task values
             int int_userId=getUserId();
-
             tasks_delete.clear();
             tasks_delete.addAll(dbHandler.getTaskEnteries(int_userId, "true", true));
             if (tasks_delete.size() >= 0) {
                 for (int i = 0; i < tasks_delete.size(); i++) {
                     tasks_delete.get(i).setIsActive(false);
                 }
-
-                dbHandler.updateDeleteOffline(tasks_delete, "select date");
-
-
+             dbHandler.updateDeleteOffline(tasks_delete, "select date");
             }
             // for delete offline notification values
             notifications_delete.clear();
@@ -813,37 +715,23 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             syncDataCheck();//checking for offline data
             deleteIds.clear(); // delete task ids.
         } else if(methodName.equals(Utils.GetAssignedTaskList)){
-            ArrayList<SpinnerData> assignedTasks = parser.parseAssignedProjects(output);
 
+            ArrayList<SpinnerData> assignedTasks = parser.parseAssignedProjects(output);
             dbHandler.updateProjectTasks(assignedTasks);//update data for notification type
 
-            /*assignedTasks=dbHandler.getProjectTasksData();
-            adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this, R.layout.spinner_row_layout, assignedTasks);
-            adapter.setDropDownViewResource(R.layout.spinner_dropdown);
-            spnProject.setAdapter(adapter);
-            if(taskEntry!=null)
-            {
-                selectedSpinnerValue(spnProject);
-            }*/
+
         } else if (methodName.equals(Utils.getTaskListAPI)) {
             String  UserId =   Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, Integer.parseInt(UserId), "0");
-
             dbHandler.updateTask(taskEntries, "", false);
 
-            //tasks = dbHandler.getTaskEnteries(UserId, selectedDate, false);
-            //taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
-
         } else if (methodName.equals(Utils.getNotificationType)) {
+            Log.e("output", ",,, ::: " + output);
             ArrayList<SpinnerData> notificationTypes = parser.parseNotificationType(output);
             dbHandler.updateNotificationType(notificationTypes);  //update data for notification type
 
-            //notificationTypes=dbHandler.getNotificationTypeData();
-            //adapter = new SpinnerTypeAdapter(SendNotification.this,
-            //R.layout.spinner_row_layout, notificationTypes);
-            //spnNotificationType.setAdapter(adapter); // Set the custom adapter to the spinner
-
         } else if (methodName.equals(Utils.getActiveUserList)) {
+            Log.e("output", ",,, ::: " + output);
             ArrayList<User> userList = parser.parseActiveUsers(output);
 
             dbHandler.updateActiveUsers(userList);
@@ -860,12 +748,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 if(i != teamMembers.size()-1){
                     userid=userid+",";
                 }
+
             }
             Log.e("StringGeneration",userid);
             GetUserListWorkSite(userid);
 
-           // team = dbHandler.getTeam(HomeActivity.user.getId());
-           // taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
         }else if(methodName.contains(Utils.GetUserListWorksiteActivity)){
 
             parser = new Time_emJsonParser(HomeActivity.this);
@@ -892,13 +779,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         {
             notifications = parser.parseNotificationList(output);
             dbHandler.updateNotifications(notifications);
-        }
+            }
 
     }
 
     private void syncDataCheck() {
-
-
         imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_green));
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
         //for notification
@@ -962,7 +847,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             parameters.put("ActivityId", "" + tasks.get(i).getActivityId());
             parameters.put("TimeSpent", "" + tasks.get(i).getTimeSpent());
             parameters.put("Id", "" + tasks.get(i).getId());
-
+           // parameters.put("CompanyId", tasks.get(i).getCompanyId());
             Log.e("getAttachmentImageFile", "" + tasks.get(i).getAttachmentImageFile());
             String value = tasks.get(i).getAttachmentImageFile();
 
@@ -989,15 +874,19 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         ArrayList<HashMap<String, String>> array_HashMapNotification = new ArrayList<>();
         for (int i = 0; i < notifications.size(); i++) {
             HashMap<String, String> parameters = new HashMap<String, String>();
-            parameters.put("Subject", notifications.get(i).getSubject());
-            parameters.put("Message", notifications.get(i).getMessage());
+            String Subject =  JSONObject.quote(notifications.get(i).getSubject());
+            parameters.put("Subject",Subject );
+            String Message =  JSONObject.quote(notifications.get(i).getMessage());
+            parameters.put("Message", Message);
             String string = notifications.get(i).getCreatedDate();
             String date = string.replace("/", "-");
             //parameters.put("CreatedDate", date);
             parameters.put("NotificationTypeId", String.valueOf(notifications.get(i).getNotificationTypeId()));
             parameters.put("UniqueNumber", notifications.get(i).getUniqueNumber());
             parameters.put("UserId", String.valueOf(notifications.get(i).getUserId()));
-            parameters.put("NotifyTo", String.valueOf(notifications.get(i).getSenderId()));
+            String NotifyTo =  JSONObject.quote(notifications.get(i).getSenderId());
+            parameters.put("NotifyTo", String.valueOf(NotifyTo));
+            parameters.put("CompanyId", String.valueOf(notifications.get(i).getCompanyId()));
             array_HashMapNotification.add(parameters);
         }
         Log.e("task hash map", "" + arrayHashMap.toString());
@@ -1010,11 +899,20 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 jsonArray = new JSONArray(arrayHashMap.toString().replace(" ", ""));
                 jsonObject = new JSONObject();
                 jsonObject.put("userTaskActivities", jsonArray);
-                jsonArray_NotificationData = new JSONArray(array_HashMapNotification.toString().replace(" ", ""));
+                jsonArray_NotificationData = new JSONArray(array_HashMapNotification.toString());
                 jsonObject.put("notifications", jsonArray_NotificationData);
+
+
+            /*    String jsonString = new Gson().toJson(arrayHashMap).toString();
+                jsonObject = new JSONObject();
+                jsonObject.put("userTaskActivities", jsonString);
+                String jsonString_notification = new Gson().toJson(array_HashMapNotification);
+                jsonObject.put("notifications", jsonString_notification);*/
+
+
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(HomeActivity.this, "Somthing Wrong, try again", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Something Wrong, try again", Toast.LENGTH_LONG).show();
             }
 
 
@@ -1091,16 +989,14 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     }
     public static void startLocationService(Context context)
-    {
-        //start services
+    {  //start services
         stopLocationService(context);
         context.startService(new Intent(context,BackgroundLocationService.class));
-    }
+        }
     public static void stopLocationService(Context context)
-    {
-        //stop services
+    {  //stop services
         context.stopService(new Intent(context,BackgroundLocationService.class));
-    }
+        }
     private void addWidget()
     {
         Home_arrayList_widget=new ArrayList<>();
@@ -1134,108 +1030,16 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         }
 
     }
-private int getUserId()
-{
-    int int_userId=0;
-    String userId=Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID);
-    try{
-        int_userId=Integer.parseInt(userId);
+    private int getUserId()
+    {
+        int int_userId=0;
+        String userId=Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID);
+        try{
+            int_userId=Integer.parseInt(userId);
+            return int_userId;
+        }catch(Exception e)
+        { e.printStackTrace();   }
         return int_userId;
-    }catch(Exception e)
-    { e.printStackTrace();   }
-    return int_userId;
-}
-
-}
- /*  private void addGraph() {
-        graphLayout = (LinearLayout) findViewById(R.id.graphLayout);
-
-        entries.add(new BarEntry(4f, 0));
-        entries.add(new BarEntry(8f, 1));
-        entries.add(new BarEntry(6f, 2));
-        entries.add(new BarEntry(12f, 3));
-        entries.add(new BarEntry(18f, 4));
-        entries.add(new BarEntry(9f, 5));
-        entries.add(new BarEntry(4f, 6));
-        entries.add(new BarEntry(8f, 7));
-        entries.add(new BarEntry(6f, 8));
-        entries.add(new BarEntry(12f, 9));
-        entries.add(new BarEntry(18f, 10));
-        entries.add(new BarEntry(9f, 11));
-        entries.add(new BarEntry(4f, 12));
-        entries.add(new BarEntry(8f, 13));
-        entries.add(new BarEntry(6f, 14));
-        entries.add(new BarEntry(12f, 15));
-        entries.add(new BarEntry(18f, 16));
-        entries.add(new BarEntry(9f, 17));
-        entries.add(new BarEntry(4f, 18));
-        entries.add(new BarEntry(8f, 19));
-        entries.add(new BarEntry(6f, 20));
-        entries.add(new BarEntry(12f, 21));
-        entries.add(new BarEntry(18f, 22));
-        entries.add(new BarEntry(9f, 23));
-
-        dataset = new BarDataSet(entries, "# of Calls");
-
-        labels.add("January");
-        labels.add("February");
-        labels.add("March");
-        labels.add("April");
-        labels.add("May");
-        labels.add("June");
-        labels.add("January1");
-        labels.add("February1");
-        labels.add("March1");
-        labels.add("April1");
-        labels.add("May1");
-        labels.add("June1");
-        labels.add("January2");
-        labels.add("February2");
-        labels.add("March2");
-        labels.add("April2");
-        labels.add("May2");
-        labels.add("June2");
-        labels.add("January3");
-        labels.add("February3");
-        labels.add("March3");
-        labels.add("April3");
-        labels.add("May3");
-        labels.add("June3");
-
-        BarChart chart = new BarChart(HomeActivity.this);
-
-        BarData data = new BarData(labels, dataset);
-        chart.setData(data);
-
-        chart.setDescription("# of times Alice called Bob");
-
-        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
-                RecyclerView.LayoutParams.MATCH_PARENT);
-        chart.setLayoutParams(params);
-        graphLayout.addView(chart);
-    }*/
-
-    /*private void populatRecyclerView(ArrayList<TaskEntry> arraylist) {
-
-        arrayList.addAll(arraylist);
-        Date myDate = new Date();
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd");
-
-        for (int i = 1; i <= 20; i++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(myDate);
-            calendar.add(Calendar.DAY_OF_YEAR, i);
-
-            TaskEntry taskEntry = new TaskEntry();
-            taskEntry.setTimeSpent(Double.valueOf(i));
-            taskEntry.setCreatedDate(dateFormatter.format(calendar.getTime()));
-
-            arrayList.add(taskEntry);
         }
-//        for (int i = 0; i <= selectedPos; i++) {
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(myDate);
-//            calendar.add(Calendar.DAY_OF_YEAR, i);
-//            arrayList.add(calendar);
-//        }
-    }*/
+
+}

@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
@@ -28,9 +29,9 @@ import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.AddEditTaskEntry;
 import com.time_em.utils.FileUtils;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.SpinnerTypeAdapter;
 import com.time_em.utils.Utils;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +70,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         loadNotificationTypes();
         loadRecipients();
         setListeners();
+        keyBoard_DoneButton();
     }
 
     private void initScreen() {
@@ -152,7 +154,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                     postDataParameters.put("Message", message.getText().toString());
                     postDataParameters.put("NotificationTypeId", selectedNotificationTypeId);
                     postDataParameters.put("notifyto", selectedIds);
-
+                    postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY));
 
                     Log.e(""+Utils.AddNotificationNew, ""+postDataParameters.toString());
 
@@ -189,6 +191,8 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                         notification.setNotificationType(selectedNotificationTypeName);
                         notification.setCreatedDate(getCurrentDate());
                         notification.setSenderFullName(selectedUsers);
+                        String companyId=PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY);
+                        notification.setCompanyId(companyId);
 
                         notification.setTimeZone(getCurrentDate());
                         notification.setIsOffline("true");
@@ -219,25 +223,19 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
 
     private void loadNotificationTypes() {
-       // if (Utils.isNetworkAvailable(SendNotification.this)) {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY));
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     SendNotification.this, "get", Utils.getNotificationType,
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
             mWebPageTask.execute();
 
-        //} else {
-         //   Utils.alertMessage(SendNotification.this, Utils.network_error);
-       // }
-    }
+         }
 
     private void loadRecipients() {
-        //if (Utils.isNetworkAvailable(SendNotification.this)) {
-
-            String timeStamp = Utils.getSharedPrefs(SendNotification.this, HomeActivity.user.getId() + getResources().getString(R.string.activeUsersTimeStampStr));
+           String timeStamp = Utils.getSharedPrefs(SendNotification.this, HomeActivity.user.getId() + getResources().getString(R.string.activeUsersTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
                 timeStamp = "";
 
@@ -245,16 +243,12 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
             postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
             postDataParameters.put("timeStamp", timeStamp);
-
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY));
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     SendNotification.this, "post", Utils.getActiveUserList,
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
             mWebPageTask.execute();
-
-       // } else {
-           // Utils.alertMessage(SendNotification.this, Utils.network_error);
-        //}
     }
 
     @Override
@@ -353,5 +347,17 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
 
     }
-
+    private void  keyBoard_DoneButton()
+    {
+        message.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    Utils.hideKeyboard(SendNotification.this);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
 }

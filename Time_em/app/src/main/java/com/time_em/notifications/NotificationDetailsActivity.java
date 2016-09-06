@@ -1,27 +1,16 @@
 package com.time_em.notifications;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
-import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.Notification;
-import com.time_em.model.TaskEntry;
-import com.time_em.parser.Time_emJsonParser;
-import com.time_em.utils.FileUtils;
-import com.time_em.utils.Utils;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -29,11 +18,7 @@ public class NotificationDetailsActivity extends Activity {
 
 
     private ImageView sendNotification, back;
-
     private String attachmentPath = null;
-
-
-
     private TextView headerText;
     private TextView textViewDate,textViewName,textViewSubject,textViewMassage;
     private LinearLayout lay_Attachment;
@@ -83,7 +68,7 @@ public class NotificationDetailsActivity extends Activity {
         try {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
             Date newDate = format.parse(date);
-            format = new SimpleDateFormat("EEE dd MMM,yyyy hh:mm");
+            format = new SimpleDateFormat("EEE dd MMM, yyyy hh:mm");
             String datestr = format.format(newDate);
             textViewDate.setText(datestr);
         } catch (Exception e) {

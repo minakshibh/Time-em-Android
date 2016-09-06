@@ -1,11 +1,15 @@
 package com.time_em.authentication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,12 +26,13 @@ import java.util.HashMap;
 
 public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 
-	private EditText loginId;
-	private TextView info;
-	private Time_emJsonParser parser;
+	private EditText Email;
+	private TextView info,txt_enterEmail;
 	private ImageView back;
 	private Button submit;
+
 	private String trigger;
+	private Time_emJsonParser parser;
 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +42,31 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
         
         initScreen();
         setClickListeners();
+		keyBoard_DoneButton();
     }
     
 	private void initScreen() {
 		// TODO Auto-generated method stub
-		loginId = (EditText)findViewById(R.id.loginId);
+		Email = (EditText)findViewById(R.id.Email);
 		info = (TextView)findViewById(R.id.info);
+		txt_enterEmail=(TextView)findViewById(R.id.txt_enterEmail);
 		back = (ImageView)findViewById(R.id.back);
 		submit = (Button)findViewById(R.id.submit);
 		parser = new Time_emJsonParser(ForgotCredentials.this);
 
 		trigger = getIntent().getStringExtra("trigger");
+
+		if(trigger!=null)
+		{
+			if(trigger.equalsIgnoreCase("password"))
+			{
+				info.setText("Forgot Password");
+				txt_enterEmail.setText("Enter your email to reset your password.");
+			}else{
+				info.setText("Forgot Pin");
+				txt_enterEmail.setText("Enter your email to reset your pin.");
+			}
+		}
 	}
 
 	private void setClickListeners() {
@@ -62,10 +81,13 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			if(v == submit){
-				if(loginId.getText().toString().trim().equals(""))
-					Utils.showToast(ForgotCredentials.this, "Please enter login id");
-				else
+				if(Email.getText().toString().trim().equals("")) {
+					Utils.showToast(ForgotCredentials.this, "Please enter email address.");
+				}
+				else {
+					Utils.hideKeyboard(ForgotCredentials.this);
 					submit();
+				}
 			}else if(v == back){
 				finish();
 			}
@@ -77,7 +99,7 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 		if (Utils.isNetworkAvailable(ForgotCredentials.this)) {
 			HashMap<String, String> postDataParameters = new HashMap<String, String>();
 			
-			String _loginId = loginId.getText().toString().trim();
+			String _loginId = Email.getText().toString().trim();
 			String methodName;
 
 			if(trigger.equals("password"))
@@ -94,7 +116,7 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 			mWebPageTask.execute();
 
 		} else {
-			Utils.alertMessage(ForgotCredentials.this, Utils.network_error);
+			Utils.alertMessageWithoutBack(ForgotCredentials.this, Utils.network_error);
 		}
 	}
 
@@ -102,26 +124,29 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
 		Log.e("output", output);
-		
-		Utils.alertMessage(ForgotCredentials.this, output);
-		/*HomeActivity.user_black = parser.getUserDetails(output , methodName);
-		 if(HomeActivity.user_black != null){
-			 Intent intent = new Intent(ForgotCredentials.this, HomeActivity.class);
-			 intent.putExtra("trigger", "login");
-			 startActivity(intent);
-			 finish();
-		 }*/
-		 
-//		 Utils.alertMessage(LoginActivity.this, "Data fetched for "+user_black.getFirstName()+" "+user_black.getLastName());
-//		Utils.showToast(LoginActivity.this, output);
-		
-		// response: 
-		
-//	{"Id":2,"LoginId":"admin","FirstName":"admin","LastName":"admin",
-		//"FullName":"admin admin","Password":"c185ddac8b5a8f5aa23c5b80bc12d214",
-		//"LoginCode":"","Supervisor":null,"SupervisorId":0,"UserType":null,
-		//"UserTypeId":2,"Department":null,"DepartmentId":0,"Company":null,"CompanyId":2,
-		//"Worksite":null,"WorksiteId":0,"Project":null,"ProjectId":0,"RefrenceCount":false,
-		//"IsSecurityPin":null,"NFCTagId":null,"Token":"azcx2b5lwos","isError":false,"ReturnMessage":null}
+		Utils.alertMessageWithoutBack(ForgotCredentials.this, output);
+		}
+	private void  keyBoard_DoneButton()
+	{
+		Email.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					hideKeyboard(ForgotCredentials.this);
+					return true;
+				}
+				return false;
+			}
+		});
+	}
+	public void hideKeyboard(Context cxt) {
+		//   context=cxt;
+		InputMethodManager inputManager = (InputMethodManager) cxt.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+		// check if no view has focus:
+		View view = ((Activity) cxt).getCurrentFocus();
+		if (view != null) {
+			inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
 	}
 }

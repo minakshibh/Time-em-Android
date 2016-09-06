@@ -125,15 +125,15 @@
             </LinearLayout>
 
           </RelativeLayout>
+
+    </LinearLayout>
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="1dp"
             android:id="@+id/bottom_side"
             android:layout_marginLeft="50dp"
             android:visibility="visible"
             android:background="@color/seperator"/>
-    </LinearLayout>
-
 
     <LinearLayout
 

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
-
 import com.time_em.authentication.LoginActivity;
 import com.time_em.authentication.PinAuthentication;
 import com.time_em.utils.GcmUtils;
@@ -32,12 +31,6 @@ public class SplashActivity extends Activity {
 
         new Handler().postDelayed(new Runnable() {
 
-			/*
-			 * Showing splash screen with a timer. This will be useful when you
-			 * want to show case your app logo / company
-			 */
-
-
 			public void run() {
 				// This method will be executed once the timer is over
 				// Start your app main activity
@@ -50,6 +43,7 @@ public class SplashActivity extends Activity {
 				}*/
 				if(Utils.isNetworkAvailable(getApplicationContext())) {
 					getRegisterId();
+					//goNext();
 				}else{
 					//Utils.alertMessage(SplashActivity.this,Utils.network_error);
 					goNext();
@@ -76,6 +70,7 @@ public class SplashActivity extends Activity {
 				@Override
 			public void onError(Exception e) {
 					Log.e("splash", "regId = " + e.toString());
+					goNext();
 				}
 			});
 
@@ -105,14 +100,12 @@ public class SplashActivity extends Activity {
 	private void goNext()
 	{
 		if(Utils.getSharedPrefs(SplashActivity.this, "loginId").equals("")){
-			Intent i = new Intent(SplashActivity.this, LoginActivity.class);
-			startActivity(i);
+			Intent mIntent = new Intent(SplashActivity.this, LoginActivity.class);
+			startActivity(mIntent);
 		}else{
-			Intent i = new Intent(SplashActivity.this, PinAuthentication.class);
-			startActivity(i);
+			Intent mIntent = new Intent(SplashActivity.this, PinAuthentication.class);
+			startActivity(mIntent);
 		}
 		finish();
 	}
-
-
 }

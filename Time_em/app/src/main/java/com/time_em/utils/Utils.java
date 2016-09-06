@@ -354,7 +354,7 @@ public class Utils {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("Userids", userIds);
-
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(context,PrefUtils.KEY_COMPANY));
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     (Activity) context, "get",  methodName,
                     postDataParameters, true, "Please wait...");

@@ -45,10 +45,6 @@ public class AddWigdetActvity extends Activity {
 
         View_arrayList_widget.clear();
         View_arrayList_widget=Utils.getWidget(AddWigdetActvity.this);
-       /* if(arrayList_widget!=null && arrayList_widget.size()>0) {
-            arrayList_widget.clear();
-            arrayList_widget.addAll(Utils.getWidget(AddWigdetActvity.this));
-        }*/
         arrayValues();
         inItScreen();
         setOnClickListener();
