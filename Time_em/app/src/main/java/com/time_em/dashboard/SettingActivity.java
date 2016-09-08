@@ -17,6 +17,7 @@ import java.util.concurrent.Semaphore;
 
 
 public class SettingActivity extends Activity{
+    //todo widgets
     private TextView headerInfo,txtHeader,txtBuildVersion,txtBuildVersionOutput,txtBuildSizeOutput;
     private ImageView back,AddButton;
     private Semaphore codeSizeSemaphore = new Semaphore(1, true);

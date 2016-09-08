@@ -26,15 +26,20 @@ import net.sourceforge.zbar.SymbolSet;
 
 public class CameraOpenActivity extends Activity {
 
+    //todo classes
     private Camera mCamera;
     private CameraPreview mPreview;
     private Handler autoFocusHandler;
-    private boolean barcodeScanned = false;
-    private boolean previewing = true;
+
+    //todo widgets
     private ImageScanner scanner;
     private FrameLayout preview;
     private TextView headerText;
     private ImageView back, AddButton;
+
+    //todo variables
+    private boolean barcodeScanned = false;
+    private boolean previewing = true;
     static {
         System.loadLibrary("iconv");
     }

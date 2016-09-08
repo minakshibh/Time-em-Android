@@ -38,24 +38,27 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
+    //todo widgets
     private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader;
     private MySpinner spnProject;
     private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete;
     private LinearLayout recipientSection, uploadAttachment;
     private Button addUpdateTask;
     private EditText hours, comments;
-    private ArrayList<SpinnerData> assignedTasks;
+   //todo classes
     private Time_emJsonParser parser;
     private SpinnerTypeAdapter adapter;
     private SpinnerData selectedSpinnerData;
     private FileUtils fileUtils;
-    private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0",taskId="0";
     private TaskEntry taskEntry=null;
     private JCVideoPlayerStandard uploadedVideo;
-    TimeEmDbHandler dbHandler;
+    private TimeEmDbHandler dbHandler;
+    //todo variables
     public static String UniqueNumber="";
     private String newTaskName="",UserId="";
-    //private String addNewTask="0",taskName="";
+    private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0",taskId="0";
+    //todo array list
+    private ArrayList<SpinnerData> assignedTasks;
     ArrayList<TaskEntry> taskEntries = new ArrayList<>();
 
 

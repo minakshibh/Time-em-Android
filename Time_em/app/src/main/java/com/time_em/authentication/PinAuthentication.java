@@ -29,12 +29,14 @@ import com.time_em.utils.Utils;
 
 public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 
-	private String userEntered;
-	private final int PIN_LENGTH = 4;
+
+	//todo widgets
 	private TextView pinBox0, pinBox1, pinBox2, pinBox3, forgotPin;
 	private TextView [] pinBoxArray;
 	private LinearLayout btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnDelete;
-
+	//todo variables
+	private String userEntered;
+	private final int PIN_LENGTH = 4;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

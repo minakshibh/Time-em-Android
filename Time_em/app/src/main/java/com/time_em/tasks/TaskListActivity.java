@@ -54,6 +54,7 @@ import com.time_em.utils.Utils;
 
 public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
+    //todo widgets
     private ListView taskListview;
     private ImageView addTaskButton, back;
     private ImageButton calbutton;
@@ -65,22 +66,25 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private TimeEmDbHandler dbHandler;
     private TextView headerInfo;
 
+    //todo variables
     private int UserId;
     private int selectedPos = 14;
     private String selectedDate;
     private int first_time = 1, totalWidth = 0;
     private float oneMin, stratPoint, endPoint;
 
+    //todo classes
     private Intent intent;
     private SimpleDateFormat apiDateFormater, dateFormatter, dayFormatter;
     private Time_emJsonParser parser;
     private Context context;
 
+    //todo array list
     private ArrayList<TaskEntry> tasks;
     private ArrayList<Calendar> arrayList;
     private ArrayList<String> backGroundColor_array = new ArrayList<>();
     private ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
-    //for graphs
+    //todo for graphs
     private LinearLayout mainLinearLayout, lay_date, lay_hours;
     private DateSliderAdapter adapter;
     private DatePickerDialog datePickerDialog;

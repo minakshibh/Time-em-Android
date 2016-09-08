@@ -27,10 +27,12 @@ import com.time_em.utils.Utils;
 
 public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 
+	//todo widgets
 	private EditText loginId, password;
 	private Button login;
 	private TextView forgotPassword;
 
+	//todo classes
 	private Time_emJsonParser parser;
 	
     @Override

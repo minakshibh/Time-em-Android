@@ -30,6 +30,7 @@ public class BackgroundLocationService extends Service implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    //todo classes
     private final String TAG = "Bckgd_LocationService";
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;

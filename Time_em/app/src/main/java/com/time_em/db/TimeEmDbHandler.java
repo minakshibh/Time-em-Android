@@ -21,16 +21,14 @@ import com.time_em.utils.Utils;
 
 public class TimeEmDbHandler extends SQLiteOpenHelper {
 
-	// The Android's default system path of your application database.
+	//todo The Android's default system path of your application database.
 	@SuppressLint("SdCardPath")
 	private static String DB_PATH = "/data/data/com.time_em.android/databases/";
-
 	private static String DB_NAME = "TimeEm_db.sqlite";
-
 	private SQLiteDatabase myDataBase;
 
 	private final Context myContext;
-
+	//todo tables names
 	private String TABLE_TASK = "Task";
 	private String TABLE_TEAM = "Team";
 	private String TABLE_ACTIVE_USERS = "ActiveUsers";
@@ -42,7 +40,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_USER_SIGN_INOUT = "UserSignInOut";
 
 
-	// fields for task table
+	//todo fields for task table
 	private String Id = "Id";
 	private String ActivityId = "ActivityId";
 	private String TaskId = "TaskId";
@@ -59,7 +57,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String SignedInHours = "SignedInHours";
 	private String TaskDate = "TaskDate";
 	private String UniqueNumber = "UniqueNumber";
-	// fields for user table
+	//todo fields for user table
 	// private String UserId = "UserId";
 	private String SupervisorId = "SupervisorId";
 	private String UserTypeId = "UserTypeId";
@@ -90,7 +88,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String IsNightShift = "IsNightShift";
 	private String SignedHours = "SignedHours";
 
-	//fields for notification table
+	//todo fields for notification table
 	private String NotificationId = "NotificationId";
 	private String SenderId = "SenderId";
 	private String NotificationType = "NotificationType";
@@ -103,11 +101,11 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String IsOffline = "IsOffline";
 
 
-	// fields for message type table
+	//todo fields for message type table
 	private String MessageId = "MessageId";
 	private String MessageType = "MessageType";
 
-	// fields for GeoGraphs type table
+	//todo fields for GeoGraphs type table
 
 	private String hoursCount = "hoursCount";
 	private String workSiteName = "workSiteName";
@@ -117,7 +115,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String DateData = "DateTime";
 	private String allData = "allData";
 
-	// fields for user Sign in Out type table
+	//todo fields for user Sign in Out type table
 	private String SignInTimeSpent = "SignInTimeSpent";
 	private String SignOutTimeSpent = "SignOutTimeSpent";
 

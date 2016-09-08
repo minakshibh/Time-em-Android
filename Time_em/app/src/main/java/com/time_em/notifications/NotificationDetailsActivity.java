@@ -17,6 +17,7 @@ import java.util.Date;
 public class NotificationDetailsActivity extends Activity {
 
 
+    //todo widgets
     private ImageView sendNotification, back;
     private String attachmentPath = null;
     private TextView headerText;

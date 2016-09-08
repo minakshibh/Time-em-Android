@@ -19,15 +19,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyProfileActivity extends Activity implements AsyncResponseTimeEm {
 
 
+    //todo classes
     private Time_emJsonParser parser;
     private User mUser;
-
+    //todo widgets
     private ImageView editButton, back;
     private CircleImageView circularImageView;
     private TextView headerText,txt_Logout;
     private EditText edt_Name,edt_Email,edt_pass,edt_Phone;
     private TextView txtName;
-
+    //todo variables
     private String Image_path=null;
 
 

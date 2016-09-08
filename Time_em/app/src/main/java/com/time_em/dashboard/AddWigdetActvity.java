@@ -28,14 +28,16 @@ import java.util.ArrayList;
 
 public class AddWigdetActvity extends Activity {
 
+    //todo widgets
     private GridView gridView;
     private TextView headerInfo,dateHeader;
     private ImageView back,AddButton;
     private SelectViewAdapter selectViewAdapter;
     private LinearLayout lay_GridView;
+    //todo array list
     private ArrayList<String> backGroundColor;
     private ArrayList<String> labelName;
-    private  ArrayList<Widget> View_arrayList_widget = new ArrayList<>();
+    private ArrayList<Widget> View_arrayList_widget = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

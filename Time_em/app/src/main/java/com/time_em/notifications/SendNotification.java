@@ -38,28 +38,35 @@ import java.util.HashMap;
 
 public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
+    //todo widgets
     private Spinner spnNotificationType;
     private EditText subject, message;
     private RelativeLayout recipients;
+    private ImageView uploadedImage, back, rightNavigation, imgdelete, videodelete;
+    private TextView txtSpnUsers, headerInfo,txt_Image_Video;
+    private Button sendNotification;
+    private ProgressDialog pDialog;
+    private LinearLayout upload;
+    //todo array list
     private ArrayList<User> userList;
     private ArrayList<Notification> offline_notification=new ArrayList<>();
     private ArrayList<SpinnerData> notificationTypes;
+    //todo classes
     private Time_emJsonParser parser;
     private SpinnerTypeAdapter adapter;
     private String selectedIds, selectedUsers, userChoosenTask, selectedNotificationTypeId, attachmentPath,selectedNotificationTypeName;
-    private ImageView uploadedImage, back, rightNavigation, imgdelete, videodelete;
-    private Button sendNotification;
+    private TimeEmDbHandler dbHandler;
+   //todo variables
     private final String twoHyphens = "--";
     private final String lineEnd = "\r\n";
     private final String boundary = "apiclient-" + System.currentTimeMillis();
     private final String mimeType = "multipart/form-data;boundary=" + boundary;
     private byte[] multipartBody;
-    private ProgressDialog pDialog;
-    private LinearLayout upload;
-    private TextView txtSpnUsers, headerInfo,txt_Image_Video;
-    private FileUtils fileUtils;
     String sendNotificationAPI = Utils.SendNotificationAPI;
-    TimeEmDbHandler dbHandler;
+
+    private FileUtils fileUtils;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

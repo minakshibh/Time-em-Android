@@ -26,13 +26,14 @@ import static android.media.ThumbnailUtils.createVideoThumbnail;
 
 public class TaskDetailActivity extends Activity {
 
+    //todo variables
     private ImageView back, attachment;
     private TextView info, taskDesc, taskComments, hoursWorked, txtDate;
     private TaskEntry taskEntry;
     private TextView AttachementTxt;
     private JCVideoPlayerStandard videoView;
     private String image_url=null;
-    //JCVideoPlayerStandard videoView;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

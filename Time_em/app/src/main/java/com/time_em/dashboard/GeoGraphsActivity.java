@@ -14,8 +14,10 @@ import com.time_em.parser.Time_emJsonParser;
 public class GeoGraphsActivity extends Activity {
 
 
+    //todo classes
     private Time_emJsonParser parser;
     private User mUser;
+    //todo widgets
     private LinearLayout mainLinearLayout, lay_date, lay_hours;
 
 

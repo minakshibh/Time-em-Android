@@ -52,9 +52,8 @@ import org.json.JSONObject;
 
 public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, TabLayout.OnTabSelectedListener {
 
+    //todo widgets
     private LinearLayout lay_indicator;
-    public DependencyResolver resolver;
-    public static User user;
     private LinearLayout changeStatus;
     private String trigger="";
     private ImageView userStatus, imgStatus;
@@ -65,7 +64,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private LinearLayout AddWigdetView;
     private TextView AddNewWidgetTextVew;
 
-
+    //todo classes
+    public DependencyResolver resolver;
+    public static User user;
     private Time_emJsonParser parser;
     private Double maxValueTask = 0.0, maxValueSignInOut = 0.0;
     private TabLayout tabLayout;
@@ -75,6 +76,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private Intent intent;
     private Context context;
 
+    //todo array list
     private ArrayList<TaskEntry> arrayList = new ArrayList<>();
     private ArrayList<TaskEntry> arrayList_SignInOut = new ArrayList<>();
     private ArrayList<Notification> notifications = new ArrayList<>();
@@ -105,7 +107,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         setTapBar();
         startLocationService(getApplicationContext());
 
-        // apis
+        //todo apis
         if(resolver.pref().getApiCheck()) {
             loadProjects();
             getTaskList();
@@ -270,7 +272,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
             }
         });
-        recyclerView.setAdapter(adapter);// set adapter on recyclerview
+        recyclerView.setAdapter(adapter);//todo set adapter on recycler view
         adapter.notifyDataSetChanged();
     }
 
@@ -283,7 +285,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
             }
         });
-        recyclerView.setAdapter(adapter);// set adapter on recyclerview
+        recyclerView.setAdapter(adapter);//todo set adapter on recyclerview
         adapter.notifyDataSetChanged();
     }
 
@@ -423,7 +425,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     public class GraphAdapter extends RecyclerView.Adapter<GraphAdapter.ViewHolder> {
-
         private final ArrayList<TaskEntry> items;
         private final OnItemClickListener listener;
         private final boolean screen;
@@ -565,7 +566,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
 
     public class ViewPagerAdapter extends PagerAdapter {
-
         Context context;
         ArrayList<TimerTask> arrayList;
         LayoutInflater inflater;
@@ -616,7 +616,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     maxValue = maxValue / 4;
                 }
                 maxValueTask = Double.valueOf(maxValue * 6);
-
+                //todo user task graphs
                 firstGraphView();
             } else {
                 maxValue = maxValueSignInOut.intValue();
@@ -707,17 +707,17 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 }
              dbHandler.updateDeleteOffline(tasks_delete, "select date");
             }
-            // for delete offline notification values
+            //todo for delete offline notification values
             notifications_delete.clear();
             // notifications_delete.addAll(dbHandler.getNotificationsByType("true",true));
             dbHandler.deleteNotificationOffline("true");
 
-            syncDataCheck();//checking for offline data
+            syncDataCheck();//todo checking for offline data
             deleteIds.clear(); // delete task ids.
         } else if(methodName.equals(Utils.GetAssignedTaskList)){
 
             ArrayList<SpinnerData> assignedTasks = parser.parseAssignedProjects(output);
-            dbHandler.updateProjectTasks(assignedTasks);//update data for notification type
+            dbHandler.updateProjectTasks(assignedTasks);//todo update data for notification type
 
 
         } else if (methodName.equals(Utils.getTaskListAPI)) {
@@ -728,7 +728,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         } else if (methodName.equals(Utils.getNotificationType)) {
             Log.e("output", ",,, ::: " + output);
             ArrayList<SpinnerData> notificationTypes = parser.parseNotificationType(output);
-            dbHandler.updateNotificationType(notificationTypes);  //update data for notification type
+            dbHandler.updateNotificationType(notificationTypes);  //todo update data for notification type
 
         } else if (methodName.equals(Utils.getActiveUserList)) {
             Log.e("output", ",,, ::: " + output);
@@ -786,11 +786,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private void syncDataCheck() {
         imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_green));
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
-        //for notification
+        //todo for notification
         notifications.clear();
         notifications.addAll(dbHandler.getNotificationsByType("true", true, "true"));
         Log.e("notification size", "" + notifications.size());
-        //for delete notification
+        //todo for delete notification
         if (notifications != null && notifications.size() > 0) {
             imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_red));
         }
@@ -798,7 +798,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         tasks.clear();
         tasks.addAll(dbHandler.getTaskEnteries(userId, "true", true));
         Log.e("task size", "" + tasks.size());
-        // for delete task
+        //todo for delete task
         if (tasks != null && tasks.size() > 0) {
             imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_red));
         }
@@ -811,13 +811,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         int int_userId=getUserId();
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
 
-        //for notification
+        //todo for notification
         notifications.clear();
         notifications.addAll(dbHandler.getNotificationsByType("true", true, "true"));
         Log.e("notification size", "" + notifications.size());
 
 
-        //for task
+        //todo for task
         tasks.clear();
         tasks.addAll(dbHandler.getTaskEnteries(int_userId, "true", true));
         if(tasks.size()>0 | deleteIds.size()>0 | notifications.size()>0) {
@@ -831,7 +831,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     private void syncUploadAPI(ArrayList<TaskEntry> tasks, ArrayList<String> deleteIds, ArrayList<Notification> notifications) {
 
-        // for task
+        //todo for task
         ArrayList<HashMap<String, String>> arrayHashMap = new ArrayList<>();
         for (int i = 0; i < tasks.size(); i++) {
             HashMap<String, String> parameters = new HashMap<String, String>();
@@ -870,7 +870,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             arrayHashMap.add(parameters);
         }
 
- 		/*for notification*/
+ 		//todo for notification
         ArrayList<HashMap<String, String>> array_HashMapNotification = new ArrayList<>();
         for (int i = 0; i < notifications.size(); i++) {
             HashMap<String, String> parameters = new HashMap<String, String>();
@@ -932,10 +932,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void syncUploadFile(SyncData syncData) {
-
         String ImagePath = null;
-
-        //for task file upload
+        //todo for task file upload
         for (int i = 0; i < syncData.getArray_taks().size(); i++) {
 
             ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
@@ -961,7 +959,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
         }
 
-        //for notification file upload
+        //todo for notification file upload
         for (int i = 0; i < syncData.getArray_noitification().size(); i++) {
 
             ArrayList<MultipartDataModel> dataModels = new ArrayList<>();
@@ -989,12 +987,12 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     }
     public static void startLocationService(Context context)
-    {  //start services
+    {  //todo start services
         stopLocationService(context);
         context.startService(new Intent(context,BackgroundLocationService.class));
         }
     public static void stopLocationService(Context context)
-    {  //stop services
+    {  //todo stop services
         context.stopService(new Intent(context,BackgroundLocationService.class));
         }
     private void addWidget()

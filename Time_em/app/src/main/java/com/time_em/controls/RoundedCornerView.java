@@ -12,10 +12,11 @@ import android.widget.LinearLayout;
 
 public class RoundedCornerView extends LinearLayout {
     private final static float CORNER_RADIUS = 8.0f;
+    private float cornerRadius;
 
     private Bitmap maskBitmap;
     private Paint paint, maskPaint;
-    private float cornerRadius;
+
 
     public RoundedCornerView(Context context) {
         super(context);

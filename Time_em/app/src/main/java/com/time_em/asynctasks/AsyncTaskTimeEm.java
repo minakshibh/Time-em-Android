@@ -15,17 +15,24 @@ import org.json.JSONObject;
 
 public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 
+	//todo classes
 	private Activity activity;
 	private Context context;
 	public AsyncResponseTimeEm delegate = null;
-	private String result = "";	
-	private  ProgressDialog pDialog;
-	private String methodName, message,method_type,email;
 	private HashMap<String, String> postDataParameters;
-	private boolean displayProgress,token;
 	private JSONObject jsonObject = new JSONObject();
-	
+
+	//todo varibles
+	private String result = "";
 	private String name,pass;
+	private boolean displayProgress,token;
+	private String methodName, message,method_type,email;
+
+	//todo widget
+	private ProgressDialog pDialog;
+
+	
+
 	
 	public AsyncTaskTimeEm(Activity activity, String method_type, String methodName, HashMap<String, String> postDataParameters, boolean displayDialog, String message) {
 		this.activity = activity;

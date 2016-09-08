@@ -36,17 +36,20 @@ import com.time_em.utils.Utils;
 
 public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 
+	//todo widgets
 	private ListView taskListview;
 	private ArrayList<User> team;
 	private Time_emJsonParser parser;
+	private ImageButton callButton;
 //	private HorizontalScrollView sView;
 	private TextView swipeInfo, headerText;
 	private ImageView back, addTask;
 	private RecyclerView recyclerView;
 	private TimeEmDbHandler dbHandler;
+	//todo variables
 	private int array_position=0;
 	private String SelectedUserId="";
-	private ImageButton calbutton;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,8 +74,8 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		back = (ImageView)findViewById(R.id.back);
 		addTask = (ImageView) findViewById(R.id.AddButton);
 		headerText = (TextView)findViewById(R.id.headerText);
-		calbutton = (ImageButton) findViewById(R.id.calbutton);
-		calbutton.setVisibility(View.GONE);
+		callButton = (ImageButton) findViewById(R.id.calbutton);
+		callButton.setVisibility(View.GONE);
 		recyclerView.setVisibility(View.GONE);
 		swipeInfo.setText("Swipe left to Sign In/ Out some user");
 		addTask.setVisibility(View.GONE);

@@ -26,12 +26,14 @@ import java.util.HashMap;
 
 public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 
+	// todo widget
 	private EditText Email;
 	private TextView info,txt_enterEmail;
 	private ImageView back;
 	private Button submit;
-
+	//todo variables
 	private String trigger;
+	//todo classes
 	private Time_emJsonParser parser;
 
 	@Override

@@ -25,9 +25,11 @@ import com.time_em.utils.Utils;
 
 public class Time_emJsonParser {
 
+	//todo classes
 	public JSONObject jObject;
 	public Context context;
 	public boolean isError;
+	//todo variables
 	public String message;
 
 	public Time_emJsonParser(Context context) {

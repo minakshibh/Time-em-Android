@@ -29,14 +29,17 @@ import java.util.ArrayList;
 
 public class UserSelectionActivity extends Activity {
 
+    //todo widgets
     private ListView userListView;
     private Button done;
     private UserAdapter adapter;
-    private ArrayList<User> userList;
-    private ArrayList<String> selectedUserIds;
-    private String selectedIds;
     private ImageView back, close;
     private TextView headerInfo;
+    //todo array list
+    private ArrayList<User> userList;
+    private ArrayList<String> selectedUserIds;
+   //todo variables
+    private String selectedIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

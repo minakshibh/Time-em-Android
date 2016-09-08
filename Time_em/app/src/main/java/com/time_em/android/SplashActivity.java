@@ -18,7 +18,8 @@ import com.time_em.utils.Utils;
 public class SplashActivity extends Activity {
 	public DependencyResolver resolver;
 	private BroadcastReceiver receiver;
-	Context mContext;
+	private Context mContext;
+	//todo variables
 	private boolean isRegistered = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

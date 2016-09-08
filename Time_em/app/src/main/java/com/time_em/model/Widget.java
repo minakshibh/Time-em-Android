@@ -1,8 +1,6 @@
 package com.time_em.model;
 
-/**
- * Created by krishnauser2 on 7/1/2016.
- */
+
 public class Widget {
     String color,name;
     int position;

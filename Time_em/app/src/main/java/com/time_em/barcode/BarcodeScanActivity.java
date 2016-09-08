@@ -28,21 +28,7 @@ import java.util.HashMap;
 
 public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm {
 
-
-    private boolean refresh;
-    private String barCode="";
-    private String nfcCode="";
-
-    public static ArrayList<String> arrayList_scanCode = new ArrayList<>();
-    private ArrayList<User> arrayListUsers = new ArrayList<>();
-    private ArrayList<User> aL_UsersExistDb = new ArrayList<>();
-    private ArrayList<User> aL_UsersNotExistDb = new ArrayList<>();
-
-    private TimeEmDbHandler dbHandler;
-    private User user = new User();
-    private ListAdapter adapter;
-    private Time_emJsonParser parser;
-
+    //todo widgets
     private RelativeLayout lay_listView;
     private ListView listView;
     private ImageScanner scanner;
@@ -50,6 +36,22 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
     private TextView headerText;
     private TextView btn_signIn,btn_signOut;
     private ImageView back, AddButton;
+    //todo array list
+    public static ArrayList<String> arrayList_scanCode = new ArrayList<>();
+    private ArrayList<User> arrayListUsers = new ArrayList<>();
+    private ArrayList<User> aL_UsersExistDb = new ArrayList<>();
+    private ArrayList<User> aL_UsersNotExistDb = new ArrayList<>();
+
+    //todo classes
+    private TimeEmDbHandler dbHandler;
+    private User user = new User();
+    private ListAdapter adapter;
+    private Time_emJsonParser parser;
+
+    //todo variables
+    private boolean refresh;
+    private String barCode="";
+    private String nfcCode="";
     private String trigger="";
 
 

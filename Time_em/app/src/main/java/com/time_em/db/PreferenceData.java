@@ -7,12 +7,14 @@ import com.time_em.db.Interface.IPreferenceData;
 
 public class PreferenceData implements IPreferenceData {
 
+    //todo variables
     private static final String USER_ID = "userid";
     private static final String ACTIVITY_ID = "activityid";
     private static final String API_CHECK = "apicheck";
     private static final String PIN = "apicheck";
 
 
+    //todo classes
     SharedPreferences prefs;
     Context context;
 

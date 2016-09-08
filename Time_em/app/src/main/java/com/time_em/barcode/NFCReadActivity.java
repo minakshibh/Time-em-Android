@@ -28,10 +28,12 @@ import java.util.Arrays;
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class NFCReadActivity extends Activity  {
 
+    //todo variables
     private static final String MIME_TYPE="vnd.secret/agent.man";
     private static final Charset US_ASCII=Charset.forName("US-ASCII");
     public static final String MIME_TEXT_PLAIN = "text/plain";
     public static final String TAG = "NfcDemo";
+    //todo classes
     private NfcAdapter mNfcAdapter=null;
 
 

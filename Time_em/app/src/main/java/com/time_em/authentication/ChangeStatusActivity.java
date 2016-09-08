@@ -19,10 +19,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ChangeStatusActivity extends Activity implements AsyncResponseTimeEm{
-	
+
+	//todo widget
 	private TextView greetings, information;
 	private TextView changeStatus;
 	private ImageView cancel;
+
+	//todo classes
 	private Time_emJsonParser parser;
 	private Resources res;
 	

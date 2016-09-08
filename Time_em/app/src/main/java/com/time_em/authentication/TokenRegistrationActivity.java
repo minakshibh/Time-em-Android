@@ -14,6 +14,7 @@ import com.time_em.utils.Utils;
 
 public class TokenRegistrationActivity extends Activity implements AsyncResponseTimeEm {
 
+	//todo widgets
 	private EditText txtToken;
 	private Button register;
 	

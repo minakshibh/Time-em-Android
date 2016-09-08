@@ -36,14 +36,19 @@ import java.util.HashMap;
 
 public class NotificationListActivity extends Activity implements AsyncResponseTimeEm{
 
-    private ListView notificationListView;
-    private ArrayList<Notification> notifications=new ArrayList<>();
-    private Time_emJsonParser parser;
+    //todo widgets
+    private ImageView notices, messages, files;
     private ImageView sendNotification, back;
     private TextView headerText;
-    private String selectedNotificationType = "Notice";
+    private ListView notificationListView;
+    //todo classes
+    private ArrayList<Notification> notifications=new ArrayList<>();
+    private Time_emJsonParser parser;
     private TimeEmDbHandler dbHandler;
-    private ImageView notices, messages, files;
+    //todo variables
+    private String selectedNotificationType = "Notice";
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

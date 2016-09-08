@@ -29,10 +29,14 @@ import java.util.HashMap;
 public class CompanyListActivity extends Activity implements AsyncResponseTimeEm {
 
 
+    // todo widget
     private ImageView back,editButton;
     private TextView headerText;
     private ListView listView;
+    //todo widget
     private Time_emJsonParser parser;
+
+    //todo array list
     private ArrayList<Company> arrayList_company;
 
     @Override
