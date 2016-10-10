@@ -231,7 +231,7 @@ public class FileUtils {
         return inSampleSize;
     }
 
-    public void sendMultipartRequest(final String APIName, ArrayList<MultipartDataModel> data){
+    public void sendMultipartRequest(final String message, final String APIName, ArrayList<MultipartDataModel> data){
 
         Log.e("multipart","Send calling");
 
@@ -265,7 +265,11 @@ public class FileUtils {
 
                    // pDialog.dismiss();
                     if(response.statusCode==200) {
-                        Utils.showToast(context, "File uploaded successfully.");
+                        if(message.equalsIgnoreCase("home")) {
+                            Utils.showToast(context, "Sync completed successfully.");
+                        }else{
+                            Utils.showToast(context, "File uploaded successfully.");
+                        }
 
                       /*  if (APIName.contains("AddUpdateUserTaskActivity")) {
                             Utils.alertMessage(context, "Task Added successfully.");
@@ -378,7 +382,7 @@ public class FileUtils {
         }
     }
 
-    public void onRecordVideoResult(Activity Activity,Intent data, JCVideoPlayerStandard uploadedVideo) {
+    public void onRecordVideoResult(Activity activity,Intent data, JCVideoPlayerStandard uploadedVideo) {
         Log.e("video path:",""+attachmentPath);
       // Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(attachmentPath), 500,500);
         try {
@@ -393,11 +397,11 @@ public class FileUtils {
         }
     }
 
-    public static String getUniqueNumber()
+    public static String getUniqueNumber(Activity activity)
     {
         String UniqueNumber="";
         long timeStamp = System.currentTimeMillis();
-        UniqueNumber= HomeActivity.user.getId()+""+timeStamp;
+        UniqueNumber= Utils.getSharedPrefs(activity,PrefUtils.KEY_USER_ID)+""+timeStamp;
         return UniqueNumber;
         }
 

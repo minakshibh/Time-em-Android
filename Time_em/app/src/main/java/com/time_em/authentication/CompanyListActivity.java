@@ -13,11 +13,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.Company;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.PrefUtils;
@@ -33,9 +35,11 @@ public class CompanyListActivity extends Activity implements AsyncResponseTimeEm
     private ImageView back,editButton;
     private TextView headerText;
     private ListView listView;
-    //todo widget
-    private Time_emJsonParser parser;
+    private ProgressBar progressBar;
 
+    //todo class
+    private Time_emJsonParser parser;
+    private TimeEmDbHandler db;
     //todo array list
     private ArrayList<Company> arrayList_company;
 
@@ -53,6 +57,7 @@ public class CompanyListActivity extends Activity implements AsyncResponseTimeEm
 
 
     private void initScreen() {
+        db=new TimeEmDbHandler(CompanyListActivity.this);
         editButton = (ImageView) findViewById(R.id.AddButton);
         editButton.setVisibility(View.INVISIBLE);
         back = (ImageView) findViewById(R.id.back);
@@ -61,12 +66,14 @@ public class CompanyListActivity extends Activity implements AsyncResponseTimeEm
         headerText.setText("Choose Company");
         headerText.setTextSize(20);
         listView=(ListView)findViewById(R.id.listView);
+        progressBar=(ProgressBar)findViewById(R.id.progressBar);
+
 
     }
 
 
     private void getCompanyList() {
-      if(Utils.isNetworkAvailable(CompanyListActivity.this)) {
+      //if(Utils.isNetworkAvailable(CompanyListActivity.this)) {
           HashMap<String, String> postDataParameters = new HashMap<String, String>();
           String userId = Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID);
           postDataParameters.put("userId", String.valueOf(userId));
@@ -77,9 +84,9 @@ public class CompanyListActivity extends Activity implements AsyncResponseTimeEm
                   postDataParameters, true, "Please wait...");
           mWebPageTask.delegate = (AsyncResponseTimeEm) CompanyListActivity.this;
           mWebPageTask.execute();
-      }else{
+      /*}else{
           Utils.alertMessage(CompanyListActivity.this,Utils.network_error);
-      }
+      }*/
     }
     public class ListAdapter extends BaseAdapter {
         private Context context;
@@ -125,7 +132,10 @@ public class CompanyListActivity extends Activity implements AsyncResponseTimeEm
                 @Override
                 public void onClick(View v) {
                    // Toast.makeText(CompanyListActivity.this,"click",Toast.LENGTH_SHORT).show();
-                    PrefUtils.setStringPreference(CompanyListActivity.this,PrefUtils.KEY_COMPANY,arrayList_company.get(position).getKey());
+                    PrefUtils.setStringPreference(CompanyListActivity.this,
+                            PrefUtils.KEY_COMPANY,arrayList_company.get(position).getKey());
+                    PrefUtils.setStringPreference(CompanyListActivity.this,
+                            PrefUtils.KEY_COMPANY_NAME,arrayList_company.get(position).getValue());
                     Intent mIntent=new Intent(CompanyListActivity.this, HomeActivity.class);
                     mIntent.putExtra("trigger", getIntent().getStringExtra("trigger"));
                     startActivity(mIntent);
@@ -138,9 +148,32 @@ public class CompanyListActivity extends Activity implements AsyncResponseTimeEm
     @Override
     public void processFinish(String output, String methodName) {
         if(methodName.equalsIgnoreCase(Utils.GetUserCompaniesList)){
+
+            progressBar.setVisibility(View.VISIBLE);
             arrayList_company=new ArrayList<>();
             parser=new Time_emJsonParser(CompanyListActivity.this);
             arrayList_company=parser.parseCompanyList(output);
+
+            String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
+            db.updateCompany(arrayList_company,getSPrefsId);
+            arrayList_company.clear();
+            arrayList_company.addAll(db.getCompany(getSPrefsId));
+            progressBar.setVisibility(View.GONE);
+            if(arrayList_company!=null)
+            {
+                if(arrayList_company.size()==1){
+
+
+                    PrefUtils.setStringPreference(CompanyListActivity.this,PrefUtils.KEY_COMPANY,arrayList_company.get(0).getKey());
+                    PrefUtils.setStringPreference(CompanyListActivity.this,
+                            PrefUtils.KEY_COMPANY_NAME,arrayList_company.get(0).getValue());
+                    Intent mIntent=new Intent(CompanyListActivity.this, HomeActivity.class);
+                    mIntent.putExtra("trigger", getIntent().getStringExtra("trigger"));
+                    startActivity(mIntent);
+                    finish();
+                }
+            }
+
            // arrayList_company.addAll(parser.parseCompanyList(output));
 
 

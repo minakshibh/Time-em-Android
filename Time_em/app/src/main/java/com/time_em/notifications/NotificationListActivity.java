@@ -26,8 +26,10 @@ import com.time_em.inappbilling.PurchaseActivity;
 import com.time_em.inappbilling.util.Purchase;
 import com.time_em.model.Notification;
 import com.time_em.parser.Time_emJsonParser;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,9 +40,11 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
     //todo widgets
     private ImageView notices, messages, files;
+    private TextView txt_notices,txt_messages,txt_files;
     private ImageView sendNotification, back;
     private TextView headerText;
     private ListView notificationListView;
+    private LinearLayout layout_notification,layout_message;
     //todo classes
     private ArrayList<Notification> notifications=new ArrayList<>();
     private Time_emJsonParser parser;
@@ -70,10 +74,20 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         notices = (ImageView)findViewById(R.id.notices);
         messages = (ImageView) findViewById(R.id.messages);
         files = (ImageView)findViewById(R.id.files);
+        txt_notices=(TextView)findViewById(R.id.txt_notices);
+        txt_messages=(TextView)findViewById(R.id.txt_messages);
+        txt_files=(TextView)findViewById(R.id.txt_files);
+
+        layout_notification=(LinearLayout)findViewById(R.id.layout_notification);
+        layout_message=(LinearLayout)findViewById(R.id.layout_message);
+
+       /* txt_notices.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
+        txt_messages.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+        txt_files.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
 
         notices.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
         messages.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
-        files.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+        files.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));*/
 
         headerText.setText("Notifications");
         dbHandler = new TimeEmDbHandler(NotificationListActivity.this);
@@ -84,9 +98,16 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     private void setUpClickListeners() {
         sendNotification.setOnClickListener(listener);
         back.setOnClickListener(listener);
-        notices.setOnClickListener(listener);
+
+   /*     notices.setOnClickListener(listener);
         messages.setOnClickListener(listener);
         files.setOnClickListener(listener);
+        txt_notices.setOnClickListener(listener);
+        txt_messages.setOnClickListener(listener);
+        txt_files.setOnClickListener(listener);
+        layout_notification.setOnClickListener(listener);
+        layout_message.setOnClickListener(listener);*/
+
         notificationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -100,38 +121,52 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(v == notices){
+            if(v == notices | v==txt_notices | v==layout_notification){
+
+                txt_notices.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
+                txt_messages.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+                txt_files.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+
                 notices.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
                 messages.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
                 files.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
 
                 selectedNotificationType = "Notice";
                 loadNotificationsByType();
-            }else if(v == messages){
+            }else if(v == messages | v==txt_messages | v==layout_message){
+                txt_notices.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+                txt_messages.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
+                txt_files.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+
                 notices.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
                 messages.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
                 files.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
 
                 selectedNotificationType = "Message";
                 loadNotificationsByType();
-            }else if(v == files){
+            }else if(v == files | v==txt_files){
+                txt_notices.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+                txt_messages.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
+                txt_files.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
+
                 notices.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
                 messages.setBackgroundColor(getResources().getColor(R.color.gradientBgEnd));
                 files.setBackgroundColor(getResources().getColor(R.color.gradientBgStart));
 
                 selectedNotificationType = "File";
                 loadNotificationsByType();
-            }else if(v == back){
+            }
+            else if(v == back){
                 finish();
             }else if(v == sendNotification){
                 String purchase=Utils.getSharedPrefs(getApplicationContext(),"notification_purchase");
-                if(purchase.equalsIgnoreCase("")){
+                /*if(purchase.equalsIgnoreCase("")){
                 Intent intent = new Intent(NotificationListActivity.this, PurchaseActivity.class);
                 startActivity(intent);
-                }else{
+                }else{*/
                     Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);
                     startActivity(intent);
-                }
+                //}
                 //showPurchaseDialog();
 
             }
@@ -139,17 +174,19 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     };
 
     private void getNotificationList() {
-
-            String timeStamp = Utils.getSharedPrefs(NotificationListActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.notificationTimeStampStr));
+        String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID);
+        String getCompanyId=PrefUtils.getStringPreference(getApplicationContext(),PrefUtils.KEY_COMPANY);
+            String timeStamp = Utils.getSharedPrefs(NotificationListActivity.this, getSPrefsId +getCompanyId+ getResources().getString(R.string.notificationTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
                 timeStamp = "";
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
-            postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
-            postDataParameters.put("timeStamp", timeStamp);
+            postDataParameters.put("UserId", getSPrefsId);
+            postDataParameters.put("timeStamp", "");
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(NotificationListActivity.this,PrefUtils.KEY_COMPANY));
 
-            Log.e("ss","ss"+postDataParameters.toString());
+            Log.e(""+Utils.GetNotificationAPI,""+postDataParameters.toString());
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                     NotificationListActivity.this, "post", Utils.GetNotificationAPI,
                     postDataParameters, true, "Please wait...");
@@ -287,7 +324,8 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
     private void loadNotificationsByType(){
         notifications.clear();
-        notifications = dbHandler.getNotificationsByType(selectedNotificationType,false,"false");
+        String companyId= PrefUtils.getStringPreference(NotificationListActivity.this,PrefUtils.KEY_COMPANY);
+        notifications = dbHandler.getNotificationsByType(selectedNotificationType,false,"false",companyId);
         notificationListView.setAdapter(new NotificationAdapter());
     }
 
@@ -296,11 +334,13 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
      //   Utils.alertMessage(NotificationListActivity.this, output);
-        notifications = parser.parseNotificationList(output);
-        dbHandler.updateNotifications(notifications);
+       String companyId= PrefUtils.getStringPreference(NotificationListActivity.this,PrefUtils.KEY_COMPANY);
+        if(methodName.equalsIgnoreCase(Utils.GetNotificationAPI)) {
+            notifications = parser.parseNotificationList(output);
+            dbHandler.updateNotifications(notifications);
 
-        loadNotificationsByType();
-
+            loadNotificationsByType();
+        }
         /*if(methodName.equals(Utils.getTaskListAPI)) {
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(NotificationListActivity.this);

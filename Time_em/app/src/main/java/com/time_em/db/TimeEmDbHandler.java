@@ -4,19 +4,23 @@ import java.sql.Time;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.time_em.model.Company;
 import com.time_em.model.UserWorkSite;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.model.WorkSiteList;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 public class TimeEmDbHandler extends SQLiteOpenHelper {
@@ -38,6 +42,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_GEOGRAPH = "GeoGraph";
 	private String TABLE_USERTASK = "UserTask";
 	private String TABLE_USER_SIGN_INOUT = "UserSignInOut";
+	private String TABLE_COMPANY = "company";
 
 
 	//todo fields for task table
@@ -119,6 +124,10 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String SignInTimeSpent = "SignInTimeSpent";
 	private String SignOutTimeSpent = "SignOutTimeSpent";
 
+	//todo fields for COMPANY table
+	private String Key = "key";
+	private String CompanyName = "companyName";
+
 
 	SQLiteCursor cursor;
 
@@ -166,7 +175,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ IsNightShift + " TEXT," + SignedHours + " TEXT)";
 
 		String CREATE_ACTIVE_USERS_TABLE = "CREATE TABLE if NOT Exists " + TABLE_ACTIVE_USERS
-				+ "(" + Id + " TEXT," + FullName + " TEXT)";
+				+ "(" + Id + " TEXT," + FullName + " TEXT,"+ CompanyId + " TEXT)";
 
 		String CREATE_NOTIFICATION_TABLE = "CREATE TABLE if NOT Exists " + TABLE_NOTIFICATIONS
 				+ "(" + NotificationId + " TEXT," + SenderId + " TEXT," + NotificationType + " TEXT,"
@@ -179,21 +188,23 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
 
 		String CREATE_PROJECT_TASKS = "CREATE TABLE if NOT Exists " + TABLE_PROJECT_TASK
-				+ "(" + MessageId + " TEXT," + MessageType + " TEXT)";
+				+ "(" + MessageId + " TEXT," + MessageType + " TEXT,"+ CompanyId + " TEXT)";
 
 		String CREATE_GEO_GRAPHS = "CREATE TABLE if NOT Exists " + TABLE_GEOGRAPH
 				+ "(" + UserId + " TEXT,"+ allData + " TEXT," + DateData + " TEXT)";
 
 		String CREATE_USERTASK = "CREATE TABLE if NOT Exists " + TABLE_USERTASK
-				+ "(" + CreatedDate + " TEXT," + TimeSpent + " TEXT)";
+				+ "(" + CreatedDate + " TEXT," + TimeSpent + " TEXT," +CompanyId + " TEXT)";;
 
 		String CREATE_USER_SIGN_INOUT = "CREATE TABLE if NOT Exists " + TABLE_USER_SIGN_INOUT
-				+ "(" + CreatedDate + " TEXT," + SignInTimeSpent + " TEXT," + SignOutTimeSpent + " TEXT)";
+				+ "(" + CreatedDate + " TEXT," + SignInTimeSpent + " TEXT," + SignOutTimeSpent + " TEXT,"+CompanyId + " TEXT)";
+
+		String CREATE_COMPANY = "CREATE TABLE if NOT Exists " + TABLE_COMPANY
+				+ "(" + CompanyId + " TEXT," + UserId + " TEXT," + CompanyName + " TEXT)";
+
 
 		db.execSQL(CREATE_TASK_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
-
-
 		db.execSQL(CREATE_ACTIVE_USERS_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TYPE_TABLE);
@@ -201,6 +212,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.execSQL(CREATE_GEO_GRAPHS);
 		db.execSQL(CREATE_USERTASK);
 		db.execSQL(CREATE_USER_SIGN_INOUT);
+		db.execSQL(CREATE_COMPANY);
 	}
 
 	@Override
@@ -208,6 +220,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 	}
 
+	//todo delete all tables
 	public void deleteTaskTable() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_TASK, null, null);
@@ -251,26 +264,34 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.delete(TABLE_USERTASK, null, null);
 		db.close();
 	}
-	public void delete_USER_SIGNINOUT() {
+	public void deleteUSER_SIGNINOUT() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_USER_SIGN_INOUT, null, null);
 		db.close();
 	}
+	public void deleteCOMPANY() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_COMPANY, null, null);
+		db.close();
+	}
+
+	//todo update and get from all users
 	public void updateActiveUsers(ArrayList<User> activeUsers) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < activeUsers.size(); i++) {
 			User user = activeUsers.get(i);
 			String selectQuery = "SELECT  * FROM " + TABLE_ACTIVE_USERS + " where "
-					+ Id + "=" + user.getId();
+					+ Id + "=" + user.getId() +" AND "+ CompanyId + "=" + user.getCompanyId();
 			try {
 				ContentValues values = new ContentValues();
-
 				values.put(Id, String.valueOf(user.getId()));
 				values.put(FullName, user.getFullName());
+				values.put(CompanyId, String.valueOf(user.getCompanyId()));
 
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if (cursor.moveToFirst()) {
-						db.update(TABLE_ACTIVE_USERS, values, Id + " = ?",new String[] { String.valueOf(user.getId()) });
+//db.update(TABLE_TEAM, values, UserId + " = ? AND " + CompanyId + " = ?", new String[] { String.valueOf(user.getId()),companyId });
+						db.update(TABLE_ACTIVE_USERS, values, Id + " = ? AND " + CompanyId + " = ?",new String[] { String.valueOf(user.getId()),String.valueOf(user.getCompanyId())});
 				} else {
 						db.insert(TABLE_ACTIVE_USERS, null, values);
 				}
@@ -392,6 +413,11 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < notificationList.size(); i++) {
 			Notification notification = notificationList.get(i);
+
+
+			String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS + " where "
+					+ NotificationId + "=\"" + notification.getNotificationId()+"\""+
+					" AND "+ CompanyId + "=\"" + notification.getCompanyId()+"\"";
 			try {
 
 				ContentValues values = new ContentValues();
@@ -412,7 +438,16 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(UniqueNumber, notification.getUniqueNumber());
 				values.put(CompanyId, notification.getCompanyId());
 
-				db.insert(TABLE_NOTIFICATIONS, null, values);
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+					// updating row
+					//db.update(TABLE_TEAM, values, UserId + " = ? AND " + CompanyId + " = ?", new String[] { String.valueOf(user.getId()),companyId })
+					db.update(TABLE_NOTIFICATIONS, values, NotificationId + " = ? AND "+CompanyId + " = ?",
+							new String[]{String.valueOf(notification.getNotificationId()),String.valueOf(notification.getCompanyId())});
+				} else {
+					db.insert(TABLE_NOTIFICATIONS, null, values);
+				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -420,17 +455,18 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public ArrayList<Notification> getNotificationsByType(String notificationType,boolean all,String str_IsOffline) {
+	public ArrayList<Notification> getNotificationsByType(String notificationType,
+														  boolean all,String str_IsOffline,String companyId) {
 		ArrayList<Notification> notifications = new ArrayList<Notification>();
 		String selectQuery=null;
 		if(all){
 			selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS+ " where "
-					+ IsOffline + "=\"" + notificationType + "\"";
+					+ IsOffline + "=\"" + str_IsOffline + "\""+" AND " + CompanyId + "=\"" + companyId + "\"";
 		}
 		else {
-			 selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS
-					+ " where "
-					+ NotificationType + "=\"" + notificationType + "\"" +" AND " + IsOffline + "=\"" + str_IsOffline + "\"";
+			 selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS +
+					 " where " + IsOffline + "=\"" + str_IsOffline + "\"" +" AND " + CompanyId + "=\"" + companyId + "\"";
+					//+ NotificationType + "=\"" + notificationType + "\"" +" AND " + IsOffline + "=\"" + str_IsOffline + "\"";
 		}
 		SQLiteDatabase db = this.getReadableDatabase();
 
@@ -529,7 +565,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		for (int i = 0; i < team.size(); i++) {
 			User user = team.get(i);
 			String selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where "
-					+ UserId + "=" + user.getId();
+					+ UserId + "=" + user.getId()+ " AND "+CompanyId + "=\"" + user.getCompanyId() + "\"";;
 			try {
 				ContentValues values = new ContentValues();
 
@@ -565,12 +601,13 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(IsNightShift, String.valueOf(user.isNightShift()));
 				values.put(SignedHours, String.valueOf(user.getSignedHours()));
 
+				//db.update(TABLE_GEOGRAPH, values, UserId + " = ? AND " + DateData + " = ?",new String[] { strUserId,str_dateData });
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if (cursor.moveToFirst()) {
 					if(!user.isActive())
 						db.delete(TABLE_TEAM, UserId + " = ?", new String[] { String.valueOf(user.getId()) });
 					else
-						db.update(TABLE_TEAM, values, UserId + " = ?", new String[] { String.valueOf(user.getId()) });
+						db.update(TABLE_TEAM, values, UserId + " = ? AND " + CompanyId + " = ?", new String[] { String.valueOf(user.getId()),String.valueOf(user.getCompanyId())});
 				} else {
 					if(user.isActive())
 						db.insert(TABLE_TEAM, null, values);
@@ -597,10 +634,10 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	 * }catch(Exception e){ e.printStackTrace(); } // db.close(); }
 	 */
 
-	public ArrayList<User> getActiveUsers() {
+	public ArrayList<User> getActiveUsers(String companyId) {
 		ArrayList<User> users = new ArrayList<User>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_ACTIVE_USERS;
+		String selectQuery = "SELECT  * FROM " + TABLE_ACTIVE_USERS+" where "+CompanyId+ "=\"" + companyId + "\"";
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
@@ -608,10 +645,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			if (cursor.moveToFirst()) {
 				do {
 					User user = new User();
-
 					user.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(Id))));
 					user.setFullName(cursor.getString(cursor.getColumnIndex(FullName)));
-
+					user.setCompanyId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(CompanyId))));
 					users.add(user);
 				} while (cursor.moveToNext());
 			}
@@ -634,17 +670,17 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 	}
 
-	public ArrayList<TaskEntry> getTaskEnteries(int userId, String date,boolean all) {
+	public ArrayList<TaskEntry> getTaskEnteries(int userId, String date,boolean all,String companyId) {
 		ArrayList<TaskEntry> taskEntryList = new ArrayList<TaskEntry>();
 		// Select All Query
 		String selectQuery=null;
 		if(all){
 			selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
-					+ UserId + "=" + userId + " AND " + IsOffline + "=\"" + date + "\"";
+					+ UserId + "=" + userId + " AND " + IsOffline + "=\"" + date + "\""+ " AND " + CompanyId + "=\"" + companyId + "\"";
 		}
 		else {
 			 selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
-					+ UserId + "=" + userId + " AND " + TaskDate + "=\"" + date + "\"";
+					+ UserId + "=" + userId + " AND " + TaskDate + "=\"" + date + "\""+ " AND " + CompanyId + "=\"" + companyId + "\"";
 		}
 		SQLiteDatabase db = this.getReadableDatabase();
 
@@ -708,10 +744,16 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 	}
 
-	public ArrayList<User> getTeam(int userId) {
+	public ArrayList<User> getTeam(String check, int userId,String  companyId) {
 		ArrayList<User> team = new ArrayList<User>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_TEAM +" where "+SupervisorId+" = "+userId;
+		String selectQuery=null;
+		if(check.equalsIgnoreCase("admin")) {
+			selectQuery = "SELECT  * FROM " + TABLE_TEAM ;
+		}else{
+			selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + SupervisorId + " = " + userId
+					+ CompanyId + "=\"" + companyId + "\"";
+		}
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
@@ -983,16 +1025,18 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		for (int i = 0; i < messages.size(); i++) {
 			SpinnerData message = messages.get(i);
 			String selectQuery = "SELECT  * FROM " + TABLE_PROJECT_TASK + " where "
-					+ MessageId + "=" + message.getId();
+					+ MessageId + "=" + message.getId()+" AND "+ CompanyId + "=" + message.getCompanyId();
 			try {
 				ContentValues values = new ContentValues();
 
 				values.put(MessageId, String.valueOf(message.getId()));
 				values.put(MessageType, message.getName());
+				values.put(CompanyId, message.getCompanyId());
 
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if (cursor.moveToFirst()) {
-					db.update(TABLE_PROJECT_TASK, values, MessageId + " = ?",new String[] { String.valueOf(message.getId()) });
+					//db.update(TABLE_GEOGRAPH, values, UserId + " = ? AND " + DateData + " = ?",new String[] { strUserId,str_dateData });
+					db.update(TABLE_PROJECT_TASK, values, MessageId + " = ? AND "+CompanyId + " = ?",new String[] { String.valueOf(message.getId()),String.valueOf(message.getCompanyId()) });
 				} else {
 					db.insert(TABLE_PROJECT_TASK, null, values);
 				}
@@ -1002,10 +1046,10 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
-	public ArrayList<SpinnerData> getProjectTasksData() {
+	public ArrayList<SpinnerData> getProjectTasksData(String companyId) {
 		ArrayList<SpinnerData> types = new ArrayList<SpinnerData>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_PROJECT_TASK;
+		String selectQuery = "SELECT  * FROM " + TABLE_PROJECT_TASK+ " where "+	CompanyId +"=\"" + companyId + "\"";
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
@@ -1013,9 +1057,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			if (cursor.moveToFirst()) {
 				do {
 					SpinnerData type = new SpinnerData();
-
 					type.setId(Integer.valueOf(cursor.getString(cursor.getColumnIndex(MessageId))));
 					type.setName(cursor.getString(cursor.getColumnIndex(MessageType)));
+					type.setCompanyId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(CompanyId))));
 					types.add(type);
 
 				} while (cursor.moveToNext());
@@ -1114,7 +1158,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			return types;
 		}
 }
-	public void updateUserTask(ArrayList<TaskEntry> arrayTaskEntry) {
+	public void updateUserTask(Activity activity,ArrayList<TaskEntry> arrayTaskEntry) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < arrayTaskEntry.size(); i++) {
 			TaskEntry taskEntry = arrayTaskEntry.get(i);
@@ -1125,6 +1169,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 				values.put(CreatedDate, String.valueOf(taskEntry.getCreatedDate()));
 				values.put(TimeSpent, taskEntry.getTimeSpent());
+				values.put(CompanyId,  PrefUtils.getStringPreference(activity,PrefUtils.KEY_COMPANY));
 
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if (cursor.moveToFirst()) {
@@ -1138,10 +1183,12 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
-	public ArrayList<TaskEntry> getUserTask() {
+	//todo fetch value form database user task graph value
+	public ArrayList<TaskEntry> getUserTask(Activity activity) {
 		ArrayList<TaskEntry> types = new ArrayList<TaskEntry>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_USERTASK;
+		String selectQuery = "SELECT  * FROM " + TABLE_USERTASK + " where "
+				+ CompanyId +  "=\"" + PrefUtils.getStringPreference(activity,PrefUtils.KEY_COMPANY) + "\"";
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
@@ -1152,6 +1199,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 					type.setCreatedDate(cursor.getString(cursor.getColumnIndex(CreatedDate)));
 					type.setTimeSpent(Double.parseDouble(cursor.getString(cursor.getColumnIndex(TimeSpent))));
+					type.setCompanyId(cursor.getString(cursor.getColumnIndex(CompanyId)));
 					types.add(type);
 
 				} while (cursor.moveToNext());
@@ -1175,7 +1223,8 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 	}
 
-	public void updateUserSignInOut(ArrayList<TaskEntry> arrayTaskEntry) {
+	//TODO STORE DATA FOR TABLE_USER_SIGN_INOUT
+	public void updateUserSignInOut(Activity activity,ArrayList<TaskEntry> arrayTaskEntry) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < arrayTaskEntry.size(); i++) {
 			TaskEntry taskEntry = arrayTaskEntry.get(i);
@@ -1187,6 +1236,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(CreatedDate, String.valueOf(taskEntry.getCreatedDate()));
 				values.put(SignInTimeSpent, taskEntry.getSignedInHours());
 				values.put(SignOutTimeSpent, taskEntry.getSignedOutHours());
+				values.put(CompanyId, PrefUtils.getStringPreference(activity,PrefUtils.KEY_COMPANY));
 				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
 				if (cursor.moveToFirst()) {
 					db.update(TABLE_USER_SIGN_INOUT, values, CreatedDate + " = ?",new String[] { String.valueOf(taskEntry.getCreatedDate()) });
@@ -1199,10 +1249,12 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
-	public ArrayList<TaskEntry> getUserSignInOut() {
+	//todo get user graphs sing in and out data
+	public ArrayList<TaskEntry> getUserSignInOut(Activity activity) {
 		ArrayList<TaskEntry> types = new ArrayList<TaskEntry>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_USER_SIGN_INOUT;
+		String selectQuery = "SELECT  * FROM " + TABLE_USER_SIGN_INOUT+ " where "
+				+ CompanyId +  "=\"" + PrefUtils.getStringPreference(activity,PrefUtils.KEY_COMPANY) + "\"";
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		try {
@@ -1214,6 +1266,73 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 					type.setCreatedDate(cursor.getString(cursor.getColumnIndex(CreatedDate)));
 					type.setSignedInHours(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SignInTimeSpent))));
 					type.setSignedOutHours(Double.parseDouble(cursor.getString(cursor.getColumnIndex(SignOutTimeSpent))));
+					type.setCompanyId(cursor.getString(cursor.getColumnIndex(CompanyId)));
+					types.add(type);
+
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return types;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return types;
+		}
+	}
+
+	//TODO STORE DATA FOR TABLE_USER_SIGN_INOUT
+	public void updateCompany(ArrayList<Company> arrayCompany,String userId) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		for (int i = 0; i < arrayCompany.size(); i++) {
+			Company company = arrayCompany.get(i);
+			String selectQuery = "SELECT  * FROM " + TABLE_COMPANY
+					+ " where "
+					+ CompanyId + "=\"" + company.getKey() + "\"";
+			try {
+				ContentValues values = new ContentValues();
+				values.put(CompanyId, String.valueOf(company.getKey()));
+				values.put(CompanyName, String.valueOf(company.getValue()));
+				values.put(UserId, String.valueOf(userId));
+
+				cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+				if (cursor.moveToFirst()) {
+					db.update(TABLE_COMPANY, values, CompanyId + " = ?", new String[]{String.valueOf(CompanyId)});
+				} else {
+					db.insert(TABLE_COMPANY, null, values);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		db.close();
+	}
+	//todo get company data
+	public ArrayList<Company> getCompany(String  userId) {
+		ArrayList<Company> types = new ArrayList<Company>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_COMPANY
+				+ " where "
+				+ UserId +  "=\"" + userId + "\"";
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					Company type = new Company();
+					type.setKey(cursor.getString(cursor.getColumnIndex(CompanyId)));
+					type.setValue(cursor.getString(cursor.getColumnIndex(CompanyName)));
+					type.setId(cursor.getString(cursor.getColumnIndex(UserId)));
 					types.add(type);
 
 				} while (cursor.moveToNext());

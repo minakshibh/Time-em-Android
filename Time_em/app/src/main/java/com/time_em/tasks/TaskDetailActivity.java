@@ -166,11 +166,13 @@ public class TaskDetailActivity extends Activity {
                 else{
                     attachment.setVisibility(View.GONE);
                     videoView.setVisibility(View.VISIBLE);
-                  /*  videoView.setVideoPath(image_url);
-                    videoView.setMediaController(new MediaController(TaskDetailActivity.this));
-                    videoView.requestFocus();
-                    videoView.seekTo(5);*/
-                }
+                    try {
+                        videoView.setUp(image_url , "video");
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                  }
             }
 
 

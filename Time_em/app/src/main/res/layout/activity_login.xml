@@ -8,12 +8,23 @@
     android:padding="10dp"
     android:background="@drawable/bg_gradient"
     tools:context="com.time_em.authentication.LoginActivity">
-    
-     <ImageView
+
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:id="@+id/scrollView3" >
+
+		<LinearLayout
+			android:gravity="center"
+			android:layout_width="fill_parent"
+			android:orientation="vertical"
+			android:layout_height="fill_parent">
+
+	<ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/inner_logo"
-            android:layout_margin="20dp"/>
+            android:layout_margin="50dp"/>
      
     <LinearLayout 
         android:layout_width="fill_parent"
@@ -109,8 +120,10 @@
     	android:layout_alignParentTop="true"
     	android:text="Forgot Password?"
     	android:gravity="center"
-    	android:textColor="@color/textColor"
+		android:textColor="@color/textColor"
 		android:padding="10dp"
     	android:textSize="11sp" 
     />
+		</LinearLayout>
+	</ScrollView>
 </LinearLayout>

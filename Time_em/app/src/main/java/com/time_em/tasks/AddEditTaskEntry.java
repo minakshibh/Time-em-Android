@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import com.time_em.ImageLoader.ImageLoader;
@@ -39,10 +40,11 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     //todo widgets
-    private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader;
+    private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader,first_separator;
     private MySpinner spnProject;
     private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete;
     private LinearLayout recipientSection, uploadAttachment;
+    private RelativeLayout notTypeLayout;
     private Button addUpdateTask;
     private EditText hours, comments;
    //todo classes
@@ -58,7 +60,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     private String newTaskName="",UserId="";
     private String addUpdateTaskAPI = Utils.AddUpdateUserTaskAPI, selectedDate, taskEntryId = "0",taskId="0";
     //todo array list
-    private ArrayList<SpinnerData> assignedTasks;
+    private ArrayList<SpinnerData> assignedTasks=new ArrayList<>();
     ArrayList<TaskEntry> taskEntries = new ArrayList<>();
 
 
@@ -70,7 +72,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         initScreen();
         loadProjects();
         setListeners();
-        UniqueNumber= FileUtils.getUniqueNumber();
+        UniqueNumber= FileUtils.getUniqueNumber(AddEditTaskEntry.this);
     }
 
     private void initScreen() {
@@ -83,7 +85,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         comments = (EditText) findViewById(R.id.subject);
         txtHoursHeader = (TextView) findViewById(R.id.MessageTxt);
         hours = (EditText) findViewById(R.id.message);
-        spnProject = (MySpinner) findViewById(R.id.spnNotificationType);
         hoursIcon = (ImageView) findViewById(R.id.messageIcon);
         uploadedImage = (ImageView) findViewById(R.id.uploadedImage);
         uploadedVideo=(JCVideoPlayerStandard)findViewById(R.id.uploadedVideo);
@@ -108,11 +109,22 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
+
+
+        //todo for task view chnages in xml
+        first_separator=(TextView)findViewById(R.id.first_separator);
+        first_separator.setVisibility(View.VISIBLE);
+        notTypeLayout=(RelativeLayout)findViewById(R.id.notTypeLayout);
+        notTypeLayout.setVisibility(View.VISIBLE);
+        spnProject = (MySpinner) findViewById(R.id.spnNotificationType);
+        spnProject.setVisibility(View.VISIBLE);
+
+        txtProjectSelection.setVisibility(View.VISIBLE);
         txtProjectSelection.setText("Select Project or Task:");
         txtCommentsHeader.setText("Enter your Comments:");
         comments.setHint("Your comments goes here");
         txtHoursHeader.setText("Specify number of hours:");
-        hours.setHint("No. of hours.(max 24hrs)");
+        hours.setHint("No. of hours.(max 12hrs)");
         hours.setInputType(InputType.TYPE_CLASS_NUMBER);
         int maxLength = 2;
         hours.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
@@ -260,20 +272,24 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 else if(selectedSpinnerData.getId()==-1){
                     Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
                 }
-                else if(intHours>24){
-                    Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 24 hrs.");
+                else if(intHours>12){
+                    Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 12 hrs.");
                 }
-                else if(!HomeActivity.user.isSignedIn()){
+                else if(!PrefUtils.getBooleanPreference(getApplicationContext(),PrefUtils.KEY_IS_SIGNED_IN,false)){
                    Utils.alertMessage(AddEditTaskEntry.this, "You are currently signed out. To continue Please sign in.");
                 }
               else {
 
+
                       if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
                             HashMap<String, String> postDataParameters = new HashMap<String, String>();
                             postDataParameters.put("UserId", String.valueOf(UserId));
-                            postDataParameters.put("ActivityId", String.valueOf(HomeActivity.user.getActivityId()));
+                            postDataParameters.put("ActivityId",
+                                     String.valueOf(PrefUtils.getIntegerPreference(getApplicationContext(),PrefUtils.KEY_ACTIVITY_ID,0)));
                             postDataParameters.put("TimeSpent", hours.getText().toString());
                             postDataParameters.put("Comments", comments.getText().toString());
+                            postDataParameters.put("CompanyId",
+                                   PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY));
                             if (selectedSpinnerData.getId() == 0) {
                                 postDataParameters.put("TaskId", String.valueOf(0));
                                 if(newTaskName != null)
@@ -315,8 +331,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 if (fileUtils.getAttachmentPath() != null)
                                     task.setAttachmentImageFile(fileUtils.getAttachmentPath());
                                 task.setId(Integer.parseInt(taskEntryId));
-                                task.setActivityId(HomeActivity.user.getActivityId());
-
+                               // task.setActivityId(HomeActivity.user.getActivityId());
+                                task.setActivityId(PrefUtils.getIntegerPreference(getApplicationContext(),PrefUtils.KEY_ACTIVITY_ID,0));
                                 if (selectedSpinnerData.getId() == 0) {
                                     task.setTaskId(0);
                                     task.setTaskName(newTaskName);
@@ -390,9 +406,11 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
             postDataParameters.put("userId", String.valueOf(getSPrefsId));
+            postDataParameters.put("CompanyId",
+                PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY));
 
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                    AddEditTaskEntry.this, "get", Utils.GetAssignedTaskList,
+                    AddEditTaskEntry.this, "get", Utils.GetAssignedTaskIList,
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) AddEditTaskEntry.this;
             mWebPageTask.execute();
@@ -403,12 +421,13 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     @Override
     public void processFinish(String output, String methodName) {
         Log.e("output",""+output);
-        if(methodName.equals(Utils.GetAssignedTaskList)){
-            assignedTasks = parser.parseAssignedProjects(output);
+        if(methodName.equals(Utils.GetAssignedTaskIList)){
+            String companyId=PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY);
+            assignedTasks = parser.parseAssignedProjects(output,Integer.parseInt(companyId));
 
             dbHandler.updateProjectTasks(assignedTasks);// // todo update data for notification type
 
-            assignedTasks=dbHandler.getProjectTasksData();
+            assignedTasks=dbHandler.getProjectTasksData(companyId);
             adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this, R.layout.spinner_row_layout, assignedTasks);
             adapter.setDropDownViewResource(R.layout.spinner_dropdown);
             spnProject.setAdapter(adapter);
@@ -528,7 +547,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
              if (ImagePath != null)
                 dataModels.add(new MultipartDataModel("profile_picture", ImagePath, MultipartDataModel.FILE_TYPE));
                 Log.e("send task", "send task" + ImagePath);
-            fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
+            fileUtils.sendMultipartRequest("other",Utils.SyncFileUpload, dataModels);
     }
 
     @Override

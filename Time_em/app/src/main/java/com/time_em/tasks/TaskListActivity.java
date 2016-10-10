@@ -162,7 +162,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
         try{
             UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
-        }catch (Exception e){}
+        }catch (Exception e){
+
+        }
         // todo fetch from data base
 
         dbHandler = new TimeEmDbHandler(TaskListActivity.this);
@@ -200,14 +202,16 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             addTaskButton.setVisibility(View.INVISIBLE);
             try{
                 UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
-            }catch (Exception e){}
+            }catch (Exception e){
+            }
               calbutton.setVisibility(View.GONE);
         }
         else{
             headerText.setText("My Tasks");
             try{
             UserId =   Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID));
-            }catch (Exception e){}
+            }catch (Exception e){
+            }
         }
         footer = (LinearLayout) findViewById(R.id.footer);
         footer.setVisibility(View.GONE);
@@ -308,13 +312,13 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
         postDataParameters.put("userId", String.valueOf(UserId));
         postDataParameters.put("createdDate",createdDate);
-        postDataParameters.put("TimeStamp", timeStamp);
-
-        Log.e("values"+Utils.getTaskListAPI, "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
-        Log.e(""+Utils.getTaskListAPI, "" + postDataParameters.toString());
+        postDataParameters.put("TimeStamp", "");
+        postDataParameters.put("CompanyId", PrefUtils.getStringPreference(TaskListActivity.this,PrefUtils.KEY_COMPANY));
+        //Log.e("values"+Utils.GetUserActivityTask, "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
+        Log.e(""+Utils.GetUserActivityTask, "" + postDataParameters.toString());
 
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                TaskListActivity.this, "post", Utils.getTaskListAPI,
+                TaskListActivity.this, "post", Utils.GetUserActivityTask,
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
         mWebPageTask.execute();
@@ -460,12 +464,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     public void processFinish(String output, String methodName) {
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
-        if (methodName.equals(Utils.getTaskListAPI)) {
+        if (methodName.equals(Utils.GetUserActivityTask)) {
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
 
             dbHandler.updateTask(taskEntries, selectedDate, false);
-
-            tasks = dbHandler.getTaskEnteries(UserId, selectedDate, false);
+            String companyId=  PrefUtils.getStringPreference(TaskListActivity.this,PrefUtils.KEY_COMPANY);
+            tasks = dbHandler.getTaskEnteries(UserId, selectedDate, false,companyId);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
         } else if (methodName.equals(Utils.deleteTaskAPI)) {
             boolean error = parser.parseDeleteTaskResponse(output);

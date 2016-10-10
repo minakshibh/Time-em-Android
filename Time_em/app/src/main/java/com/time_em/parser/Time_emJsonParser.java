@@ -7,6 +7,8 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import com.time_em.android.R;
@@ -21,6 +23,7 @@ import com.time_em.model.User;
 import com.time_em.model.UserWorkSite;
 import com.time_em.model.WorkSiteList;
 import com.time_em.model.mutiUserworkSiteList;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 public class Time_emJsonParser {
@@ -58,7 +61,7 @@ public class Time_emJsonParser {
 			// TODO Auto-generated catch block
 			user = null;
 			e.printStackTrace();
-			Utils.showToast(context, "Something went wrong. Try again");
+			Utils.showToast(context, Utils.Api_error);
 		}
 
 		//if(isError)
@@ -83,7 +86,9 @@ public class Time_emJsonParser {
 					User user = parseJson(teamArray.getJSONObject(i), method);
 					teamList.add(user);
 				}
-				Utils.saveInSharedPrefs(context, HomeActivity.user.getId() + context.getResources().getString(R.string.teamTimeStampStr), timeStamp);
+				Utils.saveInSharedPrefs(context, Utils.getSharedPrefs(context,PrefUtils.KEY_USER_ID) +
+						PrefUtils.getStringPreference(context,PrefUtils.KEY_COMPANY)+
+						context.getResources().getString(R.string.teamTimeStampStr), timeStamp);
 				if (message != null) {
 					if (message.contains("No Record")) {
 						Utils.showToast(context, "No Record Found");
@@ -119,7 +124,12 @@ public class Time_emJsonParser {
 			user.setUserTypeId(jObject.getInt("UserTypeId"));
 			user.setDepartmentId(jObject.getInt("DepartmentId"));
 			user.setCompany(jObject.getString("Company"));
-			user.setCompanyId(jObject.getInt("CompanyId"));
+			try {
+				user.setCompanyId(jObject.getInt("CompanyId"));
+			}catch (Exception e)
+			{
+			e.printStackTrace();
+			}
 			user.setWorksite(jObject.getString("Worksite"));
 			user.setWorkSiteId(jObject.getInt("WorksiteId"));
 			user.setProject(jObject.getString("Project"));
@@ -210,12 +220,13 @@ public class Time_emJsonParser {
 				notification.setMessage(taskObject.getString("Message"));
 				notification.setCreatedDate(taskObject.getString("createdDate"));
 				notification.setSenderFullName(taskObject.getString("SenderFullName"));
+				notification.setCompanyId(taskObject.getString("CompanyId"));
 				notification.setIsOffline("false");
 				notification.setUniqueNumber("-1");
 				notificationList.add(notification);
 			}
 
-			Utils.saveInSharedPrefs(context, HomeActivity.user.getId()+res.getString(R.string.notificationTimeStampStr), timeStamp);
+			Utils.saveInSharedPrefs(context, Utils.getSharedPrefs(context,PrefUtils.KEY_USER_ID)+PrefUtils.getStringPreference(context,PrefUtils.KEY_COMPANY)+res.getString(R.string.notificationTimeStampStr), timeStamp);
 
 		}catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -259,6 +270,7 @@ public class Time_emJsonParser {
 			task.setSelectedDate(taskObject.getString("SelectedDate"));
 			task.setToken(taskObject.getString("Token"));
 			task.setIsActive(taskObject.getBoolean("isActive"));
+			task.setCompanyId(taskObject.getString("CompanyId"));
 			image=taskObject.getString("AttachmentImageFile");
 			if(image!=null && !image.equalsIgnoreCase("null")) {
 				task.setAttachmentImageFile(image);
@@ -329,7 +341,13 @@ public class Time_emJsonParser {
 			message = jObject.getString("Message");
 			timeStamp = jObject.getString("TimeStamp");
 
-			JSONArray jArray = jObject.getJSONArray("activeuserlist");
+			JSONArray jArray = null;
+			try {
+				jArray=jObject.getJSONArray("activeuserlist");
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+
 
 			for(int i = 0; i<jArray.length(); i++){
 				JSONObject userObject = jArray.getJSONObject(i);
@@ -337,15 +355,16 @@ public class Time_emJsonParser {
 				User user = new User();
 				user.setId(userObject.getInt("userid"));
 				user.setFullName(userObject.getString("FullName"));
-
+				user.setCompanyId(userObject.getInt("CompanyId"));
 				userList.add(user);
 			}
 
-			Utils.saveInSharedPrefs(context, HomeActivity.user.getId() + res.getString(R.string.activeUsersTimeStampStr), timeStamp);
+			Utils.saveInSharedPrefs(context,  Utils.getSharedPrefs(context,PrefUtils.KEY_USER_ID)
+					+PrefUtils.getStringPreference(context,PrefUtils.KEY_COMPANY) + res.getString(R.string.activeUsersTimeStampStr), timeStamp);
 
 		}catch (JSONException e) {
 			// TODO Auto-generated catch block
-			userList = new ArrayList<User>();
+			//userList = new ArrayList<User>();
 			e.printStackTrace();
 			//Utils.showToast(context, e.getMessage());
 		}
@@ -391,28 +410,42 @@ public class Time_emJsonParser {
 
 						array_user.add(user);
 
-						///save id to home screen
-						if (id == HomeActivity.user.getId()) {
+						//todo save id to home screen
+						String getSPrefsId = Utils.getSharedPrefs(context, PrefUtils.KEY_USER_ID);
+						int getId=0;
+						try{
+							getId=Integer.parseInt(getSPrefsId);
+						}catch (Exception e){
+							e.printStackTrace();
+						}
+						if (id == getId) {
 							if (methodName.equals(Utils.signInAPI)) {
-								id = taskObject.getInt("Id");
+								int ActivityId = taskObject.getInt("Id");
 								if (isError)
-									HomeActivity.user.setSignedIn(false);
+									//HomeActivity.user.setSignedIn(false);
+									PrefUtils.setBooleanPreference(context,PrefUtils.KEY_IS_SIGNED_IN,false);
 								else {
-									HomeActivity.user.setSignedIn(true);
-									HomeActivity.user.setActivityId(id);
+									PrefUtils.setBooleanPreference(context,PrefUtils.KEY_IS_SIGNED_IN,true);
+									//HomeActivity.user.setSignedIn(true);
+									//HomeActivity.user.setActivityId(id);
+									PrefUtils.setIntegerPreference(context,PrefUtils.KEY_ACTIVITY_ID,ActivityId);
 								}
 							} else {
 								//signOutAt = jObject.getString("SignOutAt");
-								if (isError)
-									HomeActivity.user.setSignedIn(true);
+								if (isError) {
+									//HomeActivity.user.setSignedIn(true);
+									PrefUtils.setBooleanPreference(context,PrefUtils.KEY_IS_SIGNED_IN,true);
+								}
 								else {
-									HomeActivity.user.setSignedIn(false);
-									HomeActivity.user.setActivityId(0);
+									//HomeActivity.user.setSignedIn(false);
+									//HomeActivity.user.setActivityId(0);
+									PrefUtils.setBooleanPreference(context,PrefUtils.KEY_IS_SIGNED_IN,false);
+									PrefUtils.setIntegerPreference(context,PrefUtils.KEY_ACTIVITY_ID,0);
 								}
 							}
 
-							Utils.saveInSharedPrefs(context, "isSignedIn", String.valueOf(HomeActivity.user.isSignedIn()));
-							Utils.saveInSharedPrefs(context, "activityId", String.valueOf(HomeActivity.user.getActivityId()));
+							//Utils.saveInSharedPrefs(context, PrefUtils.KEY_IS_SIGNED_IN, String.valueOf(HomeActivity.user.isSignedIn()));
+							//Utils.saveInSharedPrefs(context, PrefUtils.KEY_ACTIVITY_ID, String.valueOf(HomeActivity.user.getActivityId()));
 						}
 					}
 				}
@@ -492,7 +525,7 @@ public class Time_emJsonParser {
 
 		return array_user;
 	}
-	public ArrayList<SpinnerData> parseAssignedProjects(String webResponse) {
+	public ArrayList<SpinnerData> parseAssignedProjects(String webResponse,int companyID) {
 		ArrayList<SpinnerData> taskList = new ArrayList<SpinnerData>();
 		try {
 			jObject = new JSONObject(webResponse);
@@ -502,11 +535,13 @@ public class Time_emJsonParser {
 			SpinnerData task_header = new SpinnerData();
 			task_header.setId(-1);
 			task_header.setName("Select Project/Task");
+			task_header.setCompanyId(companyID);
 			taskList.add(task_header);
 
 			task_header = new SpinnerData();
 			task_header.setId(0);
 			task_header.setName("Add New Task");
+			task_header.setCompanyId(companyID);
 			taskList.add(task_header);
 			if(!isError) {
 				JSONArray jArray = jObject.getJSONArray("ReturnKeyValueViewModel");
@@ -515,6 +550,7 @@ public class Time_emJsonParser {
 					SpinnerData task = new SpinnerData();
 					task.setId(taskObject.getInt("TaskId"));
 					task.setName(taskObject.getString("TaskName"));
+					task.setCompanyId(taskObject.getInt("CompanyId"));
 					taskList.add(task);
 				}
 			}
@@ -536,7 +572,9 @@ public class Time_emJsonParser {
 
 		try{
 			jObject = new JSONObject(webResponse);
-			isError = jObject.getBoolean("IsError");
+			try {
+				isError = jObject.getBoolean("IsError");
+			}catch (Exception e){e.printStackTrace();}
 			message = jObject.getString("Message");
 
 
@@ -575,7 +613,9 @@ public class Time_emJsonParser {
 		ArrayList<TaskEntry> arrayTaskEntry = new ArrayList<TaskEntry>();
 		try{
 			jObject = new JSONObject(webResponse);
-			isError = jObject.getBoolean("IsError");
+			try {
+				isError = jObject.getBoolean("IsError");
+			}catch (Exception e){e.printStackTrace();}
 			message = jObject.getString("Message");
 
 			JSONArray jArray = jObject.getJSONArray("UsersList");

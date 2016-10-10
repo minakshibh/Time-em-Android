@@ -279,6 +279,7 @@
 
     </LinearLayout>
     <HorizontalScrollView
+        android:visibility="gone"
          android:layout_width="fill_parent"
         android:layout_height="100dp"
         android:id="@+id/horizontalScrollView"
@@ -291,6 +292,7 @@
     </HorizontalScrollView>
 
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/AddNewWidgetView"
         android:layout_width="match_parent"
         android:layout_height="25dp"

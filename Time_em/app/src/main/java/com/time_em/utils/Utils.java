@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -67,7 +68,8 @@ public class Utils {
     static public String network_error = "Please check your internet connection, try again";
     static public String Api_error = "Something went wrong,please try again";
     static int statusCode;
-
+    static int connectTimeout=2*10*1000;
+    static int socketTimeout=3*10*1000;
     public static final String Loation = "loation";
     private static SharedPreferences preferences;
     public static String PROJECT_ID = "554809123006";
@@ -81,8 +83,9 @@ public class Utils {
     static public String sigOutAPI = "/UserActivity/SignOutByLoginId";
     static public String pinAuthenticationAPI = "/User/GetValidateUserByPin";
     static public String getTeamAPI = "/User/GetAllUsersList";
-    static public String getTaskListAPI = "/UserTask/GetUserActivityTask";
+    static public String GetUserActivityTask = "/UserTask/GetUserActivityTask";
     static public String forgotPasswordAPI = "/USER/ForgetPassword";
+
     static public String forgotPinAPI = "/USER/ForgetPin";
     static public String getSpinnerTypeAPI = "/Task/GetAssignedTaskIList";
     static public String AddUpdateUserTaskAPI = "/UserTask/AddUpdateUserTaskActivity";
@@ -95,7 +98,7 @@ public class Utils {
     static public String SendNotificationAPI = "/Notification/AddNotification";
     static public String GetNotificationAPI = "/notification/NotificationByUserId";
     static public String RegisterUserDevice = "/User/RegisterUserDevice";
-    static public String GetAssignedTaskList = "/Task/GetAssignedTaskIList";
+    static public String GetAssignedTaskIList = "/Task/GetAssignedTaskIList";
     static public String UserTaskGraph = "/usertask/UserTaskGraph";
     static public String UsersGraph = "/usertask/UsersGraph";
     static public String Sync = "/UserActivity/Sync";
@@ -107,6 +110,14 @@ public class Utils {
     static public String AddNotificationNew="notification/AddNotificationNew";
     static public String AddUpdateUserTaskActivityNew="usertask/AddUpdateUserTaskActivityNew";
     static public String GetUserCompaniesList="User/GetUserCompaniesList";
+
+    //todo get all data at home page
+    static public String GetAllTaskList="/UserTask/GetAllTaskList";
+    static public String GetAllUsersListOffline = "/User/GetAllUsersListOffline";
+    static public String GetAllNotificationByUserId ="/notification/GetAllNotificationByUserId";
+    static public String GetActiveUserListoffline ="User/GetActiveUserListoffline";
+    static public String GetAllAssignedTaskIList="task/GetAllAssignedTaskIList";
+
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -206,8 +217,8 @@ public class Utils {
             url = new URL(requestString);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setReadTimeout(30000);
-//            conn.setConnectTimeout(30000);
+            conn.setConnectTimeout(connectTimeout);
+            conn.setReadTimeout(socketTimeout);
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -232,12 +243,16 @@ public class Utils {
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 while ((line = br.readLine()) != null) {
                     response += line;
-                    Log.d(functionName,response);
+                    Log.e(functionName,response);
                 }
             } else {
                 response = "";
             }
-        } catch (Exception e) {
+        }
+        catch (SocketException e) {
+//            Toast.makeText(context,"Poor network, Try again.",Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -292,6 +307,7 @@ public class Utils {
     }
 
     public static String getResponseFromUrlGet(Boolean token, String functionName, HashMap<String, String> postDataParams, Context context) {
+
         String requestString = context.getResources().getString(R.string.baseUrl) + functionName;
 
         requestString += getGetDataString(postDataParams);
@@ -303,8 +319,10 @@ public class Utils {
         try {
             url = new URL(requestString);
 
-            urlConnection = (HttpURLConnection) url
-                    .openConnection();
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.setConnectTimeout(connectTimeout);
+            urlConnection.setReadTimeout(socketTimeout);
 
             statusCode = urlConnection.getResponseCode();
 
@@ -313,12 +331,16 @@ public class Utils {
                 BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 while ((line = br.readLine()) != null) {
                     response += line;
-                    Log.d(functionName,response);
+                    Log.e(functionName,response);
                 }
             } else {
                 response = "";
             }
-        } catch (Exception e) {
+        }
+        catch (SocketException e) {
+          // Toast.makeText(context,"Poor network, Try again.",Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (urlConnection != null) {

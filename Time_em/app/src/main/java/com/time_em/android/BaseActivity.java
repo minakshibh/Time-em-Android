@@ -22,13 +22,13 @@ import com.time_em.barcode.NFCReadActivity;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.dashboard.SettingActivity;
 import com.time_em.db.TimeEmDbHandler;
-import com.time_em.inappbilling.PurchaseActivity;
 import com.time_em.notifications.NotificationListActivity;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.profile.MyProfileActivity;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.team.UserListActivity;
 import com.time_em.utils.FileUtils;
+import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 
@@ -146,7 +146,8 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 				dbHandler.deleteTABLE_NOTIFICATIONS_TYPE();
 				dbHandler.deleteProjectTask();
 				dbHandler.deleteUSERTASK();
-				dbHandler.delete_USER_SIGNINOUT();
+				dbHandler.deleteUSER_SIGNINOUT();
+				dbHandler.deleteCOMPANY();
 
 				HomeActivity.stopLocationService(BaseActivity.this);// stop service
 				Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
@@ -166,7 +167,7 @@ public class BaseActivity extends Activity implements  AsyncResponseTimeEm{
 			}else if (v == myTasks) {
 				setSelection(true, false, false, false);
 				Intent intent = new Intent(BaseActivity.this, TaskListActivity.class);
-				intent.putExtra("UserId", HomeActivity.user.getId());
+				intent.putExtra("UserId", Utils.getSharedPrefs(BaseActivity.this, PrefUtils.KEY_USER_ID));
 				startActivity(intent);
 			} else if (v == myTeam) {
 				setSelection(false, true, false, false);

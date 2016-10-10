@@ -67,13 +67,13 @@ public class BackgroundLocationService extends Service implements
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1*60*1000); // Update location every 5 second
-
-        int permission_finelocation = ContextCompat.checkSelfPermission(this,
+        mLocationRequest.setInterval(1*60*1000); // todo Update location every 5 second
+        mLocationRequest.setSmallestDisplacement(2);//todo  Update location if move 1 meter away
+        int permission_fineLocation = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         int permission_coarse_location = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_COARSE_LOCATION);
-        if (permission_finelocation == PackageManager.PERMISSION_GRANTED
+        if (permission_fineLocation == PackageManager.PERMISSION_GRANTED
                 || permission_coarse_location == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, this);
@@ -122,7 +122,7 @@ public class BackgroundLocationService extends Service implements
 
 
         public AsyncTaskTimeEm(String method_type, String methodName, HashMap<String, String> postDataParameters, String message) {
-             this.method_type = method_type;
+            this.method_type = method_type;
             this.methodName = methodName;
             this.postDataParameters = postDataParameters;
             this.message = message;

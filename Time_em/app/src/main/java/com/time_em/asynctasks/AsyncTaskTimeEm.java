@@ -60,11 +60,17 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 
 		if(displayProgress){
 
-			pDialog = new ProgressDialog(activity, R.style.MyTheme);
-			//pDialog.setTitle("Time'em");
-			//pDialog.setMessage(message);
-			pDialog.setCancelable(false);
-			pDialog.show();
+			try {
+				pDialog = new ProgressDialog(activity, R.style.MyTheme);
+				//pDialog.setTitle("Time'em");
+				//pDialog.setMessage(message);
+				pDialog.setCancelable(false);
+				pDialog.show();
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+
 		}
 	}
 
@@ -88,20 +94,26 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 		// TODO Auto-generated method stub
 		super.onPostExecute(result);
 		int resultcode=0;
+		try {
+			if (displayProgress) {
+				pDialog.dismiss();
+			}
+		}
+			catch(Exception e)
+			{e.printStackTrace();		}
+
 		try{
-		if(displayProgress)
-				
-		pDialog.dismiss();
 		resultcode=Utils.resultCode();
 
 		if(resultcode==200)
 		{
 			delegate.processFinish(result, methodName);
-		}else if(result==null)
+		}
+		else if(result==null)
 		{
-			
-			Toast.makeText(activity, "Something went wrong. Please try again..", Toast.LENGTH_LONG).show();	
-		}else{
+			Toast.makeText(activity, Utils.Api_error, Toast.LENGTH_LONG).show();
+		}
+		else{
 			//Toast.makeText(activity, result, Toast.LENGTH_LONG).show();
 			delegate.processFinish(result, methodName);
 		}
@@ -109,6 +121,7 @@ public class AsyncTaskTimeEm extends AsyncTask<String, Void, String> {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+
 		}
 	}
 }

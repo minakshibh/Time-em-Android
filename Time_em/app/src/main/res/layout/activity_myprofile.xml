@@ -163,6 +163,64 @@
 
     </LinearLayout>
             <TextView style="@style/separator" />
+            <LinearLayout
+                android:id="@+id/lay_company"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/company"
+                    android:layout_marginRight="10dp" />
+
+                <EditText
+                    android:id="@+id/edt_company"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:ems="10"
+                    android:padding="8dp"
+                    android:hint=""
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:imeOptions="actionDone"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+            <TextView style="@style/separator" />
+            <LinearLayout
+                android:id="@+id/lay_userType"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/user_black"
+                    android:layout_marginRight="10dp" />
+
+                <EditText
+                    android:id="@+id/edt_userType"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:ems="10"
+                    android:padding="8dp"
+                    android:hint=""
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:imeOptions="actionDone"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+            <TextView style="@style/separator" />
     <LinearLayout
         android:id="@+id/lay_Logout"
         android:layout_width="fill_parent"

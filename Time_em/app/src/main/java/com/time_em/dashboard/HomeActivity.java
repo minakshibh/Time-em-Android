@@ -66,7 +66,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     //todo classes
     public DependencyResolver resolver;
-    public static User user;
+    public User user;
     private Time_emJsonParser parser;
     private Double maxValueTask = 0.0, maxValueSignInOut = 0.0;
     private TabLayout tabLayout;
@@ -99,9 +99,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 .inflate(R.layout.activity_home, null, false);
         contentFrame.addView(contentView, 0);
 
-        fetchTaskGraphsData();
-        fetchGraphsSignInOut();
-        registerDevice();
+        String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
+        fetchTaskGraphsData(getSPrefsId);
+        fetchGraphsSignInOut(getSPrefsId);
+        registerDevice(getSPrefsId);
         initScreen();
         setClickListeners();
         setTapBar();
@@ -109,12 +110,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
         //todo apis
         if(resolver.pref().getApiCheck()) {
-            loadProjects();
-            getTaskList();
-            loadNotificationTypes();
-            loadRecipients();
-            getUserList(user.getId());
-            getNotificationList();
+            String getSPrefsId2 = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
+            loadProjects(getSPrefsId2);
+            getTaskList(getSPrefsId2);
+            //loadNotificationTypes();
+            loadRecipients(getSPrefsId2);
+            getUserList(getSPrefsId2);
+            getNotificationList(getSPrefsId2);
             resolver.pref().setApiCheck(false);
         }
 
@@ -143,13 +145,19 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         currentDate = (TextView) findViewById(R.id.currentDate);
         currentDate.setText(Utils.getCurrentDate());
         parser = new Time_emJsonParser(HomeActivity.this);
+
+        //todo get all user info
+        String json = Utils.getSharedPrefs(HomeActivity.this, PrefUtils.KEY_USER);
+        Gson gson = new Gson();
+        if(json != "")
+            user = gson.fromJson(json, User.class);
         try {
             if (user.getUserTypeId() == 4)
                 myTeam.setVisibility(View.GONE);
         }catch (Exception e) {
             e.printStackTrace();
         }
-        SetUpWigdet();
+       // SetUpWigdet();
 
     }
 
@@ -202,10 +210,12 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     protected void onResume() {
         super.onResume();
         syncDataCheck();
-        addWidget();
-        if (HomeActivity.user.isSignedIn()) {
-            resolver.pref().SetUserId(String.valueOf(HomeActivity.user.getId()));
-            resolver.pref().SetActivityId(String.valueOf(HomeActivity.user.getActivityId()));
+     //   addWidget();
+        //if (HomeActivity.user.isSignedIn()) {
+        if (PrefUtils.getBooleanPreference(getApplicationContext(),PrefUtils.KEY_IS_SIGNED_IN,false)) {
+            String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
+            resolver.pref().SetUserId(getSPrefsId);
+            resolver.pref().SetActivityId(""+PrefUtils.getIntegerPreference(getApplicationContext(),PrefUtils.KEY_ACTIVITY_ID,0));
 
             menuUserStatus.setImageResource(R.drawable.user_online);
             userStatus.setImageResource(R.drawable.user_online);
@@ -219,10 +229,12 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         }
     }
 
-    private void registerDevice() {
+    //todo device register api
+    private void registerDevice(String getSPrefsId) {
             String regId = GcmUtils.getRegistrationId(this);
+
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
-            postDataParameters.put("UserID", "" + user.getId());
+            postDataParameters.put("UserID", "" + getSPrefsId);
             postDataParameters.put("DeviceUId", regId);
             postDataParameters.put("DeviceOS", "android");
 
@@ -235,9 +247,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     }
 
-    private void fetchTaskGraphsData() {
+    //todo task graphs data
+    private void fetchTaskGraphsData( String getSPrefsId) {
+
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
-            postDataParameters.put("userid", "" + user.getId());
+            postDataParameters.put("userid", "" + getSPrefsId);
             postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
 
             Log.e(Utils.UserTaskGraph, postDataParameters.toString());
@@ -249,9 +263,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     }
 
-    private void fetchGraphsSignInOut() {
+    //todo sign In/out data of graphs
+    private void fetchGraphsSignInOut( String getSPrefsId) {
+
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
-            postDataParameters.put("userid", "" + user.getId());
+            postDataParameters.put("userid", "" + getSPrefsId);
             postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
             // http://timeemapi.azurewebsites.net/api/usertask/UsersGraph?userid=2
             Log.e(Utils.UsersGraph, postDataParameters.toString());
@@ -289,33 +305,41 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         adapter.notifyDataSetChanged();
     }
 
-    private void loadProjects() {
-        int getSPrefsId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID));
+    //todo get all tasks list for dropdown task data
+    private void loadProjects(String getSPrefsId ) {
+
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-        postDataParameters.put("userId", String.valueOf(getSPrefsId));
+        postDataParameters.put("userId", getSPrefsId);
+        postDataParameters.put("CompanyId", "0");
+        Log.e(""+ Utils.GetAllAssignedTaskIList,""+postDataParameters.toString());
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                HomeActivity.this, "get", Utils.GetAssignedTaskList,
+                HomeActivity.this, "get", Utils.GetAllAssignedTaskIList,
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
     }
 
-    private void getTaskList() {
+    //todo api for get all tasks all company for offline shown data.
+    private void getTaskList(String getSPrefsId) {
+
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-        postDataParameters.put("userId",String.valueOf(user.getId()));
+        postDataParameters.put("userId",getSPrefsId);
         postDataParameters.put("createdDate","");
         postDataParameters.put("TimeStamp", "");
+        postDataParameters.put("CompanyId", "0");
 
+        Log.e(""+ Utils.GetAllTaskList,""+postDataParameters.toString());
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                HomeActivity.this, "post", Utils.getTaskListAPI,
+                HomeActivity.this, "post", Utils.GetAllTaskList,
                 postDataParameters, true, "Please wait...");
+
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
     }
 
-    private void loadNotificationTypes() {
+   /* private void loadNotificationTypes() {
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
         postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
@@ -325,65 +349,71 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         mWebPageTask.execute();
 
 
-    }
+    }*/
+//todo api for get data active user for notification
+    private void loadRecipients( String getSPrefsId) {
 
-    private void loadRecipients() {
-
-        String timeStamp = Utils.getSharedPrefs(HomeActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.activeUsersTimeStampStr));
+      /*  String timeStamp = Utils.getSharedPrefs(HomeActivity.this, getSPrefsId + getResources().getString(R.string.activeUsersTimeStampStr));
         if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
-            timeStamp = "";
+            timeStamp = "";*/
 
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-        postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
-        postDataParameters.put("timeStamp", timeStamp);
-        postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
+        postDataParameters.put("UserId", getSPrefsId);
+        postDataParameters.put("timeStamp", "");
+        postDataParameters.put("CompanyId", "0");
+
+        Log.e(""+ Utils.GetActiveUserListoffline,""+postDataParameters.toString());
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                HomeActivity.this, "post", Utils.getActiveUserList,
+                HomeActivity.this, "post", Utils.GetActiveUserListoffline,
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
     }
-    private void getNotificationList() {
+    //todo for get data all notifications for offline data
+    private void getNotificationList( String getSPrefsId) {
 
-       String timeStamp = Utils.getSharedPrefs(HomeActivity.this, HomeActivity.user.getId() + getResources().getString(R.string.notificationTimeStampStr));
+       /*String timeStamp = Utils.getSharedPrefs(HomeActivity.this, getSPrefsId + getResources().getString(R.string.notificationTimeStampStr));
         if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
             timeStamp = "";
+*/
 
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
-        postDataParameters.put("UserId", String.valueOf(HomeActivity.user.getId()));
-        postDataParameters.put("timeStamp", timeStamp);
-
-        Log.e("ss","ss"+postDataParameters.toString());
+        postDataParameters.put("UserId", getSPrefsId);
+        postDataParameters.put("timeStamp", "");
+        postDataParameters.put("CompanyId", "0");
+        Log.e(Utils.GetAllNotificationByUserId,""+postDataParameters.toString());
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                HomeActivity.this, "post", Utils.GetNotificationAPI,
+
+                HomeActivity.this, "post", Utils.GetAllNotificationByUserId,
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
       }
-    private void getUserList(int userId){
+    //todo get all team members
+    private void getUserList(String userId){
 
-            String timeStamp = Utils.getSharedPrefs(HomeActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
+           /* String timeStamp = Utils.getSharedPrefs(HomeActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
             if(timeStamp==null || timeStamp.equals(null) || timeStamp.equals("null"))
-                timeStamp="";
+                timeStamp="";*/
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
-            postDataParameters.put("TimeStamp",timeStamp);
+            postDataParameters.put("TimeStamp","");
             postDataParameters.put("UserId", String.valueOf(userId));
-            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY));
-            Log.e("values", "userid: " + String.valueOf(userId) + ", TimeStamp: " + timeStamp);
+            postDataParameters.put("CompanyId", "0");
 
+            Log.e(""+ Utils.GetAllUsersListOffline,""+postDataParameters.toString());
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                    HomeActivity.this, "post", Utils.getTeamAPI,
+                    HomeActivity.this, "post", Utils.GetAllUsersListOffline,
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
 
     }
 
+    //todo get all geo fencing data
     private void GetUserListWorkSite(String userId){
 
         if(userId.length()>0) {
@@ -651,9 +681,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         Log.e("" + methodName, "" + output);
         if (methodName.contains(Utils.UserTaskGraph)) {
             arrayList.addAll(parser.parseGraphsData(output));
-            dbHandler.updateUserTask(arrayList);
+            dbHandler.updateUserTask(HomeActivity.this,arrayList);
             arrayList.clear();
-            arrayList.addAll(dbHandler.getUserTask());
+            arrayList.addAll(dbHandler.getUserTask(HomeActivity.this));
 
             ArrayList<TaskEntry> arrayList_sort = new ArrayList<>();
             arrayList_sort.addAll(arrayList);
@@ -671,9 +701,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 //            setViewPager();
         } else if (methodName.contains(Utils.UsersGraph)) {
             arrayList_SignInOut.addAll(parser.parseGraphsSignInOut(output));
-            dbHandler.updateUserSignInOut(arrayList_SignInOut);
+            dbHandler.updateUserSignInOut(HomeActivity.this,arrayList_SignInOut);
             arrayList_SignInOut.clear();
-            arrayList_SignInOut.addAll(dbHandler.getUserSignInOut());
+            arrayList_SignInOut.addAll(dbHandler.getUserSignInOut(HomeActivity.this));
             ArrayList<Double> signedInOutArray = new ArrayList<>();
 
             for (int i = 0; i < arrayList_SignInOut.size(); i++) {
@@ -700,7 +730,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             // for delete offline task values
             int int_userId=getUserId();
             tasks_delete.clear();
-            tasks_delete.addAll(dbHandler.getTaskEnteries(int_userId, "true", true));
+            String companyId=  PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY);
+            tasks_delete.addAll(dbHandler.getTaskEnteries(int_userId, "true", true,companyId));
             if (tasks_delete.size() >= 0) {
                 for (int i = 0; i < tasks_delete.size(); i++) {
                     tasks_delete.get(i).setIsActive(false);
@@ -714,32 +745,40 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
             syncDataCheck();//todo checking for offline data
             deleteIds.clear(); // delete task ids.
-        } else if(methodName.equals(Utils.GetAssignedTaskList)){
-
-            ArrayList<SpinnerData> assignedTasks = parser.parseAssignedProjects(output);
+        } else if(methodName.equals(Utils.GetAllAssignedTaskIList)){
+            String companyId=PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY);
+            ArrayList<SpinnerData> assignedTasks = parser.parseAssignedProjects(output,Integer.parseInt(companyId));
             dbHandler.updateProjectTasks(assignedTasks);//todo update data for notification type
 
 
-        } else if (methodName.equals(Utils.getTaskListAPI)) {
+        } else if (methodName.equals(Utils.GetAllTaskList)) {
+            Log.e(""+Utils.GetAllTaskList,""+output);
             String  UserId =   Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, Integer.parseInt(UserId), "0");
             dbHandler.updateTask(taskEntries, "", false);
 
-        } else if (methodName.equals(Utils.getNotificationType)) {
+        }
+    /*    else if (methodName.equals(Utils.getNotificationType)) {
+
             Log.e("output", ",,, ::: " + output);
             ArrayList<SpinnerData> notificationTypes = parser.parseNotificationType(output);
             dbHandler.updateNotificationType(notificationTypes);  //todo update data for notification type
 
-        } else if (methodName.equals(Utils.getActiveUserList)) {
-            Log.e("output", ",,, ::: " + output);
-            ArrayList<User> userList = parser.parseActiveUsers(output);
+        } */
 
+        else if (methodName.equals(Utils.GetActiveUserListoffline)) {
+            Log.e("output", ",,, ::: " + output);
+
+           // String companyId=PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY);
+            ArrayList<User> userList = parser.parseActiveUsers(output);
             dbHandler.updateActiveUsers(userList);
             //userList = dbHandler.getActiveUsers();
-        } else if(methodName.equals(Utils.getTeamAPI)) {
+        } else if(methodName.equals(Utils.GetAllUsersListOffline)) {
             Log.e("output", ",,, ::: " + output);
+
             ArrayList<User> teamMembers = parser.getTeamList(output, methodName);
             TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
+           // String companyId=PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY);
             dbHandler.updateTeam(teamMembers);
 
             String userid="";
@@ -775,8 +814,9 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             }
 
         }
-        else if(methodName.equalsIgnoreCase(Utils.GetNotificationAPI))
+        else if(methodName.equalsIgnoreCase(Utils.GetAllNotificationByUserId))
         {
+            String companyId= PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY);
             notifications = parser.parseNotificationList(output);
             dbHandler.updateNotifications(notifications);
             }
@@ -788,7 +828,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         TimeEmDbHandler dbHandler = new TimeEmDbHandler(HomeActivity.this);
         //todo for notification
         notifications.clear();
-        notifications.addAll(dbHandler.getNotificationsByType("true", true, "true"));
+        String companyId= PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY);
+        notifications.addAll(dbHandler.getNotificationsByType("", true, "true",companyId));
         Log.e("notification size", "" + notifications.size());
         //todo for delete notification
         if (notifications != null && notifications.size() > 0) {
@@ -796,7 +837,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         }
        int userId=getUserId();
         tasks.clear();
-        tasks.addAll(dbHandler.getTaskEnteries(userId, "true", true));
+
+        tasks.addAll(dbHandler.getTaskEnteries(userId, "true", true,companyId));
         Log.e("task size", "" + tasks.size());
         //todo for delete task
         if (tasks != null && tasks.size() > 0) {
@@ -813,13 +855,15 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
         //todo for notification
         notifications.clear();
-        notifications.addAll(dbHandler.getNotificationsByType("true", true, "true"));
+        String companyId= PrefUtils.getStringPreference(HomeActivity.this,PrefUtils.KEY_COMPANY);
+        notifications.addAll(dbHandler.getNotificationsByType("", true, "true",companyId));
         Log.e("notification size", "" + notifications.size());
 
 
         //todo for task
         tasks.clear();
-        tasks.addAll(dbHandler.getTaskEnteries(int_userId, "true", true));
+
+        tasks.addAll(dbHandler.getTaskEnteries(int_userId, "true", true,companyId));
         if(tasks.size()>0 | deleteIds.size()>0 | notifications.size()>0) {
             syncUploadAPI(tasks, deleteIds, notifications);
         }else{
@@ -844,10 +888,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             parameters.put("Comments", "" + tasks.get(i).getComments());
             parameters.put("UserId", "" + tasks.get(i).getUserId());
             parameters.put("TaskId", "" + tasks.get(i).getTaskId());
+            parameters.put("TaskName", "" + tasks.get(i).getTaskName());
             parameters.put("ActivityId", "" + tasks.get(i).getActivityId());
             parameters.put("TimeSpent", "" + tasks.get(i).getTimeSpent());
             parameters.put("Id", "" + tasks.get(i).getId());
-           // parameters.put("CompanyId", tasks.get(i).getCompanyId());
+            parameters.put("CompanyId", tasks.get(i).getCompanyId());
             Log.e("getAttachmentImageFile", "" + tasks.get(i).getAttachmentImageFile());
             String value = tasks.get(i).getAttachmentImageFile();
 
@@ -881,7 +926,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             String string = notifications.get(i).getCreatedDate();
             String date = string.replace("/", "-");
             //parameters.put("CreatedDate", date);
-            parameters.put("NotificationTypeId", String.valueOf(notifications.get(i).getNotificationTypeId()));
+            parameters.put("NotificationTypeId", "0");
             parameters.put("UniqueNumber", notifications.get(i).getUniqueNumber());
             parameters.put("UserId", String.valueOf(notifications.get(i).getUserId()));
             String NotifyTo =  JSONObject.quote(notifications.get(i).getSenderId());
@@ -956,7 +1001,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             }
             Log.e("send task", "send task" + ImagePath);
 
-            fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
+            fileUtils.sendMultipartRequest("home",Utils.SyncFileUpload, dataModels);
         }
 
         //todo for notification file upload
@@ -981,7 +1026,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             }
 
             Log.e("send notification", "send notification" + ImagePath);
-            fileUtils.sendMultipartRequest(Utils.SyncFileUpload, dataModels);
+            fileUtils.sendMultipartRequest("home",Utils.SyncFileUpload, dataModels);
 
         }
 

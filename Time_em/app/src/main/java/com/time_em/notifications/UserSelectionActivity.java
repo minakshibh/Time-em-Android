@@ -80,8 +80,13 @@ public class UserSelectionActivity extends Activity {
             selectedUserIds.add(_users[i]);
         }
 
-        adapter = new UserAdapter(UserSelectionActivity.this);
-        userListView.setAdapter(adapter);
+        try {
+            adapter = new UserAdapter(UserSelectionActivity.this);
+            userListView.setAdapter(adapter);
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void setClickListeners() {

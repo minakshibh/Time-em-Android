@@ -31,12 +31,14 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 
 
 	//todo widgets
-	private TextView pinBox0, pinBox1, pinBox2, pinBox3, forgotPin;
+	private TextView pinBox0, pinBox1, pinBox2, pinBox3, forgotPin,login;
 	private TextView [] pinBoxArray;
 	private LinearLayout btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnDelete;
 	//todo variables
 	private String userEntered;
 	private final int PIN_LENGTH = 4;
+	private User user;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +71,9 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  pinBox2 = (TextView)findViewById(R.id.pinBox2);
 		  pinBox3 = (TextView)findViewById(R.id.pinBox3);
 		  forgotPin = (TextView)findViewById(R.id.forgotPin);
+		  login= (TextView)findViewById(R.id.login);
 
-		  btn0.setTag("0");
+		   btn0.setTag("0");
 		  btn1.setTag("1");
 		  btn2.setTag("2");
 		  btn3.setTag("3");
@@ -101,6 +104,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  btn9.setOnClickListener(pinButtonHandler);
 		  btnDelete.setOnClickListener(pinButtonHandler);
 		  forgotPin.setOnClickListener(pinButtonHandler);
+		login.setOnClickListener(pinButtonHandler);
 	}
 	
 	View.OnClickListener pinButtonHandler = new View.OnClickListener() {
@@ -118,7 +122,16 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 				intent.putExtra("trigger","pin");
 				startActivity(intent);
 
-			}else{
+			}
+			else if(v==login)
+			{
+				Intent intent = new Intent(PinAuthentication.this, LoginActivity.class);
+				startActivity(intent);
+				finish();
+				}
+
+
+			else{
 	    	
 	    	LinearLayout pressedButton = (LinearLayout)v;
     		
@@ -176,13 +189,13 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 
 		} else {
 
-			String json = Utils.getSharedPrefs(PinAuthentication.this, "user");
+			String json = Utils.getSharedPrefs(PinAuthentication.this, PrefUtils.KEY_USER);
 			Gson gson = new Gson();
 			if(json != "")
-			HomeActivity.user = gson.fromJson(json, User.class);
+			user = gson.fromJson(json, User.class);
 
-			if(HomeActivity.user != null && HomeActivity.user.getPin() != null){
-				String _pin = HomeActivity.user.getPin();
+			if(user != null && user.getPin() != null){
+				String _pin = user.getPin().trim();
 				if(pin.equals(_pin)){
 					gotoHomeScreen();
 
@@ -203,21 +216,24 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		Time_emJsonParser parser = new Time_emJsonParser(PinAuthentication.this);
 //		Boolean isAuthenticated = parser.authorizePIN(output);
 		
-		HomeActivity.user = parser.getUserDetails(output , methodName);
-		if(HomeActivity.user!=null)
+		user = parser.getUserDetails(output , methodName);
+		if(user!=null)
 		{
-			Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID,""+HomeActivity.user.getId());
-			//Gson gson = new Gson();
-			//String json = gson.toJson(HomeActivity.user);
-			//Utils.saveInSharedPrefs(getApplicationContext(), "user" , json );
+			Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID,""+user.getId());
+			PrefUtils.setIntegerPreference(getApplicationContext(), PrefUtils.KEY_ACTIVITY_ID,user.getActivityId());
+			boolean value =user.isSignedIn();
+			Log.e("boolean","boolean="+value);
+			PrefUtils.setBooleanPreference(getApplicationContext(), PrefUtils.KEY_IS_SIGNED_IN,value);
 
+			Gson gson = new Gson();
+			String json = gson.toJson(user);
+			Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER, json );
+			gotoHomeScreen();
 		}
 //		 HomeActivity.user.setSignedIn(Boolean.valueOf((Utils.getSharedPrefs(PinAuthentication.this, "isSignedIn").equals(""))?"false":"true"));
 //		 HomeActivity.user.setActivityId(Integer.parseInt((Utils.getSharedPrefs(PinAuthentication.this, "activityId").equals(""))?"0":Utils.getSharedPrefs(PinAuthentication.this, "activityId")));
 //		
-		if(HomeActivity.user != null){
-			gotoHomeScreen();
-		}
+
 		//else
 			//Utils.showToast(PinAuthentication.this, "Please enter a valid PIN");
 

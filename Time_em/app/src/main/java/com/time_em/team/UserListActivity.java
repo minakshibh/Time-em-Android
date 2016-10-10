@@ -49,6 +49,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 	//todo variables
 	private int array_position=0;
 	private String SelectedUserId="";
+	private int userId=0;
 
 
 	@Override
@@ -56,12 +57,19 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_task_list);
-	
-		initScreen();
-		SimpleDateFormat postFormater = new SimpleDateFormat("dd/MM/yyyy"); 
 
-		String currentDate = postFormater.format(new Date()); 
-		getUserList(HomeActivity.user.getId());
+		initScreen();
+		SimpleDateFormat postFormater = new SimpleDateFormat("dd/MM/yyyy");
+
+		String currentDate = postFormater.format(new Date());
+
+		try {
+			 userId = Integer.parseInt(Utils.getSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID));
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		getUserList(userId);
 	}
 	
 	private void initScreen(){
@@ -115,15 +123,15 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		mWebPageTask.execute();
 	}
 	private void getUserList(int userId){
-		
+			String getCompanyId=PrefUtils.getStringPreference(getApplicationContext(),PrefUtils.KEY_COMPANY);
+			String timeStamp = Utils.getSharedPrefs(UserListActivity.this, userId+getCompanyId+getResources().getString(R.string.teamTimeStampStr));
 
-			String timeStamp = Utils.getSharedPrefs(UserListActivity.this, userId+getResources().getString(R.string.teamTimeStampStr));
 			if(timeStamp==null || timeStamp.equals(null) || timeStamp.equals("null"))
 				timeStamp="";
 			
 			HashMap<String, String> postDataParameters = new HashMap<String, String>();
 
-			postDataParameters.put("TimeStamp",timeStamp);
+			postDataParameters.put("TimeStamp","");
 			postDataParameters.put("UserId", String.valueOf(userId));
 			postDataParameters.put("CompanyId", PrefUtils.getStringPreference(UserListActivity.this,PrefUtils.KEY_COMPANY));
 			Log.e("values","userid: "+String.valueOf(userId)+", TimeStamp: "+timeStamp);
@@ -135,6 +143,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 			mWebPageTask.execute();
 
 	}
+
 
 	public class TeamAdapter extends BaseSwipeAdapter {
 		private Context context;
@@ -241,7 +250,26 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 			TimeEmDbHandler dbHandler = new TimeEmDbHandler(UserListActivity.this);
 			dbHandler.updateTeam(teamMembers);
 
-			team = dbHandler.getTeam(HomeActivity.user.getId());
+			String companyId=PrefUtils.getStringPreference(UserListActivity.this,PrefUtils.KEY_COMPANY);
+			///////////
+			User user=null;
+			String json = Utils.getSharedPrefs(UserListActivity.this, PrefUtils.KEY_USER);
+			Gson gson = new Gson();
+			if(json != "") {
+				user = gson.fromJson(json, User.class);
+			}
+			/////////////
+			if(user!=null) {
+
+				if (user.getUserType().equalsIgnoreCase("admin")) {
+					team = dbHandler.getTeam("Admin", userId,"");
+				} else {
+					team = dbHandler.getTeam("", userId,companyId);
+				}
+			}
+			else{
+				team = dbHandler.getTeam("", userId,companyId);
+			}
 
 			taskListview.setAdapter(new TeamAdapter(UserListActivity.this));
 		}
@@ -269,7 +297,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		}
 		else{
 //			Utils.showToast(UserListActivity.this, output);
-			getUserList(HomeActivity.user.getId());
+			getUserList(userId);
 		}
 	}
 	private void goToNext() {

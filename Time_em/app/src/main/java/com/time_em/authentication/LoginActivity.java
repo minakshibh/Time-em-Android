@@ -21,6 +21,7 @@ import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
+import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
@@ -31,6 +32,7 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 	private EditText loginId, password;
 	private Button login;
 	private TextView forgotPassword;
+	private User user;
 
 	//todo classes
 	private Time_emJsonParser parser;
@@ -114,14 +116,18 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 		Log.e("output",""+ output);
 		
 		if(methodName.equalsIgnoreCase(Utils.loginAPI)) {
-			HomeActivity.user = parser.getUserDetails(output, methodName);
-			if (HomeActivity.user != null) {
+			user = parser.getUserDetails(output, methodName);
+			if (user != null) {
 
-				// TODo saved userId into SharedPrefs
-				Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID, "" + HomeActivity.user.getId());
+				// Todo saved userId into SharedPrefs
+				Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER_ID, "" + user.getId());
+				PrefUtils.setIntegerPreference(getApplicationContext(), PrefUtils.KEY_ACTIVITY_ID, user.getActivityId());
+				boolean value =user.isSignedIn();
+				PrefUtils.setBooleanPreference(getApplicationContext(), PrefUtils.KEY_IS_SIGNED_IN,value);
+
 				Gson gson = new Gson();
-				String json = gson.toJson(HomeActivity.user);
-				Utils.saveInSharedPrefs(getApplicationContext(), "user", json);
+				String json = gson.toJson(user);
+				Utils.saveInSharedPrefs(getApplicationContext(), PrefUtils.KEY_USER, json);
 
 				Intent intent = new Intent(LoginActivity.this, CompanyListActivity.class);
 				intent.putExtra("trigger", "login");

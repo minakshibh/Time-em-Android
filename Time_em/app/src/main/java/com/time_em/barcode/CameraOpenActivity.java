@@ -15,6 +15,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.time_em.android.R;
+import com.time_em.utils.Utils;
+
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
 
@@ -88,17 +90,19 @@ public class CameraOpenActivity extends Activity {
 
     private void initControls() {
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        autoFocusHandler = new Handler();
-        mCamera = getCameraInstance();
-        // Instance barcode scanner
-        scanner = new ImageScanner();
-        scanner.setConfig(0, Config.X_DENSITY, 3);
-        scanner.setConfig(0, Config.Y_DENSITY, 3);
+        boolean result= Utils.checkPermission(getApplicationContext());
+        if(result) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            autoFocusHandler = new Handler();
+            mCamera = getCameraInstance();
+            // Instance barcode scanner
+            scanner = new ImageScanner();
+            scanner.setConfig(0, Config.X_DENSITY, 3);
+            scanner.setConfig(0, Config.Y_DENSITY, 3);
 
-        mPreview = new CameraPreview(CameraOpenActivity.this, mCamera, previewCb, autoFocusCB);
-        preview.addView(mPreview);
-
+            mPreview = new CameraPreview(CameraOpenActivity.this, mCamera, previewCb, autoFocusCB);
+            preview.addView(mPreview);
+        }
     }
 
 

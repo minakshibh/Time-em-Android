@@ -8,7 +8,14 @@ import android.text.TextUtils;
 public class PrefUtils {
 
     public static  String KEY_COMPANY="key_company";
+    public static  String KEY_COMPANY_NAME ="key_company_name";
     public static  String KEY_USER_ID="apiUserId";
+    public static  String KEY_IS_SIGNED_IN="isSignedIn";
+    public static  String KEY_ACTIVITY_ID="activityId";
+    public static  String KEY_USER="user";
+
+
+
 
     private PrefUtils() {}
 
