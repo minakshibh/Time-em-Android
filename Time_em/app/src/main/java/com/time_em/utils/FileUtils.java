@@ -152,7 +152,7 @@ public class FileUtils {
         String imageFileName = "IMG_" + ""+ AddEditTaskEntry.UniqueNumber;// + "_";
         String videoFileName = "VID_" + ""+ AddEditTaskEntry.UniqueNumber;//+ "_";
         Log.e("imageFileName",""+imageFileName);
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         File file;
         if(video)
         {
@@ -180,7 +180,7 @@ public class FileUtils {
         }
 
         // Save a file: path for use with ACTION_VIEW intents
-      //  attachmentPath = "file:" + file.getAbsolutePath();
+      // attachmentPath = "file:" + file.getAbsolutePath();
         attachmentPath = "" + file.getAbsolutePath();
         Log.e("attachmentPath",""+attachmentPath);
         return file;
