@@ -102,7 +102,7 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 			HashMap<String, String> postDataParameters = new HashMap<String, String>();
 			
 			String _loginId = Email.getText().toString().trim();
-			String methodName;
+			String methodName="";
 
 			if(trigger.equals("password"))
 				methodName = Utils.forgotPasswordAPI;
@@ -110,7 +110,8 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 				methodName = Utils.forgotPinAPI;
 
 			postDataParameters.put("email", _loginId);
-			
+
+			Log.e(methodName,""+postDataParameters.toString());
 			AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
 					ForgotCredentials.this, "post", methodName,
 					postDataParameters, true, "Please wait...");
@@ -126,7 +127,7 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
 		Log.e("output", output);
-		Utils.alertMessageWithoutBack(ForgotCredentials.this, output);
+		Utils.alertMessage(ForgotCredentials.this, output);
 		}
 	private void  keyBoard_DoneButton()
 	{

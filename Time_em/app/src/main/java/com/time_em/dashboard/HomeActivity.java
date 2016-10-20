@@ -279,7 +279,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     }
 
     private void firstGraphView() {
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
         GraphAdapter adapter = new GraphAdapter(true, arrayList, new OnItemClickListener() {
@@ -301,7 +300,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
             }
         });
-        recyclerView.setAdapter(adapter);//todo set adapter on recyclerview
+        recyclerView.setAdapter(adapter);//todo set adapter on recycler view
         adapter.notifyDataSetChanged();
     }
 
@@ -847,6 +846,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         if (deleteIds.size() > 0) {
             imageSync.setImageDrawable(getResources().getDrawable(R.drawable.sync_red));
         }
+
     }
 
     private void syncUploadData() {
@@ -923,8 +923,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             parameters.put("Subject",Subject );
             String Message =  JSONObject.quote(notifications.get(i).getMessage());
             parameters.put("Message", Message);
-            String string = notifications.get(i).getCreatedDate();
-            String date = string.replace("/", "-");
+           // String string = notifications.get(i).getCreatedDate();
+            //String date = string.replace("/", "-");
             //parameters.put("CreatedDate", date);
             parameters.put("NotificationTypeId", "0");
             parameters.put("UniqueNumber", notifications.get(i).getUniqueNumber());
@@ -953,14 +953,10 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 jsonObject.put("userTaskActivities", jsonString);
                 String jsonString_notification = new Gson().toJson(array_HashMapNotification);
                 jsonObject.put("notifications", jsonString_notification);*/
-
-
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(HomeActivity.this, "Something Wrong, try again", Toast.LENGTH_LONG).show();
             }
-
-
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("Data", "" + jsonObject.toString());
             Log.e("" + Utils.Sync, "" + postDataParameters.toString());
@@ -1065,6 +1061,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                    relativeLayout.setPadding(5,0,5,0);
                    AddWigdetView.addView(rowView);
                }catch(Exception e)
+
                {
                    e.printStackTrace();
                }

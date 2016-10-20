@@ -13,7 +13,7 @@ import com.time_em.inappbilling.util.IabHelper;
 import com.time_em.inappbilling.util.IabResult;
 import com.time_em.inappbilling.util.Inventory;
 import com.time_em.inappbilling.util.Purchase;
-import com.time_em.notifications.SendNotification;
+import com.time_em.notifications.SendNotificationActivity;
 
 public class PurchaseActivity extends Activity {
 
@@ -100,7 +100,7 @@ public class PurchaseActivity extends Activity {
            if(result.getResponse()==IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED)
             {
                 Log.d(TAG, "*****7*****"+purchase);
-                Intent in=new Intent(getApplicationContext(), SendNotification.class);
+                Intent in=new Intent(getApplicationContext(), SendNotificationActivity.class);
                 startActivity(in);
             }
            else if (result.isFailure()) {
@@ -109,7 +109,7 @@ public class PurchaseActivity extends Activity {
                 return;
             }
            else if (purchase.getSku().equals(ITEM_SKU)) {
-                Intent in=new Intent(getApplicationContext(), SendNotification.class);
+                Intent in=new Intent(getApplicationContext(), SendNotificationActivity.class);
                 startActivity(in);
                 consumeItem();
                 cancel.setEnabled(false);

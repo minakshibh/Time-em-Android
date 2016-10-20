@@ -14,22 +14,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
-import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
-import com.time_em.inappbilling.PurchaseActivity;
-import com.time_em.inappbilling.util.Purchase;
 import com.time_em.model.Notification;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -164,7 +159,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
                 Intent intent = new Intent(NotificationListActivity.this, PurchaseActivity.class);
                 startActivity(intent);
                 }else{*/
-                    Intent intent = new Intent(NotificationListActivity.this, SendNotification.class);
+                    Intent intent = new Intent(NotificationListActivity.this, SendNotificationActivity.class);
                     startActivity(intent);
                 //}
                 //showPurchaseDialog();

@@ -462,6 +462,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     else if(fileUtils.getUserChoosenTask().equals("Record Video"))
                         fileUtils.videoIntent();
                 } else {
+
                     //code for deny
                 }
                 break;

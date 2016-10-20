@@ -96,7 +96,7 @@
             android:name="com.time_em.tasks.TaskDetailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.time_em.notifications.SendNotification"
+            android:name="com.time_em.notifications.SendNotificationActivity"
             android:windowSoftInputMode="stateHidden"
             android:label="@string/title_activity_send_notification"
             android:screenOrientation="portrait"

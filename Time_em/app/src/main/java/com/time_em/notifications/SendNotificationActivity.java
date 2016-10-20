@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
-import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
@@ -38,7 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SendNotification extends Activity implements AsyncResponseTimeEm {
+public class SendNotificationActivity extends Activity implements AsyncResponseTimeEm {
 
     //todo widgets
     private Spinner spnNotificationType;
@@ -85,9 +84,9 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
     private void initScreen() {
         Utils.saveInSharedPrefs(getApplicationContext(),"notification_purchase","yes");
-        AddEditTaskEntry.UniqueNumber= FileUtils.getUniqueNumber(SendNotification.this);
-        fileUtils = new FileUtils(SendNotification.this);
-        dbHandler = new TimeEmDbHandler(SendNotification.this);
+        AddEditTaskEntry.UniqueNumber= FileUtils.getUniqueNumber(SendNotificationActivity.this);
+        fileUtils = new FileUtils(SendNotificationActivity.this);
+        dbHandler = new TimeEmDbHandler(SendNotificationActivity.this);
         spnNotificationType = (Spinner) findViewById(R.id.spnNotificationType);
         subject = (EditText) findViewById(R.id.subject);
         message = (EditText) findViewById(R.id.message);
@@ -103,15 +102,15 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         txt_Image_Video=(TextView)findViewById(R.id.txt_Image_Video);
         txt_Image_Video.setText("Upload Image");
         headerInfo.setText("Send Notification");
-        parser = new Time_emJsonParser(SendNotification.this);
+        parser = new Time_emJsonParser(SendNotificationActivity.this);
 
         imgdelete=(ImageView) findViewById(R.id.imgdelete);
         videodelete=(ImageView) findViewById(R.id.videodelete);
         imgdelete.setVisibility(View.GONE);
         videodelete.setVisibility(View.GONE);
 
-        Utils.saveInSharedPrefs(SendNotification.this, "SelectedIds", "");
-        Utils.saveInSharedPrefs(SendNotification.this, "SelectedUsers", "");
+        Utils.saveInSharedPrefs(SendNotificationActivity.this, "SelectedIds", "");
+        Utils.saveInSharedPrefs(SendNotificationActivity.this, "SelectedUsers", "");
 
     }
 
@@ -147,16 +146,16 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
              //  Log.e("selectedNotiId",""+selectedNotificationTypeId);
                 if(subject.getText().toString().trim().equals("") || message.getText().toString().trim().equals("")
                        || selectedIds.equals("")){
-                    Utils.showToast(SendNotification.this, "Please specify required information");
+                    Utils.showToast(SendNotificationActivity.this, "Please specify required information");
                 }
               /*  else if(selectedNotificationTypeId.equals("0"))
                 {
-                    Utils.showToast(SendNotification.this, "Please select specify notification type");
+                    Utils.showToast(SendNotificationActivity.this, "Please select specify notification type");
                     }*/
                 else {
 
 
-               if(Utils.isNetworkAvailable(SendNotification.this)) {
+               if(Utils.isNetworkAvailable(SendNotificationActivity.this)) {
                    String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
                    HashMap<String, String> postDataParameters = new HashMap<String, String>();
                     postDataParameters.put("UserId", getSPrefsId);
@@ -164,14 +163,14 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                     postDataParameters.put("Message", message.getText().toString());
                     postDataParameters.put("NotificationTypeId", "0");
                     postDataParameters.put("notifyto", selectedIds);
-                    postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY));
+                    postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotificationActivity.this,PrefUtils.KEY_COMPANY));
 
                     Log.e(""+Utils.AddNotificationNew, ""+postDataParameters.toString());
 
                     AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                            SendNotification.this, "post", Utils.AddNotificationNew,
+                            SendNotificationActivity.this, "post", Utils.AddNotificationNew,
                             postDataParameters, true, "Please wait...");
-                    mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
+                    mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotificationActivity.this;
                     mWebPageTask.execute();
 
 
@@ -201,7 +200,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                        // notification.setNotificationType(selectedNotificationTypeName);
                         notification.setCreatedDate(getCurrentDate());
                         notification.setSenderFullName(selectedUsers);
-                        String companyId=PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY);
+                        String companyId=PrefUtils.getStringPreference(SendNotificationActivity.this,PrefUtils.KEY_COMPANY);
                         notification.setCompanyId(companyId);
 
                         notification.setTimeZone(getCurrentDate());
@@ -211,7 +210,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
                         Log.e("",""+notification.toString());
                         offline_notification.add(notification);
                         dbHandler.updateNotifications(offline_notification);
-                        Utils.alertMessage(SendNotification.this,"Send Notification Successfully.!");
+                        Utils.alertMessage(SendNotificationActivity.this,"Send Notification Successfully.!");
                          }
 
                 }
@@ -235,11 +234,11 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
  /*   private void loadNotificationTypes() {
 
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
-            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY));
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotificationActivity.this,PrefUtils.KEY_COMPANY));
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                    SendNotification.this, "get", Utils.getNotificationType,
+                    SendNotificationActivity.this, "get", Utils.getNotificationType,
                     postDataParameters, true, "Please wait...");
-            mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
+            mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotificationActivity.this;
             mWebPageTask.execute();
 
          }
@@ -247,7 +246,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     private void loadRecipients() {
         String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
         String getCompanyId=PrefUtils.getStringPreference(getApplicationContext(),PrefUtils.KEY_COMPANY);
-           String timeStamp = Utils.getSharedPrefs(SendNotification.this, getSPrefsId+getCompanyId+ getResources().getString(R.string.activeUsersTimeStampStr));
+           String timeStamp = Utils.getSharedPrefs(SendNotificationActivity.this, getSPrefsId+getCompanyId+ getResources().getString(R.string.activeUsersTimeStampStr));
             if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
                 timeStamp = "";
 
@@ -255,12 +254,12 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
             postDataParameters.put("UserId", getSPrefsId);
             postDataParameters.put("timeStamp", "");
-            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY));
+            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(SendNotificationActivity.this,PrefUtils.KEY_COMPANY));
 
             AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
-                    SendNotification.this, "post", Utils.getActiveUserList,
+                    SendNotificationActivity.this, "post", Utils.getActiveUserList,
                     postDataParameters, true, "Please wait...");
-            mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotification.this;
+            mWebPageTask.delegate = (AsyncResponseTimeEm) SendNotificationActivity.this;
             mWebPageTask.execute();
     }
 
@@ -273,7 +272,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             if(userList!=null)
             dbHandler.updateActiveUsers(userList);
 
-            String companyId=PrefUtils.getStringPreference(SendNotification.this,PrefUtils.KEY_COMPANY);
+            String companyId=PrefUtils.getStringPreference(SendNotificationActivity.this,PrefUtils.KEY_COMPANY);
             userList = dbHandler.getActiveUsers(companyId);
         }
    /*     else if (methodName.equals(Utils.getNotificationType)) {
@@ -281,7 +280,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             dbHandler.updateNotificationType(notificationTypes);//update data for notification type
 
             notificationTypes=dbHandler.getNotificationTypeData();
-            adapter = new SpinnerTypeAdapter(SendNotification.this,
+            adapter = new SpinnerTypeAdapter(SendNotificationActivity.this,
                     R.layout.spinner_row_layout, notificationTypes);
             spnNotificationType.setAdapter(adapter); // Set the custom adapter to the spinner
 
@@ -289,7 +288,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
         else if(methodName.equalsIgnoreCase(Utils.AddNotificationNew)){
             String Id = parser.getTaskId(output);
             if(Id.equalsIgnoreCase("0")){
-                Utils.showToast(SendNotification.this,Utils.Api_error);
+                Utils.showToast(SendNotificationActivity.this,Utils.Api_error);
             }
             else {
                 finish();
@@ -302,7 +301,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
 
     private void showUserSelectionDropdown(){
         if(userList!=null) {
-            Intent intent = new Intent(SendNotification.this, UserSelectionActivity.class);
+            Intent intent = new Intent(SendNotificationActivity.this, UserSelectionActivity.class);
             intent.putExtra("activeUsers", userList);
             intent.putExtra("selectedIds", selectedIds);
             startActivity(intent);
@@ -314,8 +313,8 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
     @Override
     protected void onResume() {
         super.onResume();
-        selectedIds = Utils.getSharedPrefs(SendNotification.this, "SelectedIds");
-        selectedUsers = Utils.getSharedPrefs(SendNotification.this, "SelectedUsers");
+        selectedIds = Utils.getSharedPrefs(SendNotificationActivity.this, "SelectedIds");
+        selectedUsers = Utils.getSharedPrefs(SendNotificationActivity.this, "SelectedUsers");
         txtSpnUsers.setText(selectedUsers);
     }
 
@@ -375,7 +374,7 @@ public class SendNotification extends Activity implements AsyncResponseTimeEm {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    Utils.hideKeyboard(SendNotification.this);
+                    Utils.hideKeyboard(SendNotificationActivity.this);
                     return true;
                 }
                 return false;
