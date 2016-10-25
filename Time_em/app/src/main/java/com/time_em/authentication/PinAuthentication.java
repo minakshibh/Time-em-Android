@@ -27,6 +27,7 @@ import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
+
 public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 
 
@@ -48,23 +49,23 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_pin_authentication);
-		
+
 		initScreen();
 		setClickListeners();
 	}
 
 	private void initScreen(){
-		  btn0 = (LinearLayout)findViewById(R.id.button0);
-		  btn1 = (LinearLayout)findViewById(R.id.button1);
-		  btn2 = (LinearLayout)findViewById(R.id.button2);
-		  btn3 = (LinearLayout)findViewById(R.id.button3);
-		  btn4 = (LinearLayout)findViewById(R.id.button4);
-		  btn5 = (LinearLayout)findViewById(R.id.button5);
-		  btn6 = (LinearLayout)findViewById(R.id.button6);
-		  btn7 = (LinearLayout)findViewById(R.id.button7);
-		  btn8 = (LinearLayout)findViewById(R.id.button8);
-		  btn9 = (LinearLayout)findViewById(R.id.button9);
-		  btnDelete = (LinearLayout)findViewById(R.id.buttonDeleteBack);
+		btn0 = (LinearLayout)findViewById(R.id.button0);
+		btn1 = (LinearLayout)findViewById(R.id.button1);
+		btn2 = (LinearLayout)findViewById(R.id.button2);
+		btn3 = (LinearLayout)findViewById(R.id.button3);
+		btn4 = (LinearLayout)findViewById(R.id.button4);
+		btn5 = (LinearLayout)findViewById(R.id.button5);
+		btn6 = (LinearLayout)findViewById(R.id.button6);
+		btn7 = (LinearLayout)findViewById(R.id.button7);
+		btn8 = (LinearLayout)findViewById(R.id.button8);
+		btn9 = (LinearLayout)findViewById(R.id.button9);
+		btnDelete = (LinearLayout)findViewById(R.id.buttonDeleteBack);
 		  
 		  pinBox0 = (TextView)findViewById(R.id.pinBox0);
 		  pinBox1 = (TextView)findViewById(R.id.pinBox1);
@@ -73,7 +74,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  forgotPin = (TextView)findViewById(R.id.forgotPin);
 		  login= (TextView)findViewById(R.id.login);
 
-		   btn0.setTag("0");
+		  btn0.setTag("0");
 		  btn1.setTag("1");
 		  btn2.setTag("2");
 		  btn3.setTag("3");
@@ -84,7 +85,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  btn8.setTag("8");
 		  btn9.setTag("9");
 		  
-		  pinBoxArray = new TextView[PIN_LENGTH];
+		    pinBoxArray = new TextView[PIN_LENGTH];
 			pinBoxArray[0] = pinBox0;
 			pinBoxArray[1] = pinBox1;
 			pinBoxArray[2] = pinBox2;
@@ -104,7 +105,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		  btn9.setOnClickListener(pinButtonHandler);
 		  btnDelete.setOnClickListener(pinButtonHandler);
 		  forgotPin.setOnClickListener(pinButtonHandler);
-		login.setOnClickListener(pinButtonHandler);
+		  login.setOnClickListener(pinButtonHandler);
 	}
 	
 	View.OnClickListener pinButtonHandler = new View.OnClickListener() {
@@ -134,8 +135,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 			else{
 	    	
 	    	LinearLayout pressedButton = (LinearLayout)v;
-    		
-	    	
+
 	    	if (userEntered.length()<PIN_LENGTH)
 	    	{
 	    		userEntered = userEntered + pressedButton.getTag().toString();
@@ -246,5 +246,6 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 		startActivity(intent);
 		finish();
 	}
+
 }
 

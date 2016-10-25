@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,12 +39,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
+
 public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     //todo widgets
     private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader,first_separator;
     private MySpinner spnProject;
-    private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete;
+    private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete,dropdown,dropdown1,dropdown2;
     private LinearLayout recipientSection, uploadAttachment;
     private RelativeLayout notTypeLayout;
     private Button addUpdateTask;
@@ -99,6 +102,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         imgdelete=(ImageView) findViewById(R.id.imgdelete);
         videodelete=(ImageView) findViewById(R.id.videodelete);
+        dropdown=(ImageView) findViewById(R.id.dropdown);
+        dropdown1=(ImageView) findViewById(R.id.dropdown1);
+        dropdown2=(ImageView) findViewById(R.id.dropdown2);
 
         selectedDate = getIntent().getStringExtra("selectDate");
         taskEntry = getIntent().getParcelableExtra("taskEntry");
@@ -133,6 +139,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         addUpdateTask.setText("ADD");
         addUpdateTask.setTextSize(20);
         assignedTasks = new ArrayList<>();
+
+        dropdown.setVisibility(View.GONE);
+        dropdown1.setVisibility(View.GONE);
+        dropdown2.setVisibility(View.GONE);
 
         if(taskEntry == null) {
             headerInfo.setText("Add Task");
@@ -195,7 +205,27 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 }
             }
         }
+
+        comments.addTextChangedListener(textInput);
     }
+
+    TextWatcher textInput = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            comments.setError(null);
+            hours.setError(null);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     private void selectedSpinnerValue(Spinner sp) {
 
@@ -266,14 +296,16 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 fileUtils.setAttachmentPath(null);
             }else if(v == addUpdateTask){
 
-                if(comments.getText().toString().trim().equals("") || hours.getText().toString().trim().equals("") || selectedSpinnerData == null){
-                    Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
-                }
-                else if(selectedSpinnerData.getId()==-1){
+
+                if(selectedSpinnerData == null){
                     Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
                 }
-                else if(intHours>12){
-                    Utils.showToast(AddEditTaskEntry.this, "Please enter hours values less than 12 hrs.");
+                else if(selectedSpinnerData.getId()==-1 ){
+                    Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
+                }
+                else if(!Utils.hasText(comments) || !Utils.hasText(hours) || !validateHours(hours,intHours)){
+                    //Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
+                    return;
                 }
                 else if(!PrefUtils.getBooleanPreference(getApplicationContext(),PrefUtils.KEY_IS_SIGNED_IN,false)){
                    Utils.alertMessage(AddEditTaskEntry.this, "You are currently signed out. To continue Please sign in.");
@@ -394,7 +426,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
                             }
 
-                        }
+                       }
 
             }
         }
@@ -561,6 +593,20 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     protected void onPause() {
         super.onPause();
        // uploadedVideo.setTop(0);
+    }
+
+    // check the input field has any text or not
+    // return true if it contains text otherwise false
+    public static boolean validateHours(EditText editText, double hours) {
+
+        editText.setError(null);
+
+        if (hours>12 || hours==0.0) {
+            editText.setError("Please enter hours values 1-12 hrs.");
+            return false;
+        }
+
+        return true;
     }
 
 

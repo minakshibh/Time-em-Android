@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -487,4 +488,21 @@ public class Utils {
 
         return (ArrayList<Widget>) loations;
     }
+
+    // check the input field has any text or not
+    // return true if it contains text otherwise false
+    public static boolean hasText(EditText editText) {
+
+        String text = editText.getText().toString().trim();
+        editText.setError(null);
+
+        // length 0 means there is no text
+        if (text.length() == 0) {
+            editText.setError("Required");
+            return false;
+        }
+
+        return true;
+    }
+    
 }

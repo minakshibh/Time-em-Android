@@ -16,12 +16,12 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 		Log.e(TAG, "received notification!");
 
 	    //Explicitly specify that GcmIntentService will handle this intent
-	    ComponentName comp = new ComponentName(context.getPackageName(),
-			    GcmIntentService.class.getName());
+	    ComponentName comp = new ComponentName(context.getPackageName(), GcmIntentService.class.getName());
 
 	    //start the service, keeping the device awake while it is starting
 	    startWakefulService(context, intent.setComponent(comp));
 
 	    setResultCode(Activity.RESULT_OK);
     }
+
 }

@@ -161,7 +161,6 @@
         </activity>
 
 
-
         <receiver
             android:name="com.time_em.utils.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">

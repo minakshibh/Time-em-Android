@@ -57,7 +57,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     private LinearLayout changeStatus;
     private String trigger="";
     private ImageView userStatus, imgStatus;
-    private TextView txtUserStatus;
+    private TextView txtUserStatus,horizontalLabel;
     private ViewPager viewPager;
     private RecyclerView recyclerView;
     private TextView currentDate;
@@ -95,8 +95,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
         LayoutInflater inflater = (LayoutInflater) this
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View contentView = inflater
-                .inflate(R.layout.activity_home, null, false);
+        View contentView = inflater.inflate(R.layout.activity_home, null, false);
         contentFrame.addView(contentView, 0);
 
         String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
@@ -139,6 +138,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         AddNewWidgetTextVew = (TextView) findViewById(R.id.AddNewWidgetTextVew);
         userStatus = (ImageView) findViewById(R.id.userStatus);
         txtUserStatus = (TextView) findViewById(R.id.txtUserStatus);
+        horizontalLabel = (TextView) findViewById(R.id.horizontalLabel);
         imgStatus = (ImageView) findViewById(R.id.imgStatus);
         trigger = getIntent().getStringExtra("trigger");
         lay_indicator = (LinearLayout) findViewById(R.id.lay_indicator);
@@ -601,7 +601,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         int value;
         int maxValue = 0;
 
-        TextView scale0, scale1, scale2, scale3, scale4, scale5;
+        TextView scale0, scale1, scale2, scale3, scale4, scale5,verticalLabel;
 
         public ViewPagerAdapter(Context context, int value) {
             this.context = context;
@@ -634,6 +634,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
             scale3 = (TextView) itemView.findViewById(R.id.scale3);
             scale4 = (TextView) itemView.findViewById(R.id.scale4);
             scale5 = (TextView) itemView.findViewById(R.id.scale5);
+            verticalLabel = (TextView) itemView.findViewById(R.id.verticalLabel);
+
 
 
             if (position == 0) {
@@ -645,14 +647,19 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     maxValue = maxValue / 4;
                 }
                 maxValueTask = Double.valueOf(maxValue * 6);
+                verticalLabel.setText("Hours");
+                horizontalLabel.setText("Date");
                 //todo user task graphs
                 firstGraphView();
+
             } else {
                 maxValue = maxValueSignInOut.intValue();
                 if(maxValue>4) {
                     maxValue = maxValue / 4;
                 }
                 maxValueSignInOut = Double.valueOf(maxValue * 6);
+                verticalLabel.setText("SignIn/SignOut");
+                horizontalLabel.setText("Date");
             }
 
 

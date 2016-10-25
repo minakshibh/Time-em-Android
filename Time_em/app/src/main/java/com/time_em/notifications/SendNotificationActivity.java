@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -43,7 +45,7 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
     private Spinner spnNotificationType;
     private EditText subject, message;
     private RelativeLayout recipients;
-    private ImageView uploadedImage, back, rightNavigation, imgdelete, videodelete;
+    private ImageView uploadedImage, back, rightNavigation, imgdelete, videodelete,dropdown1,dropdown2;
     private TextView txtSpnUsers, headerInfo,txt_Image_Video;
     private Button sendNotification;
     private ProgressDialog pDialog;
@@ -109,6 +111,11 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
         imgdelete.setVisibility(View.GONE);
         videodelete.setVisibility(View.GONE);
 
+        dropdown1=(ImageView) findViewById(R.id.dropdown1);
+        dropdown2=(ImageView) findViewById(R.id.dropdown2);
+        dropdown1.setVisibility(View.GONE);
+        dropdown2.setVisibility(View.GONE);
+
         Utils.saveInSharedPrefs(SendNotificationActivity.this, "SelectedIds", "");
         Utils.saveInSharedPrefs(SendNotificationActivity.this, "SelectedUsers", "");
 
@@ -137,16 +144,39 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
             public void onNothingSelected(AdapterView<?> adapter) {
             }
         });
+
+        subject.addTextChangedListener(textInput);
+        message.addTextChangedListener(textInput);
     }
+
+    private TextWatcher textInput = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+           subject.setError(null);
+           message.setError(null);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(v== sendNotification){
              //  Log.e("selectedNotiId",""+selectedNotificationTypeId);
-                if(subject.getText().toString().trim().equals("") || message.getText().toString().trim().equals("")
-                       || selectedIds.equals("")){
-                    Utils.showToast(SendNotificationActivity.this, "Please specify required information");
+                if(!Utils.hasText(subject) || !Utils.hasText(message) ){
+                    return;
+                }
+                else if( selectedIds.equals("")){
+                    Utils.showToast(SendNotificationActivity.this, "Please select any recipient");
                 }
               /*  else if(selectedNotificationTypeId.equals("0"))
                 {
@@ -156,8 +186,8 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
 
 
                if(Utils.isNetworkAvailable(SendNotificationActivity.this)) {
-                   String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
-                   HashMap<String, String> postDataParameters = new HashMap<String, String>();
+                    String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
+                    HashMap<String, String> postDataParameters = new HashMap<String, String>();
                     postDataParameters.put("UserId", getSPrefsId);
                     postDataParameters.put("Subject", subject.getText().toString());
                     postDataParameters.put("Message", message.getText().toString());

@@ -33,6 +33,7 @@
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
+
     <!-- our tablayout to display tabs  -->
     <android.support.design.widget.TabLayout
         android:id="@+id/tabLayout"
@@ -78,9 +79,10 @@
         android:layout_below="@+id/graphLayout"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginLeft="25dp"
         android:background="@color/dullTextColor" />
     <LinearLayout
-        android:id="@+id/lay_indicator"
+
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_below="@+id/line"
@@ -88,17 +90,24 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/horizontalLabel"
             android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:gravity="right" />
 
         <LinearLayout
+            android:id="@+id/lay_indicator"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:gravity="right|center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="invisible"
+           >
 
 
             <TextView

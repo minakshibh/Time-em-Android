@@ -26,10 +26,14 @@ import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+
 
 public class NotificationListActivity extends Activity implements AsyncResponseTimeEm{
 
@@ -188,7 +192,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             mWebPageTask.delegate = (AsyncResponseTimeEm) NotificationListActivity.this;
             mWebPageTask.execute();
 
-          }
+    }
 
    /* private void deleteTask(int taskEntryId) {
 
@@ -249,7 +253,17 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             message.setText(notification.getMessage());
             senderName.setText(notification.getSenderFullName());
           //  date.setText(notification.getSenderFullName());
+
             String getDate=notification.getCreatedDate();
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+                Date newDate = format.parse(getDate);
+                getDate=format.format(newDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             Calendar cal = Calendar.getInstance();
 
@@ -321,6 +335,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         notifications.clear();
         String companyId= PrefUtils.getStringPreference(NotificationListActivity.this,PrefUtils.KEY_COMPANY);
         notifications = dbHandler.getNotificationsByType(selectedNotificationType,false,"false",companyId);
+        Collections.reverse(notifications);
         notificationListView.setAdapter(new NotificationAdapter());
     }
 
@@ -328,8 +343,8 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     public void processFinish(String output, String methodName) {
         // TODO Auto-generated method stub
         Log.e("output", ":: " + output);
-     //   Utils.alertMessage(NotificationListActivity.this, output);
-       String companyId= PrefUtils.getStringPreference(NotificationListActivity.this,PrefUtils.KEY_COMPANY);
+        //  Utils.alertMessage(NotificationListActivity.this, output);
+        String companyId= PrefUtils.getStringPreference(NotificationListActivity.this,PrefUtils.KEY_COMPANY);
         if(methodName.equalsIgnoreCase(Utils.GetNotificationAPI)) {
             notifications = parser.parseNotificationList(output);
             dbHandler.updateNotifications(notifications);

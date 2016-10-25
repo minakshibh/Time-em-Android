@@ -127,7 +127,7 @@ public class ForgotCredentials extends Activity implements AsyncResponseTimeEm {
 	public void processFinish(String output, String methodName) {
 		// TODO Auto-generated method stub
 		Log.e("output", output);
-		Utils.alertMessage(ForgotCredentials.this, output);
+		Utils.alertMessageWithoutBack(ForgotCredentials.this, output);
 		}
 	private void  keyBoard_DoneButton()
 	{

@@ -44,8 +44,8 @@ public class TaskDetailActivity extends Activity {
         initScreen();
         fetchImageData();
         setClickListeners();
-    }
 
+    }
 
 
     private void initScreen() {

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
+import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
@@ -137,10 +138,11 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
 
         adapter = new ListAdapter(arrayListUsers, getApplicationContext());
         listView.setAdapter(adapter);
-
-
+        if(arrayListUsers.size()==0)
+            Utils.alertMessage(BarcodeScanActivity.this, "No User Found");
 
     }
+
     private void fetchUserByBarCode() {
         dbHandler = new TimeEmDbHandler(getApplicationContext());
 

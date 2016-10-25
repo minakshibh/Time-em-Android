@@ -19,14 +19,13 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.time_em.android.R;
 import com.time_em.android.SplashActivity;
 import com.time_em.dashboard.HomeActivity;
-
 import java.util.List;
 import java.util.Random;
-
 
 /**
  *
  */
+
 public class GcmIntentService extends IntentService {
 
 	private static final String TAG = "GcmIntentService";
@@ -104,4 +103,5 @@ public class GcmIntentService extends IntentService {
        // broadcastIntent.setAction(getString(R.string.ACTION_BOOKING_UPDATED));
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
     }
+
 }

@@ -72,8 +72,6 @@
         android:layout_above="@+id/footer"
         ></ListView>
 
-
-
     <LinearLayout
         android:visibility="gone"
         android:layout_width="fill_parent"

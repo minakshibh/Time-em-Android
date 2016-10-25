@@ -315,7 +315,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         postDataParameters.put("TimeStamp", "");
         postDataParameters.put("CompanyId", PrefUtils.getStringPreference(TaskListActivity.this,PrefUtils.KEY_COMPANY));
         //Log.e("values"+Utils.GetUserActivityTask, "userid: " + String.valueOf(UserId) + ", createdDate: " + createdDate + ", TimeStamp: " + timeStamp);
-        Log.e(""+Utils.GetUserActivityTask, "" + postDataParameters.toString());
+        //Log.e(""+Utils.GetUserActivityTask, "" + postDataParameters.toString());
 
         AsyncTaskTimeEm mWebPageTask = new AsyncTaskTimeEm(
                 TaskListActivity.this, "post", Utils.GetUserActivityTask,
@@ -471,6 +471,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             String companyId=  PrefUtils.getStringPreference(TaskListActivity.this,PrefUtils.KEY_COMPANY);
             tasks = dbHandler.getTaskEnteries(UserId, selectedDate, false,companyId);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
+            if(tasks.size()==0)
+                Utils.alertMessageWithoutBack(TaskListActivity.this, "No Task Available");
+
         } else if (methodName.equals(Utils.deleteTaskAPI)) {
             boolean error = parser.parseDeleteTaskResponse(output);
             if (!error) {
