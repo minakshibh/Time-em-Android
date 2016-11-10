@@ -138,7 +138,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         //hours.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         hoursIcon.setImageResource(R.drawable.user_icon);
         recipientSection.setVisibility(View.GONE);
-        addUpdateTask.setText("ADD");
         addUpdateTask.setTextSize(20);
         assignedTasks = new ArrayList<>();
 
@@ -148,8 +147,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         if(taskEntry == null) {
             headerInfo.setText("Add Task");
+            addUpdateTask.setText("ADD");
         }else{
             headerInfo.setText("Edit Task");
+            addUpdateTask.setText("Update");
             taskEntryId = String.valueOf(taskEntry.getId());
             taskId=String.valueOf(taskEntry.getTaskId());
             comments.setText(taskEntry.getComments());

@@ -329,7 +329,7 @@
                         android:paddingLeft="20dp"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        android:visibility="visible"/>
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 
@@ -338,7 +338,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/deleteimg"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:layout_marginTop="10dp"
                     android:layout_alignRight="@+id/outerVideoFile"/>
 
