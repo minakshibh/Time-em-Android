@@ -73,6 +73,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 	}
 	
 	private void initScreen(){
+
 		dbHandler = new TimeEmDbHandler(UserListActivity.this);
 		taskListview = (ListView)findViewById(R.id.taskList);
 		recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -304,5 +305,12 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		intent.putExtra("UserId", ""+team.get(array_position).getId());
 		intent.putExtra("UserName", team.get(array_position).getFirstName());
 		startActivity(intent);
+
+}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PrefUtils.setStringPreference(UserListActivity.this,PrefUtils.KEY_TPCheck,"true");
 	}
 }

@@ -13,6 +13,7 @@ public class PrefUtils {
     public static  String KEY_IS_SIGNED_IN="isSignedIn";
     public static  String KEY_ACTIVITY_ID="activityId";
     public static  String KEY_USER="user";
+    public static  String KEY_TPCheck="tpCheck";
 
 
 

@@ -74,6 +74,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private float oneMin, stratPoint, endPoint;
     private boolean refresh = true;
 
+
     //todo classes
     private Intent intent;
     private SimpleDateFormat apiDateFormater, dateFormatter, dayFormatter;
@@ -206,7 +207,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
             }catch (Exception e){
             }
-              calbutton.setVisibility(View.GONE);
+            calbutton.setVisibility(View.GONE);
+              if(PrefUtils.getStringPreference(TaskListActivity.this,PrefUtils.KEY_TPCheck).equalsIgnoreCase("true")) {
+                  showMessageTrackingPlot();
+                  PrefUtils.setStringPreference(TaskListActivity.this,PrefUtils.KEY_TPCheck,"false");
+
+              }
         }
         else{
             headerText.setText("My Tasks");
@@ -244,6 +250,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         });
         recyclerView.setAdapter(adapter);// // todo set adapter on recyclerview
         adapter.notifyDataSetChanged();// // todo Notify the adapter
+    }
+
+    private void showMessageTrackingPlot() {
+        Utils.alertMessageWithoutBack(TaskListActivity.this,"To rotate the device to view tracking plot should be displayed.");
     }
 
 

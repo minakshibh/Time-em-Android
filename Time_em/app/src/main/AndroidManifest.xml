@@ -84,7 +84,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.tasks.TaskListActivity"
-            android:screenOrientation="portrait" />
+            />
         <activity
             android:name="com.time_em.team.UserListActivity"
             android:screenOrientation="portrait" />
