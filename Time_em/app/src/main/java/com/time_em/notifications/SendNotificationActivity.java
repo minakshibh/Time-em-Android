@@ -57,7 +57,6 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
     //todo classes
     private Time_emJsonParser parser;
     private SpinnerTypeAdapter adapter;
-
     private TimeEmDbHandler dbHandler;
    //todo variables
     private final String twoHyphens = "--";
@@ -71,17 +70,17 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
     private FileUtils fileUtils;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_send_notification);
 
         initScreen();
-      //  loadNotificationTypes();
+      //loadNotificationTypes();
         loadRecipients();
         setListeners();
         keyBoard_DoneButton();
+
     }
 
     private void initScreen() {
@@ -131,12 +130,11 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
         spnNotificationType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 // Here you get the current item (a User object) that is selected by its position
                 SpinnerData notType = adapter.getItem(position);
                 // Here you can do the action you want to...
-               // selectedNotificationTypeId = String.valueOf(notType.getId());
+                // selectedNotificationTypeId = String.valueOf(notType.getId());
                 //selectedNotificationTypeName=String.valueOf(notType.getName());
             }
 
@@ -145,45 +143,53 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
             }
         });
 
-        subject.addTextChangedListener(textInput);
-        message.addTextChangedListener(textInput);
+        subject.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                subject.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+        message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                message.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
-
-    private TextWatcher textInput = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-           subject.setError(null);
-           message.setError(null);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
 
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(v== sendNotification){
              //  Log.e("selectedNotiId",""+selectedNotificationTypeId);
-                if(!Utils.hasText(subject) || !Utils.hasText(message) ){
+
+                if(Utils.hasText(subject)){}
+                if(Utils.hasText(message)){}
+
+
+                if( selectedIds.equals("")){
+                    //Utils.showToast(SendNotificationActivity.this, "Please select any recipient.");
+                    Utils.alertMessageWithoutBack(SendNotificationActivity.this,"Please select any recipient.");
+                }else if(!Utils.hasText(subject) || !Utils.hasText(message) ){
                     return;
-                }
-                else if( selectedIds.equals("")){
-                    Utils.showToast(SendNotificationActivity.this, "Please select any recipient");
                 }
               /*  else if(selectedNotificationTypeId.equals("0"))
                 {
-                    Utils.showToast(SendNotificationActivity.this, "Please select specify notification type");
+                    Utils.showToast(SendNotificationActivity.this, "Please select specify notification type.");
                     }*/
                 else {
-
 
                if(Utils.isNetworkAvailable(SendNotificationActivity.this)) {
                     String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
@@ -248,8 +254,7 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
                 uploadedImage.setVisibility(View.GONE);
                 imgdelete.setVisibility(View.GONE);
                 fileUtils.setAttachmentPath(null);
-            }
-            else if(v == recipients){
+            } else if(v == recipients){
                 showUserSelectionDropdown();
             }else if(v == upload){
                 fileUtils.showChooserDialog(false);
@@ -273,6 +278,7 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
 
          }
 */
+
     private void loadRecipients() {
         String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
         String getCompanyId=PrefUtils.getStringPreference(getApplicationContext(),PrefUtils.KEY_COMPANY);
@@ -300,7 +306,7 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
             userList = parser.parseActiveUsers(output);
 
             if(userList!=null)
-            dbHandler.updateActiveUsers(userList);
+                dbHandler.updateActiveUsers(userList);
 
             String companyId=PrefUtils.getStringPreference(SendNotificationActivity.this,PrefUtils.KEY_COMPANY);
             userList = dbHandler.getActiveUsers(companyId);
@@ -324,6 +330,8 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
                 finish();
                 if(fileUtils.getAttachmentPath() !=null) {
                     syncUploadFile(Id);
+                }else{
+                    Utils.showToast(getApplicationContext(), "Notification send successfully.");
                 }
             }
         }
@@ -336,7 +344,7 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
             intent.putExtra("selectedIds", selectedIds);
             startActivity(intent);
         }else{
-            Toast.makeText(getApplicationContext(),"No any user active.",Toast.LENGTH_SHORT).show();
+            Utils.showToast(getApplicationContext(),"No any user active.");
         }
     }
 
@@ -411,4 +419,5 @@ public class SendNotificationActivity extends Activity implements AsyncResponseT
             }
         });
     }
+
 }

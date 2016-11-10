@@ -58,7 +58,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private ListView taskListview;
     private ImageView addTaskButton, back;
     private ImageButton calbutton;
-    private TextView headerText, currentDate,caldate;
+    private TextView headerText, currentDate,caldate,noTaskMsg;
     private LinearLayout footer;
     private RecyclerView recyclerView;
     private ImageView addButton;
@@ -72,6 +72,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private String selectedDate;
     private int first_time = 1, totalWidth = 0;
     private float oneMin, stratPoint, endPoint;
+    private boolean refresh = true;
 
     //todo classes
     private Intent intent;
@@ -84,22 +85,24 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private ArrayList<Calendar> arrayList;
     private ArrayList<String> backGroundColor_array = new ArrayList<>();
     private ArrayList<ColorSiteId> array_colorSiteId = new ArrayList<>();
+
     //todo for graphs
     private LinearLayout mainLinearLayout, lay_date, lay_hours;
     private DateSliderAdapter adapter;
     private DatePickerDialog datePickerDialog;
     private TextView bottom_side;
 
-     @Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
-        // showTaskList();
         context = getApplicationContext();
         // currentDate.setText(Utils.formatDateChange(selectedDate,"MM-dd-yyyy","EEE dd MMM, yyyy"));
-        //  GetUserWorkSiteApi();
+        // GetUserWorkSiteApi();
+
+        // showTaskList();
 
         Calendar newCalendar = Calendar.getInstance();
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -126,7 +129,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
                     }
                 }
-
             }
 
         },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
@@ -159,7 +161,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         addButton = (ImageView) findViewById(R.id.AddButton);
         addButton.setVisibility(View.GONE);
 
-
         try{
             UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
         }catch (Exception e){
@@ -189,6 +190,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         taskListview = (ListView) findViewById(R.id.taskList);
         parser = new Time_emJsonParser(TaskListActivity.this);
         headerText = (TextView) findViewById(R.id.headerText);
+        noTaskMsg = (TextView) findViewById(R.id.noTaskMsg);
 
         currentDate = (TextView) findViewById(R.id.currentDate);
         currentDate.setVisibility(View.VISIBLE);
@@ -249,6 +251,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         addTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                refresh = false;
                 intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
                 intent.putExtra("selectDate", selectedDate);
                 intent.putExtra("UserId", ""+UserId);
@@ -266,6 +269,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         taskListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                refresh = false;
                 Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
                 intent.putExtra("taskEntry", tasks.get(position));
                 startActivity(intent);
@@ -309,7 +313,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             timeStamp = "";
 
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
-
         postDataParameters.put("userId", String.valueOf(UserId));
         postDataParameters.put("createdDate",createdDate);
         postDataParameters.put("TimeStamp", "");
@@ -322,7 +325,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 postDataParameters, true, "Please wait...");
         mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
         mWebPageTask.execute();
-
 
     }
 
@@ -348,6 +350,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 mWebPageTask.delegate = (AsyncResponseTimeEm) TaskListActivity.this;
                 mWebPageTask.execute();
 
+                dbHandler.deleteTask(taskEntry.getId());
+
             }
 
         } else {
@@ -367,14 +371,12 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             // Utils.alertMessage(TaskListActivity.this, "Task Updated Successfully.!");
             //Utils.alertMessage(TaskListActivity.this, Utils.network_error);
         }
+
     }
-
-
 
     public class TaskAdapter extends BaseSwipeAdapter {
         private Context context;
         private TextView taskName, hours, taskComments;
-
         private LinearLayout edit, delete;
 
         public TaskAdapter(Context ctx) {
@@ -437,6 +439,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    refresh = false;
                     intent = new Intent(TaskListActivity.this, AddEditTaskEntry.class);
                     intent.putExtra("selectDate", selectedDate);
                     intent.putExtra("taskEntry", selectedTask);
@@ -466,23 +469,27 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         Log.e("output", ":: " + output);
         if (methodName.equals(Utils.GetUserActivityTask)) {
             ArrayList<TaskEntry> taskEntries = parser.parseTaskList(output, UserId, selectedDate);
-
             dbHandler.updateTask(taskEntries, selectedDate, false);
             String companyId=  PrefUtils.getStringPreference(TaskListActivity.this,PrefUtils.KEY_COMPANY);
             tasks = dbHandler.getTaskEnteries(UserId, selectedDate, false,companyId);
             taskListview.setAdapter(new TaskAdapter(TaskListActivity.this));
             if(tasks.size()==0)
-                Utils.alertMessageWithoutBack(TaskListActivity.this, "No Task Available");
+                noTaskMsg.setVisibility(View.VISIBLE);
+            else
+                noTaskMsg.setVisibility(View.GONE);
+               // Utils.alertMessageWithoutBack(TaskListActivity.this, "No Task Available");
 
         } else if (methodName.equals(Utils.deleteTaskAPI)) {
             boolean error = parser.parseDeleteTaskResponse(output);
             if (!error) {
+                Utils.showToast(getApplicationContext(),"Task deleted Successfully.");
                 getTaskList(selectedDate);
-
+            }else{
+                Utils.showToast(TaskListActivity.this,Utils.Api_error);
             }
         }
-
     }
+
     public static <WorkSiteList> List<com.time_em.model.WorkSiteList> stringToArray(String s, Class<com.time_em.model.WorkSiteList[]> clazz) {
         com.time_em.model.WorkSiteList[] arr = new Gson().fromJson(s, clazz);
         return Arrays.asList(arr); //or return Arrays.asList(new Gson().fromJson(s, clazz)); for a one-liner
@@ -639,7 +646,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         super.onResume();
 
         if (getIntent().getStringExtra("UserName") != null) {
-
             int value = TaskListActivity.this.getResources().getConfiguration().orientation;
             String orientation = "";
             if (value == Configuration.ORIENTATION_PORTRAIT) {
@@ -652,14 +658,14 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 orientation = "Landscape";
                 //   Toast.makeText(this, "LANDSCAPE", Toast.LENGTH_SHORT).show();
                 showGraphs();
-
-
             }
         } else {
 
-            showTaskList();
+             if(refresh)
+                 showTaskList();
+             else
+                 getTaskList(selectedDate);
         }
-
     }
 
     private void settingGraph(ArrayList<UserWorkSite> array_worksite) {
@@ -818,7 +824,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             bottom_side.setLayoutParams(params);
             mainLinearLayout.addView(bottom_side);*/
         }
-
 
     }
 

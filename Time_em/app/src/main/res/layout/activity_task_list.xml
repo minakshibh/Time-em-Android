@@ -64,6 +64,17 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/noTaskMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No Task Available"
+        android:textSize="18sp"
+        android:textColor="@color/cardview_dark_background"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
     <ListView
         android:id="@+id/taskList"
         android:layout_width="fill_parent"

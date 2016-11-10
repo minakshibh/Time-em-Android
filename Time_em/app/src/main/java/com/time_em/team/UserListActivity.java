@@ -102,7 +102,6 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 				array_position = position;
 				GetUserWorkSiteApi("" + team.get(position).getId());
 
-
 			}
 
 		});

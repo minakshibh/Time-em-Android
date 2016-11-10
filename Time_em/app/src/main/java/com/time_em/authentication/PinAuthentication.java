@@ -7,7 +7,6 @@ Package name: 	com.ultimasquare.pinview
 Certificate fingerprint (SHA1): 	86:F2:4D:FD:34:98:BF:0C:47:94:34:D4:8C:68:A3:84:B7:D7:B2:0F
 Deep Linking: 	Disabled*/
 
-
 import java.util.HashMap;
 import android.app.Activity;
 import android.content.Intent;
@@ -27,9 +26,7 @@ import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
-
 public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
-
 
 	//todo widgets
 	private TextView pinBox0, pinBox1, pinBox2, pinBox3, forgotPin,login;
@@ -131,7 +128,6 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 				finish();
 				}
 
-
 			else{
 	    	
 	    	LinearLayout pressedButton = (LinearLayout)v;
@@ -200,7 +196,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 					gotoHomeScreen();
 
 				}else{
-				Utils.showToast(PinAuthentication.this, "Please enter a valid PIN");
+				Utils.showToast(PinAuthentication.this, "Please enter a valid PIN.");
 				}
 			}else{
 				Utils.alertMessage(PinAuthentication.this, Utils.network_error);
@@ -239,8 +235,7 @@ public class PinAuthentication extends Activity implements AsyncResponseTimeEm {
 
 	}
 
-	private void gotoHomeScreen()
-	{
+	private void gotoHomeScreen() {
 		Intent intent = new Intent(PinAuthentication.this, CompanyListActivity.class);
 		intent.putExtra("trigger", "pin");
 		startActivity(intent);

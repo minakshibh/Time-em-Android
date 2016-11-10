@@ -106,7 +106,6 @@ public class TaskDetailActivity extends Activity {
                    Bitmap bm = createVideoThumbnail(image_url, 11);
                     attachment.setImageBitmap(bm);
 
-
                     videoView.setVisibility(View.VISIBLE);
                     attachment.setVisibility(View.GONE);
                     try {

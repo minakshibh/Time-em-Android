@@ -33,7 +33,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-
+import java.util.TimeZone;
 
 public class NotificationListActivity extends Activity implements AsyncResponseTimeEm{
 
@@ -52,7 +52,6 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
     private String selectedNotificationType = "Notice";
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -61,7 +60,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
         initScreen();
         setUpClickListeners();
-       // getNotificationList();
+       //getNotificationList();
     }
 
     private void initScreen() {
@@ -194,7 +193,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
     }
 
-   /* private void deleteTask(int taskEntryId) {
+    /*private void deleteTask(int taskEntryId) {
 
         if (Utils.isNetworkAvailable(NotificationListActivity.this)) {
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
@@ -210,6 +209,7 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         } else {
             Utils.alertMessage(NotificationListActivity.this, Utils.network_error);
         }
+
     }*/
 
     public class NotificationAdapter extends BaseSwipeAdapter {
@@ -257,8 +257,9 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
             String getDate=notification.getCreatedDate();
             try {
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-                Date newDate = format.parse(getDate);
-                getDate=format.format(newDate);
+                Date newDate = format.parse(getDate);   // parse string -> Date
+                getDate=Utils.convertDate(newDate);
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -266,8 +267,6 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             Calendar cal = Calendar.getInstance();
-
-            //System.out.println(dateFormat.format(cal.getTime()));
             String getCurrentDate=dateFormat.format(cal.getTime());
             try {
                 String[] parts = getDate.split(" ");
@@ -285,11 +284,9 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
 
                 date.setText(part2);//time
             }else{
-
                //date.setText(part1);//date
                String str_date= formatDateFromOnetoAnother(part1,"dd/MM/yyyy","EEE dd MMM, yyyy");
                date.setText(str_date);
-
             }
 
 
@@ -307,8 +304,9 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
                         public void onClick(DialogInterface dialog, int which) {
                             dbHandler.deleteNotification(notifications.get(position).getNotificationId());
                             notifications.remove(position);
-                             notifyDataSetChanged();
-                             notificationListView.setAdapter(new NotificationAdapter());
+                            notifyDataSetChanged();
+                            notificationListView.setAdapter(new NotificationAdapter());
+                            Utils.showToast(getApplicationContext(),"Notification deleted successfully.");
                         }
                     });
 
@@ -348,7 +346,6 @@ public class NotificationListActivity extends Activity implements AsyncResponseT
         if(methodName.equalsIgnoreCase(Utils.GetNotificationAPI)) {
             notifications = parser.parseNotificationList(output);
             dbHandler.updateNotifications(notifications);
-
             loadNotificationsByType();
         }
         /*if(methodName.equals(Utils.getTaskListAPI)) {

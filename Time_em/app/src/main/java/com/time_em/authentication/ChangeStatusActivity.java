@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
-import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.User;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.PrefUtils;
@@ -69,8 +68,7 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 		updateUI();
 	}
 
-	private void
-	updateUI(){
+	private void updateUI(){
 		//if(HomeActivity.user.isSignedIn()){
 		if (PrefUtils.getBooleanPreference(getApplicationContext(),PrefUtils.KEY_IS_SIGNED_IN,false)){
 			information.setText(res.getString(R.string.userSignedIn));
@@ -118,6 +116,7 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 			JSONObject jObject = new JSONObject(output);
 			isError = jObject.getBoolean("isError");
 			message = jObject.getString("Message");
+			Utils.showToast(ChangeStatusActivity.this,message);
 			if(!isError){
 				if(output.contains("SignedOutUser")) {
 					//HomeActivity.user.setSignedIn(false);
@@ -154,4 +153,5 @@ public class ChangeStatusActivity extends Activity implements AsyncResponseTimeE
 			}
 
 	}
+
 }

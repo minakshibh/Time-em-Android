@@ -46,7 +46,7 @@ public class TokenRegistrationActivity extends Activity implements AsyncResponse
 			// TODO Auto-generated method stub
 			if(v == register){
 				if(txtToken.getText().toString().trim().equals(""))
-					Utils.showToast(TokenRegistrationActivity.this, "Please enter valid token");
+					Utils.showToast(TokenRegistrationActivity.this, "Please enter valid token.");
 				else
 					register();
 			}

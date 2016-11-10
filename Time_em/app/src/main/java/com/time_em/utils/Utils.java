@@ -9,13 +9,16 @@ import java.net.HttpURLConnection;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -37,6 +40,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -66,8 +70,8 @@ import org.json.JSONObject;
 
 public class Utils {
 
-    static public String network_error = "Please check your internet connection, try again";
-    static public String Api_error = "Something went wrong,please try again";
+    static public String network_error = "Please check your internet connection, try again.";
+    static public String Api_error = "Something went wrong,please try again.";
     static int statusCode;
     static int connectTimeout=2*10*1000;
     static int socketTimeout=3*10*1000;
@@ -133,7 +137,7 @@ public class Utils {
                     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
                     alertBuilder.setCancelable(true);
                     alertBuilder.setTitle("Permission necessary");
-                    alertBuilder.setMessage("External storage permission is necessary");
+                    alertBuilder.setMessage("External storage permission is necessary.");
                     alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                         public void onClick(DialogInterface dialog, int which) {
@@ -155,7 +159,9 @@ public class Utils {
     }
 
     public static void showToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
     public static void saveInSharedPrefs(Context context, String key, String value) {
@@ -390,9 +396,7 @@ public class Utils {
     }
 
     public static int resultCode() {
-
         return statusCode;
-
     }
 
     public static String getCurrentDate()
@@ -503,6 +507,36 @@ public class Utils {
         }
 
         return true;
+    }
+
+    public static String convertDate(Date dateFrom) throws ParseException {
+        //String pattern = "yyyy/MM/dd HH:mm:ss";
+        String pattern = "dd/MM/yyyy hh:mm";
+
+        SimpleDateFormat sdfFrom = new SimpleDateFormat (pattern);
+        sdfFrom.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        SimpleDateFormat sdfTo = new SimpleDateFormat (pattern);
+        sdfTo.setTimeZone(TimeZone.getDefault());
+
+        Date dateTo = sdfFrom.parse(sdfTo.format(dateFrom));
+        String timeTo = sdfTo.format(dateTo);
+        return timeTo;
+    }
+
+    public static Date convertDate1(Date dateFrom) throws ParseException {
+        //String pattern = "yyyy/MM/dd HH:mm:ss";
+        String pattern = "dd/MM/yyyy hh:mm";
+
+        SimpleDateFormat sdfFrom = new SimpleDateFormat (pattern);
+        sdfFrom.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        SimpleDateFormat sdfTo = new SimpleDateFormat (pattern);
+        sdfTo.setTimeZone(TimeZone.getDefault());
+
+        Date dateTo = sdfFrom.parse(sdfTo.format(dateFrom));
+        String timeTo = sdfTo.format(dateTo);
+        return dateTo;
     }
     
 }

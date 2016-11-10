@@ -534,7 +534,7 @@ public class Time_emJsonParser {
 
 			SpinnerData task_header = new SpinnerData();
 			task_header.setId(-1);
-			task_header.setName("Select Project/Task");
+			task_header.setName("Select your Task");
 			task_header.setCompanyId(companyID);
 			taskList.add(task_header);
 

@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
@@ -35,15 +36,17 @@ import com.time_em.utils.FileUtils;
 import com.time_em.utils.PrefUtils;
 import com.time_em.utils.SpinnerTypeAdapter;
 import com.time_em.utils.Utils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
-
 public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
     //todo widgets
-    private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader,first_separator;
+    private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader,first_separator,videofile;
     private MySpinner spnProject;
     private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete,dropdown,dropdown1,dropdown2;
     private LinearLayout recipientSection, uploadAttachment;
@@ -99,6 +102,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         rightNavigation = (ImageView)findViewById(R.id.AddButton);
         rightNavigation.setVisibility(View.GONE);
         dateHeader = (TextView)findViewById(R.id.dateHeader);
+        videofile = (TextView)findViewById(R.id.videofile);
 
         imgdelete=(ImageView) findViewById(R.id.imgdelete);
         videodelete=(ImageView) findViewById(R.id.videodelete);
@@ -112,10 +116,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         imgdelete.setVisibility(View.GONE);
         videodelete.setVisibility(View.GONE);
-
         dateHeader.setVisibility(View.VISIBLE);
         dateHeader.setText(selectedDate);
-
 
         //todo for task view chnages in xml
         first_separator=(TextView)findViewById(R.id.first_separator);
@@ -126,14 +128,14 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         spnProject.setVisibility(View.VISIBLE);
 
         txtProjectSelection.setVisibility(View.VISIBLE);
-        txtProjectSelection.setText("Select Project or Task:");
-        txtCommentsHeader.setText("Enter your Comments:");
+        txtProjectSelection.setText("Select any Task*");
+        txtCommentsHeader.setText("Enter your Comments*");
         comments.setHint("Your comments goes here");
-        txtHoursHeader.setText("Specify number of hours:");
+        txtHoursHeader.setText("Specify number of hours*");
         hours.setHint("No. of hours.(max 12hrs)");
-        hours.setInputType(InputType.TYPE_CLASS_NUMBER);
-        int maxLength = 2;
-        hours.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
+        //hours.setInputType(InputType.TYPE_CLASS_NUMBER);
+        //int maxLength = 2;
+        //hours.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
         hoursIcon.setImageResource(R.drawable.user_icon);
         recipientSection.setVisibility(View.GONE);
         addUpdateTask.setText("ADD");
@@ -152,7 +154,11 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             taskId=String.valueOf(taskEntry.getTaskId());
             comments.setText(taskEntry.getComments());
 
-            hours.setText(String.valueOf(taskEntry.getTimeSpent()));
+            String hrs= String .valueOf(taskEntry.getTimeSpent());
+            /*if(hrs.contains(".")){
+                hrs= hrs.substring(0,hrs.indexOf("."));
+            }*/
+            hours.setText(hrs);
             String image_url = taskEntry.getAttachmentImageFile();
             Log.e("image_url",""+image_url);
             int loader = R.drawable.loader;
@@ -178,7 +184,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                         uploadedVideo.seekTo(5);*/
                     }
                 }else{
-
                     if(image_url.contains(".jpg") | image_url.contains(".png")) {
                         uploadedImage.setVisibility(View.VISIBLE);
                         uploadedVideo.setVisibility(View.GONE);
@@ -206,26 +211,31 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             }
         }
 
-        comments.addTextChangedListener(textInput);
+        comments.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                comments.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+        hours.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hours.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
-
-    TextWatcher textInput = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            comments.setError(null);
-            hours.setError(null);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
 
     private void selectedSpinnerValue(Spinner sp) {
 
@@ -235,9 +245,20 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             {
                String value=""+assignedTasks.get(i).getId();
                     if(taskId.equalsIgnoreCase(value)) {
-                        if(assignedTasks.get(i).getId() != 0)
+                        if(assignedTasks.get(i).getId() != 0){
                         sp.setSelection(i);
-                        // return;
+                        }
+                        else {
+                            SpinnerData temp = new SpinnerData();
+                            temp.setId(0);
+                            temp.setName(taskEntry.getTaskName());
+                            String companyId=PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY);
+                            temp.setCompanyId(Integer.parseInt(companyId));
+                            assignedTasks.add(temp);
+                            adapter.notifyDataSetChanged();
+                            sp.setSelection(assignedTasks.size()-1);
+                        }
+                         return;
                     }
             }
         }
@@ -259,7 +280,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 // Here you can do the action you want to...
                 // selectedProjectId = String.valueOf(project.getId());
                 //for add new task
-                if (selectedSpinnerData.getId() == 0) {
+                /*if (selectedSpinnerData.getId() == 0) {
+                    showAddNewTask();
+                }*/
+                if(selectedSpinnerData.getName().equals("Add New Task")){
                     showAddNewTask();
                 }
             }
@@ -291,27 +315,29 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             }else if(v == imgdelete || v == videodelete){
                 uploadedImage.setVisibility(View.GONE);
                 uploadedVideo.setVisibility(View.GONE);
+                videofile.setVisibility(View.GONE);
                 imgdelete.setVisibility(View.GONE);
                 videodelete.setVisibility(View.GONE);
                 fileUtils.setAttachmentPath(null);
             }else if(v == addUpdateTask){
 
-
+                if(Utils.hasText(comments)){}
+                if(Utils.hasText(hours)){
+                    if(validateHours(hours,intHours)){}
+                }
                 if(selectedSpinnerData == null){
-                    Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
+                    Utils.alertMessageWithoutBack(AddEditTaskEntry.this,"Please select your task");
                 }
                 else if(selectedSpinnerData.getId()==-1 ){
-                    Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
+                    Utils.alertMessageWithoutBack(AddEditTaskEntry.this,"Please select your task");
                 }
-                else if(!Utils.hasText(comments) || !Utils.hasText(hours) || !validateHours(hours,intHours)){
-                    //Utils.showToast(AddEditTaskEntry.this, "Please specify required information");
+                else if(!Utils.hasText(comments) || !Utils.hasText(hours)|| !validateHours(hours,intHours) ){
                     return;
                 }
-                else if(!PrefUtils.getBooleanPreference(getApplicationContext(),PrefUtils.KEY_IS_SIGNED_IN,false)){
+                /* else if(!PrefUtils.getBooleanPreference(getApplicationContext(),PrefUtils.KEY_IS_SIGNED_IN,false)){
                    Utils.alertMessage(AddEditTaskEntry.this, "You are currently signed out. To continue Please sign in.");
-                }
-              else {
-
+                }*/
+                else {
 
                       if (Utils.isNetworkAvailable(AddEditTaskEntry.this)) {
                             HashMap<String, String> postDataParameters = new HashMap<String, String>();
@@ -320,18 +346,19 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                      String.valueOf(PrefUtils.getIntegerPreference(getApplicationContext(),PrefUtils.KEY_ACTIVITY_ID,0)));
                             postDataParameters.put("TimeSpent", hours.getText().toString());
                             postDataParameters.put("Comments", comments.getText().toString());
-                            postDataParameters.put("CompanyId",
-                                   PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY));
-                            if (selectedSpinnerData.getId() == 0) {
+                            postDataParameters.put("CompanyId", PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY));
+                            /*if (selectedSpinnerData.getId() == 0) {
                                 postDataParameters.put("TaskId", String.valueOf(0));
-                                if(newTaskName != null)
+                                if(newTaskName != null && !newTaskName.equals(""))
                                 postDataParameters.put("TaskName", newTaskName);
-                                else
-                                Utils.showToast(AddEditTaskEntry.this, "Please select specify project/task");
-                            }else{
-                                postDataParameters.put("TaskId", String.valueOf(selectedSpinnerData.getId()));
-                                postDataParameters.put("TaskName", String.valueOf(selectedSpinnerData.getName()));
-                            }
+                                else {
+                                    Utils.showToast(AddEditTaskEntry.this, "Please select your task");
+                                    return;
+                                }
+                            }else{*/
+                             postDataParameters.put("TaskId", String.valueOf(selectedSpinnerData.getId()));
+                             postDataParameters.put("TaskName", String.valueOf(selectedSpinnerData.getName()));
+                            //}
                             postDataParameters.put("CreatedDate", selectedDate);
                             postDataParameters.put("ID", taskEntryId);
 
@@ -395,14 +422,12 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                                 if (taskEntry == null) {   //for add new offline
 
                                     // task.setStartTime(taskObject.getString("StartTime"));
-
                                     Log.e("UniqueNumber", "" + UniqueNumber);
-
                                     task.setToken("00");
                                     task.setUniqueNumber(UniqueNumber);
                                     taskEntries.add(task);
                                     dbHandler.updateTask(taskEntries, selectedDate, true);
-                                    Utils.alertMessage(AddEditTaskEntry.this, "Task Add Successfully.!");
+                                    Utils.alertMessage(AddEditTaskEntry.this, "Task Added Successfully.!");
                                 }
                                 //for edit delete old offline
                                 else {
@@ -447,7 +472,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             mWebPageTask.delegate = (AsyncResponseTimeEm) AddEditTaskEntry.this;
             mWebPageTask.execute();
 
-
     }
 
     @Override
@@ -456,27 +480,38 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         if(methodName.equals(Utils.GetAssignedTaskIList)){
             String companyId=PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY);
             assignedTasks = parser.parseAssignedProjects(output,Integer.parseInt(companyId));
-
-            dbHandler.updateProjectTasks(assignedTasks);// // todo update data for notification type
-
+            dbHandler.updateProjectTasks(assignedTasks); // // todo update data for notification type
             assignedTasks=dbHandler.getProjectTasksData(companyId);
             adapter = new SpinnerTypeAdapter(AddEditTaskEntry.this, R.layout.spinner_row_layout, assignedTasks);
             adapter.setDropDownViewResource(R.layout.spinner_dropdown);
             spnProject.setAdapter(adapter);
-            if(taskEntry!=null)
-            {
+            if(taskEntry!=null) {
                 selectedSpinnerValue(spnProject);
-                }
+            }
         }
         else if(methodName.equals(Utils.AddUpdateUserTaskActivityNew)){
             String Id = parser.getTaskId(output);
             if(Id.equalsIgnoreCase("0")){
-                Utils.showToast(AddEditTaskEntry.this,Utils.Api_error);
+                try {
+                    JSONObject obj = new JSONObject(output);
+                    Utils.showToast(AddEditTaskEntry.this, obj.getString("Message"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //Utils.showToast(AddEditTaskEntry.this,Utils.Api_error);
             }
             else {
                 finish();
                 if(fileUtils.getAttachmentPath() !=null) {
                     syncUploadFile(Id);
+                }else{
+                    if(taskEntry == null) {
+                        Utils.showToast(getApplicationContext(), "Task added successfully.");
+                    }else{
+                        Utils.showToast(getApplicationContext(), "Task updated successfully.");
+                    }
+
                 }
             }
         }
@@ -505,7 +540,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == FileUtils.SELECT_FILE) {
+                if (requestCode == FileUtils.SELECT_FILE) {
                 uploadedVideo.setVisibility(View.GONE);
                 videodelete.setVisibility(View.GONE);
                 uploadedImage.setVisibility(View.VISIBLE);
@@ -522,7 +557,9 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             else if (requestCode == FileUtils.VIDEO_CAMERA) {
                 uploadedImage.setVisibility(View.GONE);
                 imgdelete.setVisibility(View.GONE);
-                uploadedVideo.setVisibility(View.VISIBLE);
+                videofile.setVisibility(View.VISIBLE);
+                videofile.setText(fileUtils.getAttachmentPath());
+                //uploadedVideo.setVisibility(View.VISIBLE);
                 videodelete.setVisibility(View.VISIBLE);
                 fileUtils.onRecordVideoResult(AddEditTaskEntry.this, data, uploadedVideo);
             }
@@ -536,7 +573,6 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         View promptsView = li.inflate(R.layout.layout_addnewtask, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddEditTaskEntry.this);
-
         alertDialogBuilder.setTitle("Add new task");
         // alertDialogBuilder.setMessage("Enter Password");
         alertDialogBuilder.setView(promptsView);
@@ -548,18 +584,27 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     public void onClick(DialogInterface dialog, int id) {
                         newTaskName = userInput.getText().toString();
                         if (newTaskName.equals("")) {
-                            Utils.alertMessage(AddEditTaskEntry.this, "Please enter task name");
+                            Utils.alertMessageWithoutBack(AddEditTaskEntry.this, "Please enter task name.");
+                            spnProject.setSelection(0);
                         } else {
                             Utils.hideKeyboard(AddEditTaskEntry.this);
+                            SpinnerData task_header = new SpinnerData();
+                            task_header.setId(0);
+                            task_header.setName(newTaskName);
+                            String companyId=PrefUtils.getStringPreference(AddEditTaskEntry.this,PrefUtils.KEY_COMPANY);
+                            task_header.setCompanyId(Integer.parseInt(companyId));
+                            assignedTasks.add(task_header);
+                            adapter.notifyDataSetChanged();
+                            spnProject.setSelection(assignedTasks.size()-1);
                         }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         try {
-                            newTaskName = taskEntry.getTaskName();
-                        }catch(Exception e)
-                        {
+                            spnProject.setSelection(0);
+
+                        }catch(Exception e) {
                             e.printStackTrace();
                         }
 
@@ -601,11 +646,10 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         editText.setError(null);
 
-        if (hours>12 || hours==0.0) {
-            editText.setError("Please enter hours values 1-12 hrs.");
+        if (hours>12.0 || hours<=0.0) {
+            editText.setError("Please enter hours values 0-12 hrs.");
             return false;
         }
-
         return true;
     }
 

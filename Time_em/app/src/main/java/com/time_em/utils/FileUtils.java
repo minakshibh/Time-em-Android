@@ -280,7 +280,7 @@ public class FileUtils {
                         }*/
                     }
                     else{
-                        Utils.showToast(context, "Something went wrong,Try again");
+                        Utils.showToast(context, "Something went wrong,Try again.");
 
                     }
 

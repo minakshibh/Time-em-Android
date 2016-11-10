@@ -1,7 +1,6 @@
 package com.time_em.authentication;
 
 import java.util.HashMap;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,13 +35,12 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 
 	//todo classes
 	private Time_emJsonParser parser;
-	
-    @Override
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
     	requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
 
         initScreen();
         setClickListeners();
@@ -68,21 +66,23 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 	private View.OnClickListener listener = new View.OnClickListener() {
 		
 		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			if(v == login){
-				if(loginId.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {
-					Utils.showToast(LoginActivity.this, "Please enter required information");
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(v == login){
+					if(loginId.getText().toString().trim().equals("") ) {
+						Utils.alertMessageWithoutBack(LoginActivity.this,"Please enter Login Id");
+					}else if(password.getText().toString().trim().equals("")){
+						Utils.alertMessageWithoutBack(LoginActivity.this,"Please enter password");
+					}
+					else {
+						Utils.hideKeyboard(LoginActivity.this);
+						login();
+					}
+				}else if(v == forgotPassword){
+					Intent intent = new Intent(LoginActivity.this, ForgotCredentials.class);
+					intent.putExtra("trigger","password");
+					startActivity(intent);
 				}
-				else {
-					Utils.hideKeyboard(LoginActivity.this);
-					login();
-				}
-			}else if(v == forgotPassword){
-				Intent intent = new Intent(LoginActivity.this, ForgotCredentials.class);
-				intent.putExtra("trigger","password");
-				startActivity(intent);
-			}
 		}
 	};
 	
@@ -138,8 +138,8 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 				//Utils.showToast(LoginActivity.this,"Something went wrong.");
 			}
 		}
-
 	}
+
 	private void  keyBoard_DoneButton()
 	{
 		password.setOnEditorActionListener(new TextView.OnEditorActionListener() {

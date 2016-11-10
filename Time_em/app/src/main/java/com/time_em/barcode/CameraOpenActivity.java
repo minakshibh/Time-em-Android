@@ -184,7 +184,7 @@ public class CameraOpenActivity extends Activity {
                     }
 
                   /*  Toast.makeText(BarcodeScanActivity.this, scanResult,
-                            Toast.LENGTH_SHORT).show();*/
+                          Toast.LENGTH_SHORT).show();*/
                     barcodeScanned = true;
                     break;
                 }

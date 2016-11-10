@@ -59,12 +59,12 @@ public class NFCReadActivity extends Activity  {
 
         if (mNfcAdapter == null) {
             // Stop here, we definitely need NFC
-            Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
+            Utils.showToast(NFCReadActivity.this,"This device doesn't support NFC.");
             finish();
             return;
         } else if (!mNfcAdapter.isEnabled()) {
             // Stop here,if nfc disable.
-            Toast.makeText(getApplicationContext(), "NFC is disabled. Please set enable and try again", Toast.LENGTH_LONG).show();
+            Utils.showToast(NFCReadActivity.this,"NFC is disabled. Please set enable and try again.");
             finish();
             return;
         } else {

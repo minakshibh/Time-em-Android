@@ -360,6 +360,10 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
+
+
+
+
 	public void updateDeleteOffline(ArrayList<TaskEntry> taskList, String taskDate) {
 		// Fetch only records with selected Date
 
@@ -525,6 +529,24 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			db.close();
 			return notifications;
 		}
+	}
+
+	public void deleteTask(int id){
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		String selectQuery = "SELECT  * FROM " + TABLE_TASK + " where "
+				+ Id + "=" + id;
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				db.delete(TABLE_TASK, Id + " = ?", new String[] { String.valueOf(id) });
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		db.close();
+
 	}
 
 	public void deleteNotification(int notificationId) {

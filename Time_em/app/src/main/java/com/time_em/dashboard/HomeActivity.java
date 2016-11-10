@@ -86,15 +86,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     public static ArrayList<String> deleteIds = new ArrayList<>();
     private ArrayList<Widget> Home_arrayList_widget = new ArrayList<Widget>();
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getApplicationContext();
         resolver = new DependencyResolver(context);
 
-        LayoutInflater inflater = (LayoutInflater) this
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View contentView = inflater.inflate(R.layout.activity_home, null, false);
         contentFrame.addView(contentView, 0);
 
@@ -169,8 +167,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
     private void setTapBar() {
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.addTab(tabLayout.newTab().setText("UserGraph"));
-        tabLayout.addTab(tabLayout.newTab().setText("UserLoginGraph"));
+        tabLayout.addTab(tabLayout.newTab().setText("User Graph"));
+        tabLayout.addTab(tabLayout.newTab().setText("User Login Graph"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setOnTabSelectedListener(this);
     }
@@ -210,7 +208,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
     protected void onResume() {
         super.onResume();
         syncDataCheck();
-     //   addWidget();
+         //   addWidget();
         //if (HomeActivity.user.isSignedIn()) {
         if (PrefUtils.getBooleanPreference(getApplicationContext(),PrefUtils.KEY_IS_SIGNED_IN,false)) {
             String getSPrefsId = Utils.getSharedPrefs(getApplicationContext(),PrefUtils.KEY_USER_ID);
@@ -347,7 +345,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
         mWebPageTask.execute();
 
-
     }*/
 //todo api for get data active user for notification
     private void loadRecipients( String getSPrefsId) {
@@ -437,13 +434,13 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
         viewPager.setCurrentItem(tab.getPosition());
         if (tab.getPosition() == 0) {
-            tab.setText("UserGraph");
+            tab.setText("User Graph");
             lay_indicator.setVisibility(View.INVISIBLE);
         } else if (tab.getPosition() == 1) {
-            tab.setText("UserLoginGraph");
+            tab.setText("User Login Graph");
             lay_indicator.setVisibility(View.VISIBLE);
         }
-      }
+     }
 
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
@@ -647,7 +644,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     maxValue = maxValue / 4;
                 }
                 maxValueTask = Double.valueOf(maxValue * 6);
-                verticalLabel.setText("Hours");
+                verticalLabel.setText("No. of Hours");
                 horizontalLabel.setText("Date");
                 //todo user task graphs
                 firstGraphView();
@@ -658,7 +655,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     maxValue = maxValue / 4;
                 }
                 maxValueSignInOut = Double.valueOf(maxValue * 6);
-                verticalLabel.setText("SignIn/SignOut");
+                verticalLabel.setText("No. of SignIn/SignOut");
                 horizontalLabel.setText("Date");
             }
 
@@ -962,7 +959,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                 jsonObject.put("notifications", jsonString_notification);*/
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(HomeActivity.this, "Something Wrong, try again", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Something Wrong, try again.", Toast.LENGTH_LONG).show();
             }
             HashMap<String, String> postDataParameters = new HashMap<String, String>();
             postDataParameters.put("Data", "" + jsonObject.toString());
@@ -1075,8 +1072,8 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
             }
         }
-
     }
+
     private int getUserId()
     {
         int int_userId=0;

@@ -109,7 +109,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
              if(Ids!=null && !Ids.equals("")) {
                 Utils.ChangeStatus(BarcodeScanActivity.this, ""+Ids,"signIn");
             }else{
-                Utils.showToast(getApplicationContext(),"No record for scanned users");
+                Utils.showToast(getApplicationContext(),"No record for scanned users.");
             }
 
             }else if (v == btn_signOut) {
@@ -119,7 +119,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                 if(Ids!=null && !Ids.equals("")) {
                     Utils.ChangeStatus(BarcodeScanActivity.this, "" + Ids, "SignOut");
                 }else{
-                    Utils.showToast(getApplicationContext(),"No record for scanned users");
+                    Utils.showToast(getApplicationContext(),"No record for scanned users.");
                 }
             }
 
@@ -139,7 +139,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
         adapter = new ListAdapter(arrayListUsers, getApplicationContext());
         listView.setAdapter(adapter);
         if(arrayListUsers.size()==0)
-            Utils.alertMessage(BarcodeScanActivity.this, "No User Found");
+            Utils.alertMessage(BarcodeScanActivity.this, "No User Found.");
 
     }
 
@@ -161,7 +161,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Try again..", Toast.LENGTH_LONG).show();
+                    Utils.showToast(BarcodeScanActivity.this,"Try again..");
                 }
 
                 if (user == null) {
@@ -305,7 +305,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                 teamMembers = parser.getTeamList(output, methodName);
             }catch(Exception e)
             {
-                Toast.makeText(getApplicationContext(), "Invalid user,Please try again.", Toast.LENGTH_LONG).show();
+                Utils.showToast(BarcodeScanActivity.this, "Invalid user,Please try again.");
                 e.printStackTrace();
             }
             boolean result=true;
@@ -371,7 +371,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                                  }
                              } catch (Exception e) {
                                  e.printStackTrace();
-                                 Toast.makeText(getApplicationContext(), "Invalid user,Please try again.", Toast.LENGTH_LONG).show();
+                                 Utils.showToast(BarcodeScanActivity.this, "Invalid user,Please try again.");
                              }
 
                              if (user == null) {
@@ -420,7 +420,7 @@ public class BarcodeScanActivity extends Activity implements AsyncResponseTimeEm
                         }
                     }catch(Exception e){
                         e.printStackTrace();
-                        Toast.makeText(getApplicationContext(),"Invalid user,Please try again.",Toast.LENGTH_LONG).show();
+                        Utils.showToast(BarcodeScanActivity.this, "Invalid user,Please try again.");
                     }
 
                     if(user==null) {

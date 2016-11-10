@@ -10,12 +10,13 @@ import android.widget.TextView;
 import com.time_em.ImageLoader.ImageLoader;
 import com.time_em.android.R;
 import com.time_em.model.Notification;
+import com.time_em.utils.Utils;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
 public class NotificationDetailsActivity extends Activity {
-
 
     //todo widgets
     private ImageView sendNotification, back;
@@ -25,7 +26,6 @@ public class NotificationDetailsActivity extends Activity {
     private LinearLayout lay_Attachment;
     private Notification mNotification;
     private ImageView Image_Attachment;
-
 
 
     @Override
@@ -69,6 +69,7 @@ public class NotificationDetailsActivity extends Activity {
         try {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
             Date newDate = format.parse(date);
+            newDate=Utils.convertDate1(newDate);
             format = new SimpleDateFormat("EEE dd MMM, yyyy hh:mm");
             String datestr = format.format(newDate);
             textViewDate.setText(datestr);
