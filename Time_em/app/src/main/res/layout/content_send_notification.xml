@@ -314,19 +314,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:paddingTop="8dp"
-                    android:paddingRight="8dp">
+                    android:paddingRight="6dp">
 
                     <TextView
                         android:id="@+id/videofile"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/videofileoutline"
                         android:text="videofile"
                         android:singleLine="true"
                         android:textColor="@color/alphabeticalTextColor"
                         android:textSize="14sp"
                         android:paddingRight="20dp"
                         android:paddingLeft="20dp"
-                        android:visibility="gone"/>
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:visibility="visible"/>
 
                 </LinearLayout>
 
@@ -335,7 +338,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/deleteimg"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_marginTop="10dp"
                     android:layout_alignRight="@+id/outerVideoFile"/>
 
@@ -352,7 +355,6 @@
 -->
 
             </RelativeLayout>
-
         </LinearLayout>
     </ScrollView>
 

@@ -242,7 +242,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     postDataParameters, false, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
-
     }
 
     //todo task graphs data
@@ -258,7 +257,6 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     postDataParameters, true, "Please wait...");
             mWebPageTask.delegate = (AsyncResponseTimeEm) HomeActivity.this;
             mWebPageTask.execute();
-
     }
 
     //todo sign In/out data of graphs
@@ -372,7 +370,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
        /*String timeStamp = Utils.getSharedPrefs(HomeActivity.this, getSPrefsId + getResources().getString(R.string.notificationTimeStampStr));
         if (timeStamp == null || timeStamp.equals(null) || timeStamp.equals("null"))
             timeStamp = "";
-*/
+       */
 
         HashMap<String, String> postDataParameters = new HashMap<String, String>();
         postDataParameters.put("UserId", getSPrefsId);
