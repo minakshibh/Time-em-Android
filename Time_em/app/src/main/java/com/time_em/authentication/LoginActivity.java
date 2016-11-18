@@ -70,7 +70,7 @@ public class LoginActivity extends Activity implements AsyncResponseTimeEm {
 				// TODO Auto-generated method stub
 				if(v == login){
 					if(loginId.getText().toString().trim().equals("") ) {
-						Utils.alertMessageWithoutBack(LoginActivity.this,"Please enter Login Id");
+						Utils.alertMessageWithoutBack(LoginActivity.this,"Please enter Username");
 					}else if(password.getText().toString().trim().equals("")){
 						Utils.alertMessageWithoutBack(LoginActivity.this,"Please enter password");
 					}

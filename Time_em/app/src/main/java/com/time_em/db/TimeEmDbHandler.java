@@ -13,13 +13,17 @@ import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.gson.Gson;
 import com.time_em.model.Company;
+import com.time_em.model.ListSites;
 import com.time_em.model.UserWorkSite;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
+import com.time_em.model.UserWorkSiteData;
 import com.time_em.model.WorkSiteList;
+import com.time_em.model.mutiUserworkSiteList;
 import com.time_em.utils.PrefUtils;
 import com.time_em.utils.Utils;
 
@@ -40,6 +44,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String TABLE_NOTIFICATIONS_TYPE = "NotificationsType";
 	private String TABLE_PROJECT_TASK = "ProjectTask";
 	private String TABLE_GEOGRAPH = "GeoGraph";
+	private String TABLE_GEOGRAPH_DATA = "GeoGraphData";
 	private String TABLE_USERTASK = "UserTask";
 	private String TABLE_USER_SIGN_INOUT = "UserSignInOut";
 	private String TABLE_COMPANY = "company";
@@ -118,6 +123,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String InTime = "InTime";
 	private String OutTime = "OutTime";
 	private String DateData = "DateTime";
+	private String SiteName = "SiteName";
 	private String allData = "allData";
 
 	//todo fields for user Sign in Out type table
@@ -193,6 +199,9 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		String CREATE_GEO_GRAPHS = "CREATE TABLE if NOT Exists " + TABLE_GEOGRAPH
 				+ "(" + UserId + " TEXT,"+ allData + " TEXT," + DateData + " TEXT)";
 
+		String CREATE_GEO_GRAPHS_DATA = "CREATE TABLE if NOT Exists " + TABLE_GEOGRAPH_DATA
+				+ "(" + UserId + " TEXT,"+ allData + " TEXT," + SiteName + " TEXT)";
+
 		String CREATE_USERTASK = "CREATE TABLE if NOT Exists " + TABLE_USERTASK
 				+ "(" + CreatedDate + " TEXT," + TimeSpent + " TEXT," +CompanyId + " TEXT)";;
 
@@ -210,6 +219,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		db.execSQL(CREATE_NOTIFICATION_TYPE_TABLE);
 		db.execSQL(CREATE_PROJECT_TASKS);
 		db.execSQL(CREATE_GEO_GRAPHS);
+		db.execSQL(CREATE_GEO_GRAPHS_DATA);
 		db.execSQL(CREATE_USERTASK);
 		db.execSQL(CREATE_USER_SIGN_INOUT);
 		db.execSQL(CREATE_COMPANY);
@@ -1068,6 +1078,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
+
 	public ArrayList<SpinnerData> getProjectTasksData(String companyId) {
 		ArrayList<SpinnerData> types = new ArrayList<SpinnerData>();
 		// Select All Query
@@ -1106,7 +1117,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	}
 
 	//for insert data Geo Graphs
-	public void updateGeoGraphData(String strUserId,String Alldata, String str_dateData) {
+	public void updateGeoGraph(String strUserId,String Alldata, String str_dateData) {
 		// Fetch only records with selected Date
 
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -1139,9 +1150,44 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 
 	}
 
+	//for insert data Geo Graphs
+	public void updateGeoGraphData1(String strUserId,String Alldata) {
+		// Fetch only records with selected Date
 
-		//for insert data Geo Graphs
-	public ArrayList<UserWorkSite> getGeoGraphData(String strUserId) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String selectQuery = "SELECT  * FROM " + TABLE_GEOGRAPH_DATA + " where "
+				+ UserId +  "=\"" + strUserId + "\"";
+
+		try {
+			ContentValues values = new ContentValues();
+			values.put(UserId, strUserId);
+			values.put(allData, String.valueOf(Alldata));
+
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+						/*db.update(TABLE_NAME,
+								contentValues,
+								NAME + " = ? AND " + LASTNAME + " = ?",
+								new String[]{"Manas", "Bajaj"});*/
+				//db.update(TABLE_GEOGRAPH_DATA, values, UserId + " = ? " ,new String[] { strUserId});
+				db.update(TABLE_GEOGRAPH, values, UserId + " = ? AND " + allData + " = ?",new String[] { strUserId,Alldata });
+			} else {
+				db.insert(TABLE_GEOGRAPH_DATA, null, values);
+			}
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		db.close();
+
+	}
+
+
+
+	//for insert data Geo Graphs
+	public ArrayList<UserWorkSite> getGeoGraph(String strUserId) {
 		// Fetch only records with selected Date
 
 		ArrayList<UserWorkSite> types = new ArrayList<UserWorkSite>();
@@ -1179,7 +1225,54 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 			db.close();
 			return types;
 		}
+
 }
+
+	//for insert data Geo Graphs
+	public UserWorkSiteData getGeoGraphData1(String strUserId) {
+		// Fetch only records with selected Date
+
+		UserWorkSiteData userData = new UserWorkSiteData();
+		Gson gson = new Gson();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_GEOGRAPH_DATA + " where "
+				+ UserId +  "=\"" + strUserId + "\"";
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		try {
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
+					UserWorkSiteData type = new UserWorkSiteData();
+					String userId = (cursor.getString(cursor.getColumnIndex(UserId)));
+					String data = (cursor.getString(cursor.getColumnIndex(allData)));
+					userData = gson.fromJson(data,UserWorkSiteData.class);
+
+				} while (cursor.moveToNext());
+			}
+
+			cursor.getWindow().clear();
+			cursor.close();
+			// close inserting data from database
+			db.close();
+			// return city list
+			return userData;
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (cursor != null) {
+				cursor.getWindow().clear();
+				cursor.close();
+			}
+
+			db.close();
+			return userData;
+		}
+
+	}
+
+
+
+
 	public void updateUserTask(Activity activity,ArrayList<TaskEntry> arrayTaskEntry) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		for (int i = 0; i < arrayTaskEntry.size(); i++) {
@@ -1205,6 +1298,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
+
 	//todo fetch value form database user task graph value
 	public ArrayList<TaskEntry> getUserTask(Activity activity) {
 		ArrayList<TaskEntry> types = new ArrayList<TaskEntry>();
@@ -1271,6 +1365,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
+
 	//todo get user graphs sing in and out data
 	public ArrayList<TaskEntry> getUserSignInOut(Activity activity) {
 		ArrayList<TaskEntry> types = new ArrayList<TaskEntry>();
@@ -1338,6 +1433,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		}
 		db.close();
 	}
+
 	//todo get company data
 	public ArrayList<Company> getCompany(String  userId) {
 		ArrayList<Company> types = new ArrayList<Company>();

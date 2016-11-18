@@ -47,6 +47,7 @@ import com.time_em.db.TimeEmDbHandler;
 import com.time_em.model.ColorSiteId;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.UserWorkSite;
+import com.time_em.model.UserWorkSiteData;
 import com.time_em.model.WorkSiteList;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.PrefUtils;
@@ -73,7 +74,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private int first_time = 1, totalWidth = 0;
     private float oneMin, stratPoint, endPoint;
     private boolean refresh = true;
-
 
     //todo classes
     private Intent intent;
@@ -165,12 +165,13 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         try{
             UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
         }catch (Exception e){
-
         }
-        // todo fetch from data base
 
+        // todo fetch from data base
         dbHandler = new TimeEmDbHandler(TaskListActivity.this);
-        ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraphData(""+UserId);
+        UserWorkSiteData allData = dbHandler.getGeoGraphData1(""+UserId);
+
+        ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraph(""+UserId);
         fetchDataGraphs(array_workSite);
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -504,6 +505,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         com.time_em.model.WorkSiteList[] arr = new Gson().fromJson(s, clazz);
         return Arrays.asList(arr); //or return Arrays.asList(new Gson().fromJson(s, clazz)); for a one-liner
     }
+
     private void fetchDataGraphs(ArrayList<UserWorkSite> arrayList) {
         //Gson gson = new Gson();
         ArrayList<UserWorkSite> array_UserWorkSite= new ArrayList<UserWorkSite>();
@@ -525,7 +527,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 workSiteList.setWorkingHour(stringToArray(allData, WorkSiteList[].class).get(j).getWorkingHour());
                 workSiteList.setTimeIn(stringToArray(allData, WorkSiteList[].class).get(j).getTimeIn());
                 workSiteList.setTimeOut(stringToArray(allData, WorkSiteList[].class).get(j).getTimeOut());
-               array_WorkSiteList.add(workSiteList);
+                array_WorkSiteList.add(workSiteList);
             }
 
             userWorkSite.setArraylist_WorkSiteList(array_WorkSiteList);
@@ -679,6 +681,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     }
 
     private void settingGraph(ArrayList<UserWorkSite> array_worksite) {
+        UserWorkSiteData userdata=dbHandler.getGeoGraphData1(""+UserId);
+
         lay_upperGraph = (LinearLayout) findViewById(R.id.lay_upperGraph);
         lay_upperGraph.setVisibility(View.VISIBLE);
         lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
@@ -689,58 +693,49 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         totalWidth = getScreenWidth(TaskListActivity.this);
         mainLinearLayout.removeAllViews();
         lay_date.removeAllViews();
-        for (int i = 0; i < array_worksite.size(); i++) {
+
+        for(int a=0; a < userdata.ListSites.size(); a++) {
 
             // Create LinearLayout
-            LinearLayout linearLayout = new LinearLayout(this);
-            linearLayout.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout outerlayout = new LinearLayout(this);
+            outerlayout.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT));
-            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-            linearLayout.setPadding(0, 10, 10, 0);
-
-            //   float totalWidth= lay_hours.getWidth();
-            float oneHour = totalWidth / 24;
-            float totalMins = 24 * 60;
-            oneMin = totalWidth / totalMins;
-
-            // Add text view
-            if (array_worksite.get(i).getArraylist_WorkSiteList() != null && array_worksite.get(i).getArraylist_WorkSiteList().size() > 0) {
-                for (int j = 0; j < array_worksite.get(i).getArraylist_WorkSiteList().size(); j++) {
-                    String value=null,valueIn=null,valueOut=null;
-                    value = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkingHour();
-
-                    valueIn = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeIn();
-                    valueOut = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeOut();
-                    Log.e("hours", "hours=" + value+" valueIn=" + valueIn+" valueOut=" + valueOut);
+            outerlayout.setOrientation(LinearLayout.HORIZONTAL);
+            outerlayout.setPadding(0, 10, 10, 0);
 
 
-                    if (first_time == 1) {
-                        first_time = 0;
-                        endPoint = getStartTime(valueIn);
-                        float width = getDifferenceTwoMins(0, endPoint);
-                        Log.e("width", "" + width);
-                        float oneWidth = width * oneMin;
-                        int int_width = (int) oneWidth;
-                        View view = new TextView(this);
-                        view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                        view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
-                        view.setBackgroundColor(getResources().getColor(R.color.editBg));
-                        linearLayout.addView(view);
-                    }
-                    if (endPoint != getStartTime(valueIn) &&  endPoint!=0) {
-                        // endPoint = getStartTime(valueIn);
-                        if(value!=null
-                                        && !value.equalsIgnoreCase("0.0")
-                                        && valueIn!=null
-                                        && !valueIn.equalsIgnoreCase("null")
-                                        && valueOut!=null
-                                        && !valueOut.equalsIgnoreCase("null")
+            for (int i = 0; i < userdata.ListSites.get(a).WerksiteDates.size(); i++) {
+
+                // Create LinearLayout
+                LinearLayout linearLayout = new LinearLayout(this);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                linearLayout.setLayoutParams(param);
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                linearLayout.setPadding(0, 0, 0, 0);
+
+                // float totalWidth= lay_hours.getWidth();
+                float oneHour = totalWidth / 24;
+                float totalMins = 24 * 60;
+                oneMin = totalWidth / totalMins;
+
+                // Add text view
+                if (userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList != null && userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.size() > 0) {
+                    for (int j = 0; j < userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.size(); j++) {
+                        String value = null, valueIn = null, valueOut = null;
+                        value = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkingHour();
+
+                        valueIn = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeIn();
+                        valueOut = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeOut();
+                        Log.e("hours", "hours=" + value + " valueIn=" + valueIn + " valueOut=" + valueOut);
 
 
-                                ) {
-
-                            float width = getDifferenceTwoMins(endPoint, getStartTime(valueIn));
+                        if (first_time == 1) {
+                            first_time = 0;
+                            endPoint = getStartTime(valueIn);
+                            float width = getDifferenceTwoMins(0, endPoint);
                             Log.e("width", "" + width);
                             float oneWidth = width * oneMin;
                             int int_width = (int) oneWidth;
@@ -750,32 +745,54 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                             view.setBackgroundColor(getResources().getColor(R.color.editBg));
                             linearLayout.addView(view);
                         }
-                    }
-                    stratPoint = getStartTime(valueIn);
-                    endPoint = getStartTime(valueOut);
-                    float width = getDifferenceTwoMins(stratPoint, endPoint);
+                        if (endPoint != getStartTime(valueIn) && endPoint != 0) {
+                            // endPoint = getStartTime(valueIn);
+                            if (value != null
+                                    && !value.equalsIgnoreCase("0.0")
+                                    && valueIn != null
+                                    && !valueIn.equalsIgnoreCase("null")
+                                    && valueOut != null
+                                    && !valueOut.equalsIgnoreCase("null")
 
-                    Log.e("difference width", "" + width);
-                    float one_width = width * oneMin;
-                    //float widtha= width+Float.parseFloat(value);
-                    int int_width = (int) one_width;
-                    Log.e("total_width", "" + int_width);
-                    if(int_width>0) {
-                        View view = new TextView(this);
-                        view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                        view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
-                        // view.setBackgroundColor(getResources().getColor(R.color.black));
 
-                       String id = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkSiteName();
-                        if (array_colorSiteId != null && array_colorSiteId.size() > 0) {
-                            for (int k = 0; k < array_colorSiteId.size(); k++) {
-                                if (id.equalsIgnoreCase(array_colorSiteId.get(k).getSietId())) {
-                                    view.setBackgroundColor(Color.parseColor(array_colorSiteId.get(k).getColor()));
-                                }
+                                    ) {
+
+                                float width = getDifferenceTwoMins(endPoint, getStartTime(valueIn));
+                                Log.e("width", "" + width);
+                                float oneWidth = width * oneMin;
+                                int int_width = (int) oneWidth;
+                                View view = new TextView(this);
+                                view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
+                                view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
+                                view.setBackgroundColor(getResources().getColor(R.color.editBg));
+                                linearLayout.addView(view);
                             }
                         }
-                        linearLayout.addView(view);
-                        //  view.setBackgroundColor(getResources().getColor(R.color.black));
+                        stratPoint = getStartTime(valueIn);
+                        endPoint = getStartTime(valueOut);
+                        float width = getDifferenceTwoMins(stratPoint, endPoint);
+
+                        Log.e("difference width", "" + width);
+                        float one_width = width * oneMin;
+                        //float widtha= width+Float.parseFloat(value);
+                        int int_width = (int) one_width;
+                        Log.e("total_width", "" + int_width);
+                        if (int_width > 0) {
+                            View view = new TextView(this);
+                            view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
+                            view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
+                            // view.setBackgroundColor(getResources().getColor(R.color.black));
+
+                            String id = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkSiteName();
+                            if (array_colorSiteId != null && array_colorSiteId.size() > 0) {
+                                for (int k = 0; k < array_colorSiteId.size(); k++) {
+                                    if (id.equalsIgnoreCase(array_colorSiteId.get(k).getSietId())) {
+                                        view.setBackgroundColor(Color.parseColor(array_colorSiteId.get(k).getColor()));
+                                    }
+                                }
+                            }
+                            linearLayout.addView(view);
+                            //  view.setBackgroundColor(getResources().getColor(R.color.black));
 
 
                      /*   if (j == 0) {
@@ -803,36 +820,53 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                         }*/
 
 
+                        }
                     }
+                } else {
+                    TextView textView = new TextView(this);
+                    textView.setPadding((int) 0, 0, 0, 0);  // in pixels (left, top, right, bottom)
+                    textView.setLayoutParams(new LinearLayout.LayoutParams(0, 56));
+                    textView.setGravity(Gravity.CENTER_VERTICAL);
+                    textView.setBackgroundColor(getResources().getColor(R.color.white));
+                    linearLayout.addView(textView);
                 }
-            } else {
-                TextView textView = new TextView(this);
-                textView.setPadding((int) 0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                textView.setLayoutParams(new LinearLayout.LayoutParams(0, 56));
-                textView.setGravity(Gravity.CENTER_VERTICAL);
-                textView.setBackgroundColor(getResources().getColor(R.color.white));
-                linearLayout.addView(textView);
-            }
-            first_time = 1;
-            mainLinearLayout.addView(linearLayout);
+                first_time = 1;
+                outerlayout.addView(linearLayout);
 
-            //for date
+                //for dates
+                if(a == userdata.ListSites.size()-1){
+
+                    TextView textView = new TextView(this);
+                    LinearLayout.LayoutParams param1 = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                    textView.setLayoutParams(param1);
+                    //textView.setLayoutParams(new LinearLayout.LayoutParams(60, 66));
+                    textView.setGravity(Gravity.CENTER);
+                    // textView.setTextColor(getResources().getColor(R.color.black));
+                    //textView.setText(array_worksite.get(i).getDate().substring(0, 5));
+                    textView.setText(userdata.ListSites.get(a).WerksiteDates.get(i).CreatedDate.substring(0,5));
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                    textView.setTextSize(12);
+                    textView.setPadding(0, 10, 0, 10);
+                    lay_hours.addView(textView);
+                }
+
+
+            }
+
+            mainLinearLayout.addView(outerlayout);
+            //for sitename
             TextView textView = new TextView(this);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(60, 66));
+            textView.setLayoutParams(new LinearLayout.LayoutParams(60, LinearLayout.LayoutParams.WRAP_CONTENT));
             textView.setGravity(Gravity.CENTER);
-           // textView.setTextColor(getResources().getColor(R.color.black));
-            textView.setText(array_worksite.get(i).getDate().substring(0, 5));
+            // textView.setTextColor(getResources().getColor(R.color.black));
+            //textView.setText(array_worksite.get(i).getDate().substring(0, 5));
+            textView.setText(userdata.ListSites.get(a).SiteName);
             textView.setTextColor(getResources().getColor(R.color.white));
             textView.setTextSize(12);
             textView.setPadding(0, 10, 0, 10);
             lay_date.addView(textView);
-         /*   LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            params.setMargins(textView.getWidth(), 0, 0, 0);9o
-            bottom_side.setLayoutParams(params);
-            mainLinearLayout.addView(bottom_side);*/
+
         }
 
     }

@@ -11,9 +11,12 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+
+import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.model.Company;
+import com.time_em.model.ListSites;
 import com.time_em.model.MultipartDataModel;
 import com.time_em.model.Notification;
 import com.time_em.model.SpinnerData;
@@ -21,6 +24,7 @@ import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
 import com.time_em.model.UserWorkSite;
+import com.time_em.model.UserWorkSiteData;
 import com.time_em.model.WorkSiteList;
 import com.time_em.model.mutiUserworkSiteList;
 import com.time_em.utils.PrefUtils;
@@ -719,10 +723,38 @@ public class Time_emJsonParser {
 	}
 	]*/
 
+
+	/*public ArrayList<ListSites> getListSites(String webResponse){
+
+		ArrayList<ListSites> arrayListSites = new ArrayList<ListSites>();
+
+		try{
+			Gson gson = new Gson();
+			UserWorkSiteData userdata = gson.fromJson(webResponse, UserWorkSiteData.class);
+			arrayListSites = userdata.getListSite();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return arrayListSites;
+
+	}*/
+	public UserWorkSiteData getListSites(String webResponse){
+		UserWorkSiteData userdata = new UserWorkSiteData();
+		try{
+			Gson gson = new Gson();
+			 userdata = gson.fromJson(webResponse, UserWorkSiteData.class);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return userdata;
+
+	}
+
 	public ArrayList<UserWorkSite> getUserWorkSite(String webResponse){
 		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
 		ArrayList<WorkSiteList> arrayWorkSiteList= null;
-
 
 		try{
 
@@ -759,7 +791,6 @@ public class Time_emJsonParser {
 
 		if(isError)
 			Utils.showToast(context, message);
-
 
 		return arrayUserWorkSite;
 	}

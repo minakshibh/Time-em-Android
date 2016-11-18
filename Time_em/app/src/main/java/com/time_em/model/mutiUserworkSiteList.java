@@ -1,5 +1,7 @@
 package com.time_em.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 /**
@@ -8,23 +10,26 @@ import java.util.ArrayList;
 
 public class mutiUserworkSiteList {
 
-    ArrayList<WorkSiteList> arraylist_WorkSiteList=new ArrayList<>();
-    String date;
+    @SerializedName("workSiteList")
+    public ArrayList<WorkSiteList> workSiteList=new ArrayList<>();
+
+    @SerializedName("CreatedDate")
+    public String CreatedDate;
 
     public ArrayList<WorkSiteList> getArraylist_WorkSiteList() {
-        return arraylist_WorkSiteList;
+        return workSiteList;
     }
 
     public void setArraylist_WorkSiteList(ArrayList<WorkSiteList> arraylist_WorkSiteList) {
-        this.arraylist_WorkSiteList = arraylist_WorkSiteList;
+        this.workSiteList = arraylist_WorkSiteList;
     }
 
     public String getDate() {
-        return date;
+        return CreatedDate;
     }
 
     public void setDate(String date) {
-        this.date = date;
+        this.CreatedDate = date;
     }
 
 }

@@ -51,7 +51,7 @@
             android:ems="10"
 			android:singleLine="true"
 			android:textColorHint="@color/dullTextColor"
-            android:hint="Enter Login Id"
+            android:hint="Enter Username"
 			android:textColor="@color/textColor"
 			android:imeOptions="actionNext"
             android:textSize="14sp" />

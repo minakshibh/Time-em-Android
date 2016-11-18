@@ -342,17 +342,16 @@
                     android:layout_marginTop="10dp"
                     android:layout_alignRight="@+id/outerVideoFile"/>
 
-<!--
+
                 <ImageView
-                    android:id="@+id/videodelete"
+                    android:id="@+id/videodeleteP"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/deleteimg"
                     android:layout_alignParentRight="true"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="15dp"/>
--->
 
             </RelativeLayout>
         </LinearLayout>

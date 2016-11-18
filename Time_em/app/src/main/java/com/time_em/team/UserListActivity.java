@@ -27,8 +27,10 @@ import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
 import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
+import com.time_em.model.ListSites;
 import com.time_em.model.User;
 import com.time_em.model.UserWorkSite;
+import com.time_em.model.UserWorkSiteData;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
 import com.time_em.utils.PrefUtils;
@@ -41,7 +43,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 	private ArrayList<User> team;
 	private Time_emJsonParser parser;
 	private ImageButton callButton;
-//	private HorizontalScrollView sView;
+	//	private HorizontalScrollView sView;
 	private TextView swipeInfo, headerText;
 	private ImageView back, addTask;
 	private RecyclerView recyclerView;
@@ -275,15 +277,20 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		}
 		else if (methodName.contains(Utils.GetUserWorksiteActivity)) {
 			parser = new Time_emJsonParser(UserListActivity.this);
-			ArrayList<UserWorkSite> array_worksite = parser.getUserWorkSite(output);
+			UserWorkSiteData userdata = parser.getListSites(output);
+			//ArrayList<ListSites> array_worksite = parser.getListSites(output);
+			//ArrayList<UserWorkSite> array_worksite = parser.getUserWorkSite(output);
 
-			for(int i=0;i<array_worksite.size();i++) {
+			Gson gson = new Gson();
+			dbHandler.updateGeoGraphData1(SelectedUserId,gson.toJson(userdata));
+			dbHandler.getGeoGraphData1(""+SelectedUserId);
+			/*for(int i=0;i<array_worksite.size();i++) {
 				Gson gson = new Gson();
 				// This can be any object. Does not have to be an arraylist.
-				String allData = gson.toJson(array_worksite.get(i).getArraylist_WorkSiteList());
-				dbHandler.updateGeoGraphData(SelectedUserId,allData, array_worksite.get(i).getDate());
+				String allData = gson.toJson(array_worksite.get(i).WerksiteDates);
+				dbHandler.updateGeoGraphData(SelectedUserId,allData, array_worksite.get(i).SiteName);
 
-			}
+			}*/
 			goToNext();
 			//array_worksite=  dbHandler.getGeoGraphData();
 			//fetchDataGraphs(array_worksite);
@@ -305,12 +312,12 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 		intent.putExtra("UserId", ""+team.get(array_position).getId());
 		intent.putExtra("UserName", team.get(array_position).getFirstName());
 		startActivity(intent);
-
-}
+	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		PrefUtils.setStringPreference(UserListActivity.this,PrefUtils.KEY_TPCheck,"true");
 	}
+
 }

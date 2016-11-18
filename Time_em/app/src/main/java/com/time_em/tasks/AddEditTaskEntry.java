@@ -48,7 +48,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
     //todo widgets
     private TextView txtProjectSelection, txtCommentsHeader, txtHoursHeader, headerInfo, dateHeader,first_separator,videofile;
     private MySpinner spnProject;
-    private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete,dropdown,dropdown1,dropdown2;
+    private ImageView hoursIcon, uploadedImage, back, rightNavigation,imgdelete, videodelete,videodeleteP,dropdown,dropdown1,dropdown2;
     private LinearLayout recipientSection, uploadAttachment;
     private RelativeLayout notTypeLayout;
     private Button addUpdateTask;
@@ -106,6 +106,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
 
         imgdelete=(ImageView) findViewById(R.id.imgdelete);
         videodelete=(ImageView) findViewById(R.id.videodelete);
+        videodeleteP=(ImageView) findViewById(R.id.videodeleteP);
         dropdown=(ImageView) findViewById(R.id.dropdown);
         dropdown1=(ImageView) findViewById(R.id.dropdown1);
         dropdown2=(ImageView) findViewById(R.id.dropdown2);
@@ -176,7 +177,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     }else{
                         uploadedImage.setVisibility(View.GONE);
                         uploadedVideo.setVisibility(View.VISIBLE);
-                        videodelete.setVisibility(View.VISIBLE);
+                        videodeleteP.setVisibility(View.VISIBLE);
                         imgdelete.setVisibility(View.GONE);
                         uploadedVideo.setUp(image_url , "video");
                       /*uploadedVideo.setVideoPath(image_url);
@@ -196,7 +197,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                     else{
                         uploadedImage.setVisibility(View.GONE);
                         uploadedVideo.setVisibility(View.VISIBLE);
-                        videodelete.setVisibility(View.VISIBLE);
+                        videodeleteP.setVisibility(View.VISIBLE);
                         imgdelete.setVisibility(View.GONE);
                         try {
                             uploadedVideo.setUp(image_url, "video");
@@ -270,6 +271,7 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
         addUpdateTask.setOnClickListener(listener);
         back.setOnClickListener(listener);
         imgdelete.setOnClickListener(listener);
+        videodeleteP.setOnClickListener(listener);
         videodelete.setOnClickListener(listener);
         // You can create an anonymous listener to handle the event when is selected an spinner item
 
@@ -313,12 +315,13 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 finish();
             }else if(v == uploadAttachment){
                 fileUtils.showChooserDialog(true);
-            }else if(v == imgdelete || v == videodelete){
+            }else if(v == imgdelete || v == videodelete || v == videodeleteP){
                 uploadedImage.setVisibility(View.GONE);
                 uploadedVideo.setVisibility(View.GONE);
                 videofile.setVisibility(View.GONE);
                 imgdelete.setVisibility(View.GONE);
                 videodelete.setVisibility(View.GONE);
+                videodeleteP.setVisibility(View.GONE);
                 fileUtils.setAttachmentPath(null);
             }else if(v == addUpdateTask){
 
@@ -544,6 +547,8 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
                 if (requestCode == FileUtils.SELECT_FILE) {
                 uploadedVideo.setVisibility(View.GONE);
                 videodelete.setVisibility(View.GONE);
+                    videofile.setVisibility(View.GONE);
+                    videodeleteP.setVisibility(View.GONE);
                 uploadedImage.setVisibility(View.VISIBLE);
                 imgdelete.setVisibility(View.VISIBLE);
                 fileUtils.onSelectFromGalleryResult(data, uploadedImage);
@@ -551,18 +556,24 @@ public class AddEditTaskEntry extends Activity implements AsyncResponseTimeEm {
             else if (requestCode == FileUtils.REQUEST_CAMERA) {
                 uploadedVideo.setVisibility(View.GONE);
                 videodelete.setVisibility(View.GONE);
+                    videofile.setVisibility(View.GONE);
+                    videodeleteP.setVisibility(View.GONE);
                 uploadedImage.setVisibility(View.VISIBLE);
                 imgdelete.setVisibility(View.VISIBLE);
                 fileUtils.onCaptureImageResult(data, uploadedImage);
             }
             else if (requestCode == FileUtils.VIDEO_CAMERA) {
-                uploadedImage.setVisibility(View.GONE);
-                imgdelete.setVisibility(View.GONE);
-                videofile.setVisibility(View.VISIBLE);
-                videofile.setText(fileUtils.getAttachmentPath());
-                //uploadedVideo.setVisibility(View.VISIBLE);
-                videodelete.setVisibility(View.VISIBLE);
-                fileUtils.onRecordVideoResult(AddEditTaskEntry.this, data, uploadedVideo);
+                    uploadedImage.setVisibility(View.GONE);
+                    imgdelete.setVisibility(View.GONE);
+                    if(taskEntry == null) {
+                        videofile.setVisibility(View.VISIBLE);
+                        videodelete.setVisibility(View.VISIBLE);
+                        videofile.setText(fileUtils.getAttachmentPath());
+                    } else{
+                        uploadedVideo.setVisibility(View.VISIBLE);
+                        videodeleteP.setVisibility(View.VISIBLE);
+                        fileUtils.onRecordVideoResult(AddEditTaskEntry.this, data, uploadedVideo);
+                    }
             }
         }
     }
