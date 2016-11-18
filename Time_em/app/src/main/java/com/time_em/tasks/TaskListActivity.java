@@ -169,7 +169,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
         // todo fetch from data base
         dbHandler = new TimeEmDbHandler(TaskListActivity.this);
-        UserWorkSiteData allData = dbHandler.getGeoGraphData1(""+UserId);
+        //UserWorkSiteData allData = dbHandler.getGeoGraphData1(""+UserId);
 
         ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraph(""+UserId);
         fetchDataGraphs(array_workSite);
@@ -725,10 +725,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 if (userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList != null && userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.size() > 0) {
                     for (int j = 0; j < userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.size(); j++) {
                         String value = null, valueIn = null, valueOut = null;
-                        value = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkingHour();
+                        value = userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.get(j).getWorkingHour();
 
-                        valueIn = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeIn();
-                        valueOut = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getTimeOut();
+                        valueIn = userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.get(j).getTimeIn();
+                        valueOut =userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.get(j).getTimeOut();
                         Log.e("hours", "hours=" + value + " valueIn=" + valueIn + " valueOut=" + valueOut);
 
 
@@ -781,48 +781,22 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                             View view = new TextView(this);
                             view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
                             view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
-                            // view.setBackgroundColor(getResources().getColor(R.color.black));
+                             view.setBackgroundColor(getResources().getColor(R.color.grey));
 
-                            String id = array_worksite.get(i).getArraylist_WorkSiteList().get(j).getWorkSiteName();
+                            /*String id = userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.get(j).getWorkSiteName();
                             if (array_colorSiteId != null && array_colorSiteId.size() > 0) {
                                 for (int k = 0; k < array_colorSiteId.size(); k++) {
                                     if (id.equalsIgnoreCase(array_colorSiteId.get(k).getSietId())) {
                                         view.setBackgroundColor(Color.parseColor(array_colorSiteId.get(k).getColor()));
                                     }
                                 }
-                            }
+                            }*/
                             linearLayout.addView(view);
-                            //  view.setBackgroundColor(getResources().getColor(R.color.black));
-
-
-                     /*   if (j == 0) {
-                            view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
-
-                        } else if (j == 1) {
-                            String Id = array_worksite.get(i).getArraylist_WorkSiteList().get(0).getWorkSiteId();
-                            String Id2 = array_worksite.get(i).getArraylist_WorkSiteList().get(1).getWorkSiteId();
-                            if (Id.equalsIgnoreCase(Id2)) {
-                                view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
-                            } else {
-                                view.setBackgroundColor(getResources().getColor(R.color.sendTextColor));
-                            }
-                        } else if (j == 2) {
-                            String Id = array_worksite.get(i).getArraylist_WorkSiteList().get(0).getWorkSiteId();
-                            String Id2 = array_worksite.get(i).getArraylist_WorkSiteList().get(1).getWorkSiteId();
-                            String Id3 = array_worksite.get(i).getArraylist_WorkSiteList().get(2).getWorkSiteId();
-                            if (Id.equalsIgnoreCase(Id2)) {
-                                view.setBackgroundColor(getResources().getColor(R.color.cancelTextColor));
-                            } else if (Id.equalsIgnoreCase(Id3)) {
-                                view.setBackgroundColor(getResources().getColor(R.color.sendTextColor));
-                            } else {
-                                view.setBackgroundColor(getResources().getColor(R.color.alphabeticalTextColor));
-                            }
-                        }*/
-
 
                         }
                     }
                 } else {
+                    //todo for not data for work site show empty
                     TextView textView = new TextView(this);
                     textView.setPadding((int) 0, 0, 0, 0);  // in pixels (left, top, right, bottom)
                     textView.setLayoutParams(new LinearLayout.LayoutParams(0, 56));
@@ -844,7 +818,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     textView.setGravity(Gravity.CENTER);
                     // textView.setTextColor(getResources().getColor(R.color.black));
                     //textView.setText(array_worksite.get(i).getDate().substring(0, 5));
-                    textView.setText(userdata.ListSites.get(a).WerksiteDates.get(i).CreatedDate.substring(0,5));
+                    textView.setText(userdata.ListSites.get(a).WerksiteDates.get(i).CreatedDate);
                     textView.setTextColor(getResources().getColor(R.color.white));
                     textView.setTextSize(12);
                     textView.setPadding(0, 10, 0, 10);
@@ -862,6 +836,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             // textView.setTextColor(getResources().getColor(R.color.black));
             //textView.setText(array_worksite.get(i).getDate().substring(0, 5));
             textView.setText(userdata.ListSites.get(a).SiteName);
+            textView.setMaxLines(1);
             textView.setTextColor(getResources().getColor(R.color.white));
             textView.setTextSize(12);
             textView.setPadding(0, 10, 0, 10);

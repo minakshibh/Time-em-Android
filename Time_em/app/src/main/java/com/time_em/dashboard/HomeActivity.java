@@ -809,7 +809,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
                     // This can be any object. Does not have to be an arraylist.
                     String allData = gson.toJson(array_worksite.get(k).getArraylist_multiUserWorkSiteList().get(i).getArraylist_WorkSiteList());
                     String str_Date=array_worksite.get(k).getArraylist_multiUserWorkSiteList().get(i).getDate();
-                    dbHandler.updateGeoGraphData(userId, allData,str_Date );
+                    dbHandler.updateGeoGraphData1(userId, allData);
 
                 }
             }
