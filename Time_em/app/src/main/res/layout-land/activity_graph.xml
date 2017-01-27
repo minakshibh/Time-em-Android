@@ -11,130 +11,138 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:id="@+id/scrollView2">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent">
-    <LinearLayout
-        android:id="@+id/lay_upperGraph"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal">
-        <LinearLayout
-            android:id="@+id/lay_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical">
-            <TextView
-                android:gravity="center"
-                android:layout_width="20dp"
-                android:visibility="gone"
-                android:layout_marginLeft="00dp"
-                android:layout_gravity="center_vertical"
-                android:layout_height="match_parent"
-                android:textColor="@color/white"
-                android:background="@color/seperator"/>
-            </LinearLayout>
-        <TextView
-            android:id="@+id/left_side"
-            android:layout_width="1dp"
-            android:layout_marginTop="4dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:background="@color/seperator"/>
-
-          <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/editBg"
-               >
-        <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:visibility="visible"
-              android:layout_marginRight="5dp"
-              android:orientation="horizontal">
-                  <TextView
-                     android:layout_width="0dp"
-                      android:layout_weight="2.4"
-                      android:gravity="end"
-                      android:layout_height="match_parent"
-                      android:background="@color/transparent"/>
-                <TextView
-                    android:layout_width="2dp"
-                    android:layout_marginTop="3dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/dotted_line"/>
-                  <TextView
-                      android:layout_width="0dp"
-                      android:layout_weight="2.4"
-                      android:gravity="end"
-                      android:layout_height="match_parent"
-                      android:background="@color/transparent"/>
-                  <TextView
-                      android:layout_width="2dp"
-                      android:layout_marginTop="3dp"
-                      android:layout_height="match_parent"
-                      android:background="@drawable/dotted_line"/>
-                  <TextView
-                      android:layout_width="0dp"
-                      android:layout_weight="2.4"
-                      android:gravity="end"
-                      android:layout_height="match_parent"
-                      android:background="@color/transparent"/>
-                  <TextView
-                      android:layout_width="2dp"
-                      android:layout_marginTop="3dp"
-                      android:layout_height="match_parent"
-                      android:background="@drawable/dotted_line"/>
-                  <TextView
-                      android:layout_width="0dp"
-                      android:layout_weight="2.4"
-                      android:gravity="end"
-                      android:layout_height="match_parent"
-                      android:background="@color/transparent"/>
-                  <TextView
-                      android:layout_width="2dp"
-                      android:layout_marginTop="3dp"
-                      android:layout_height="match_parent"
-                      android:background="@drawable/dotted_line"/>
-              </LinearLayout>
+        android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/lay_upperGraph"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/lay_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+                <TextView
+                    android:gravity="center"
+                    android:layout_width="20dp"
+                    android:visibility="gone"
+                    android:layout_marginLeft="00dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/white"
+                    android:background="@color/seperator"/>
+                </LinearLayout>
+            <TextView
+                android:id="@+id/left_side"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="00dp"
+                android:background="@color/seperator"/>
+
+              <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="00dp"
+                    android:background="@color/editBg">
 
             <LinearLayout
-                android:visibility="visible"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:visibility="visible"
+                  android:layout_marginRight="0dp"
+                  android:orientation="horizontal">
+
+                      <TextView
+                         android:layout_width="0dp"
+                          android:layout_weight="2.4"
+                          android:gravity="end"
+                          android:layout_height="match_parent"
+                          android:background="@color/transparent"/>
+                      <TextView
+                        android:layout_width="2dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/dotted_line"/>
+                      <TextView
+                          android:layout_width="0dp"
+                          android:layout_weight="2.4"
+                          android:gravity="end"
+                          android:layout_height="match_parent"
+                          android:background="@color/transparent"/>
+                      <TextView
+                          android:layout_width="2dp"
+                          android:layout_marginTop="3dp"
+                          android:layout_height="match_parent"
+                          android:background="@drawable/dotted_line"/>
+                      <TextView
+                          android:layout_width="0dp"
+                          android:layout_weight="2.4"
+                          android:gravity="end"
+                          android:layout_height="match_parent"
+                          android:background="@color/transparent"/>
+                      <TextView
+                          android:layout_width="2dp"
+                          android:layout_marginTop="3dp"
+                          android:layout_height="match_parent"
+                          android:background="@drawable/dotted_line"/>
+                      <TextView
+                          android:layout_width="0dp"
+                          android:layout_weight="2.4"
+                          android:gravity="end"
+                          android:layout_height="match_parent"
+                          android:background="@color/transparent"/>
+                      <TextView
+                          android:layout_width="2dp"
+                          android:layout_marginTop="3dp"
+                          android:layout_height="match_parent"
+                          android:background="@drawable/dotted_line"/>
+                      <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="2.4"
+                        android:gravity="end"
+                        android:layout_height="match_parent"
+                        android:background="@color/transparent"/>
+                  </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/graphLayout"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:orientation="vertical"
+                android:gravity="bottom">
 
+                <LinearLayout
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:id="@+id/graphLayout"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="00dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    />
 
-            </LinearLayout>
+                </LinearLayout>
 
-          </RelativeLayout>
+              </RelativeLayout>
 
-    </LinearLayout>
-
-
-
-
+        </LinearLayout>
 
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="wrap_content"
             android:id="@+id/bottom_side"
-            android:layout_marginLeft="50dp"
             android:visibility="visible"
             android:background="@color/seperator"/>
 
@@ -144,97 +152,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="0dp"
         android:orientation="horizontal">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:visibility="visible"
-                    android:text=""
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:visibility="visible"
-                    android:text="0hr"
-                    android:textColor="@color/white"
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:visibility="visible"
-                    android:text=""
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:visibility="visible"
-                    android:text="6hrs"
-                    android:textColor="@color/white"
-                    android:layout_gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:visibility="visible"
-                    android:text=""
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-
-                    android:layout_width="wrap_content"
-                    android:visibility="visible"
-                    android:text="12hrs"
-                    android:textColor="@color/white"
-                    android:layout_gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:visibility="visible"
-                    android:text=""
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:visibility="visible"
-                    android:textColor="@color/white"
-                    android:text="18hrs"
-                    android:layout_gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:visibility="visible"
-                    android:text=""
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:visibility="visible"
-                    android:text="24hrs"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="00dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_height="match_parent"
-                    />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/lay_hours"
@@ -242,14 +161,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-
             </LinearLayout>
 
-        </RelativeLayout>
-
-
-
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/lay_colorIndicator"
         android:layout_width="match_parent"

@@ -1,5 +1,6 @@
 package com.time_em.tasks;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -36,6 +38,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
@@ -59,7 +63,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
     private ListView taskListview;
     private ImageView addTaskButton, back;
     private ImageButton calbutton;
-    private TextView headerText, currentDate,caldate,noTaskMsg;
+    private TextView headerText, currentDate,caldate,noTaskMsg,left_side;
     private LinearLayout footer;
     private RecyclerView recyclerView;
     private ImageView addButton;
@@ -153,7 +157,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
         lay_hours.setVisibility(View.GONE);
         headerInfo = (TextView) findViewById(R.id.headerText);
-        bottom_side=(TextView)findViewById(R.id.bottom_side);
         if(getIntent().getStringExtra("UserName")!=null) {
             String username = getIntent().getStringExtra("UserName");
             headerInfo.setText(username + "'s Graphs");
@@ -164,15 +167,15 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
         try{
             UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
-        }catch (Exception e){
-        }
+        }catch (Exception e){}
 
         // todo fetch from data base
         dbHandler = new TimeEmDbHandler(TaskListActivity.this);
-        //UserWorkSiteData allData = dbHandler.getGeoGraphData1(""+UserId);
+        UserWorkSiteData allData = dbHandler.getGeoGraphData1(""+UserId);
 
-        ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraph(""+UserId);
-        fetchDataGraphs(array_workSite);
+        //ArrayList<UserWorkSite> array_workSite=  dbHandler.getGeoGraph(""+UserId);
+        //fetchDataGraphs(array_workSite);
+        settingGraph();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,8 +247,10 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                 // Utils.showToast(TaskListActivity.this, item.get(Calendar.DAY_OF_MONTH)+" "+weekDay+" Clicked");
 
                 selectedDate = apiDateFormater.format(item.getTime());
+                showAdd(item.getTime());
                 caldate.setVisibility(View.GONE);
                 getTaskList(selectedDate);
+
 
             }
         });
@@ -253,8 +258,31 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         adapter.notifyDataSetChanged();// // todo Notify the adapter
     }
 
+    public void showAdd(Date selectedDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date strDate = null;
+        try {
+            //strDate = sdf.parse(selectedDate);
+            if (new Date().after(selectedDate)) {
+                addTaskButton.setVisibility(View.VISIBLE);
+
+            }else if(new Date().equals(selectedDate)){
+                addTaskButton.setVisibility(View.VISIBLE);
+            }
+            else{
+                addTaskButton.setVisibility(View.INVISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void showMessageTrackingPlot() {
-        Utils.alertMessageWithoutBack(TaskListActivity.this,"To rotate the device to view tracking plot should be displayed.");
+      //  Utils.alertMessageWithoutBack(TaskListActivity.this,"To rotate the device to view tracking plot should be displayed.");
+      Intent in = new Intent(getApplicationContext(),RotateDialogActivity.class);
+      startActivity(in);
+
     }
 
 
@@ -535,8 +563,8 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         }
         array_UserWorkSite.size();
         Log.e("total","ss="+array_UserWorkSite.size());
-        setColorWithModel(array_UserWorkSite);
-        settingGraph(array_UserWorkSite); //
+        //setColorWithModel(array_UserWorkSite);
+        //settingGraph(array_UserWorkSite);
     }
 
     private void setColorWithModel(ArrayList<UserWorkSite> array_worksite) {
@@ -594,9 +622,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
         public DateSliderAdapter(ArrayList<Calendar> items, OnItemClickListener listener) {
             this.items = items;
+
             this.listener = listener;
         }
-
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.date_slider_row, parent, false);
@@ -668,8 +696,18 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
             if (value == Configuration.ORIENTATION_LANDSCAPE) {
                 orientation = "Landscape";
-                //   Toast.makeText(this, "LANDSCAPE", Toast.LENGTH_SHORT).show();
-                showGraphs();
+                //  Toast.makeText(this, "LANDSCAPE", Toast.LENGTH_SHORT).show();
+                UserId =  Integer.parseInt(getIntent().getStringExtra("UserId"));
+                dbHandler = new TimeEmDbHandler(TaskListActivity.this);
+                UserWorkSiteData userdata = dbHandler.getGeoGraphData1(""+UserId);
+                if(userdata == null || userdata.ListSites.size() == 0){
+                   showTaskList();
+                   Utils.alertMessageWithoutBack(TaskListActivity.this,"Tracking Plot not available for this user.");
+                }
+                else {
+                    showGraphs();
+                }
+
             }
         } else {
 
@@ -680,46 +718,75 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
         }
     }
 
-    private void settingGraph(ArrayList<UserWorkSite> array_worksite) {
-        UserWorkSiteData userdata=dbHandler.getGeoGraphData1(""+UserId);
+    private void settingGraph() {
+        UserWorkSiteData userdata = dbHandler.getGeoGraphData1(""+UserId);
 
         lay_upperGraph = (LinearLayout) findViewById(R.id.lay_upperGraph);
         lay_upperGraph.setVisibility(View.VISIBLE);
+
         lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
         lay_hours.setVisibility(View.VISIBLE);
+        LinearLayout.LayoutParams hrs_param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        hrs_param.setMargins(80,0,0,0);
+        lay_hours.setLayoutParams(hrs_param);
+
+        bottom_side=(TextView)findViewById(R.id.bottom_side);
+        LinearLayout.LayoutParams btm_param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2);
+        btm_param.setMargins(118,0,0,0);
+        bottom_side.setLayoutParams(btm_param);
+
+        left_side = (TextView) findViewById(R.id.left_side);
+        LinearLayout.LayoutParams left_param = new LinearLayout.LayoutParams(2, LinearLayout.LayoutParams.MATCH_PARENT);
+        left_param.setMargins(18,0,0,0);
+        left_side.setLayoutParams(left_param);
+
         mainLinearLayout = (LinearLayout) findViewById(R.id.graphLayout);
-        lay_hours = (LinearLayout) findViewById(R.id.lay_hours);
         lay_date = (LinearLayout) findViewById(R.id.lay_date);
+        LinearLayout.LayoutParams date_param = new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lay_date.setLayoutParams(date_param);
+
         totalWidth = getScreenWidth(TaskListActivity.this);
         mainLinearLayout.removeAllViews();
         lay_date.removeAllViews();
 
         for(int a=0; a < userdata.ListSites.size(); a++) {
 
-            // Create LinearLayout
-            LinearLayout outerlayout = new LinearLayout(this);
-            outerlayout.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-            outerlayout.setOrientation(LinearLayout.HORIZONTAL);
-            outerlayout.setPadding(0, 10, 10, 0);
+            //for horizontal separator.
+            TextView hori_separator = new TextView(this);
+            hori_separator.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 4));
+            hori_separator.setBackgroundResource(R.drawable.dotted_line);
+            mainLinearLayout.addView(hori_separator);
 
+
+            // Create LinearLayout( particular row)
+            LinearLayout outerlayout = new LinearLayout(this);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 65);
+            param.setMargins(0,0,0,0);   //71
+            outerlayout.setLayoutParams(param);
+            outerlayout.setOrientation(LinearLayout.HORIZONTAL);
+            outerlayout.setPadding(0, 0, 0, 0);
+
+            Random rnd = new Random();
+            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
             for (int i = 0; i < userdata.ListSites.get(a).WerksiteDates.size(); i++) {
 
-                // Create LinearLayout
+                // Create LinearLayout (particular date)
                 LinearLayout linearLayout = new LinearLayout(this);
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams para = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-                linearLayout.setLayoutParams(param);
+                        65, 1.0f);
+                para.setMargins(2,0,2,0);
+                linearLayout.setLayoutParams(para);
                 linearLayout.setOrientation(LinearLayout.HORIZONTAL);
                 linearLayout.setPadding(0, 0, 0, 0);
 
                 // float totalWidth= lay_hours.getWidth();
                 float oneHour = totalWidth / 24;
                 float totalMins = 24 * 60;
-                oneMin = totalWidth / totalMins;
+                int onepart = totalWidth / userdata.ListSites.get(a).WerksiteDates.size();
+                oneMin = onepart / totalMins;
 
                 // Add text view
                 if (userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList != null && userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.size() > 0) {
@@ -741,7 +808,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                             int int_width = (int) oneWidth;
                             View view = new TextView(this);
                             view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                            view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
+                            view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 65));
                             view.setBackgroundColor(getResources().getColor(R.color.editBg));
                             linearLayout.addView(view);
                         }
@@ -753,8 +820,6 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                                     && !valueIn.equalsIgnoreCase("null")
                                     && valueOut != null
                                     && !valueOut.equalsIgnoreCase("null")
-
-
                                     ) {
 
                                 float width = getDifferenceTwoMins(endPoint, getStartTime(valueIn));
@@ -763,7 +828,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                                 int int_width = (int) oneWidth;
                                 View view = new TextView(this);
                                 view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                                view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
+                                view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 65));
                                 view.setBackgroundColor(getResources().getColor(R.color.editBg));
                                 linearLayout.addView(view);
                             }
@@ -780,8 +845,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                         if (int_width > 0) {
                             View view = new TextView(this);
                             view.setPadding(0, 0, 0, 0);// in pixels (left, top, right, bottom)
-                            view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 55));
-                             view.setBackgroundColor(getResources().getColor(R.color.grey));
+                            view.setLayoutParams(new LinearLayout.LayoutParams(int_width, 65));
+                            view.setBackgroundColor(color);
+                            //view.setBackgroundColor(getResources().getColor(R.color.grey));
 
                             /*String id = userdata.ListSites.get(a).WerksiteDates.get(i).workSiteList.get(j).getWorkSiteName();
                             if (array_colorSiteId != null && array_colorSiteId.size() > 0) {
@@ -799,9 +865,9 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     //todo for not data for work site show empty
                     TextView textView = new TextView(this);
                     textView.setPadding((int) 0, 0, 0, 0);  // in pixels (left, top, right, bottom)
-                    textView.setLayoutParams(new LinearLayout.LayoutParams(0, 56));
+                    textView.setLayoutParams(new LinearLayout.LayoutParams(0, 65));
                     textView.setGravity(Gravity.CENTER_VERTICAL);
-                    textView.setBackgroundColor(getResources().getColor(R.color.white));
+                    textView.setBackgroundColor(getResources().getColor(R.color.deleteBg));
                     linearLayout.addView(textView);
                 }
                 first_time = 1;
@@ -818,28 +884,42 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
                     textView.setGravity(Gravity.CENTER);
                     // textView.setTextColor(getResources().getColor(R.color.black));
                     //textView.setText(array_worksite.get(i).getDate().substring(0, 5));
-                    textView.setText(userdata.ListSites.get(a).WerksiteDates.get(i).CreatedDate);
+                    SimpleDateFormat sdfSource  = new SimpleDateFormat("MM-dd-yyyy");
+                    SimpleDateFormat sdfDestination  = new SimpleDateFormat("dd-MM-yyyy");
+
+                    String createdDate = userdata.ListSites.get(a).WerksiteDates.get(i).CreatedDate;
+                    Date date = null;
+                    try {
+                        date = sdfSource.parse(createdDate);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    createdDate = sdfDestination.format(date);
+
+                    textView.setText(createdDate);
                     textView.setTextColor(getResources().getColor(R.color.white));
                     textView.setTextSize(12);
                     textView.setPadding(0, 10, 0, 10);
                     lay_hours.addView(textView);
                 }
 
-
             }
 
             mainLinearLayout.addView(outerlayout);
+
             //for sitename
             TextView textView = new TextView(this);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(60, LinearLayout.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams param2 = new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.WRAP_CONTENT);
+            param2.setMargins(0,4,0,0);
+            textView.setLayoutParams(param2);
             textView.setGravity(Gravity.CENTER);
             // textView.setTextColor(getResources().getColor(R.color.black));
-            //textView.setText(array_worksite.get(i).getDate().substring(0, 5));
+            // textView.setText(array_worksite.get(i).getDate().substring(0, 5));
             textView.setText(userdata.ListSites.get(a).SiteName);
-            textView.setMaxLines(1);
+            //textView.setMaxLines(1);
             textView.setTextColor(getResources().getColor(R.color.white));
             textView.setTextSize(12);
-            textView.setPadding(0, 10, 0, 10);
+            textView.setPadding(0, 0, 0, 0);
             lay_date.addView(textView);
 
         }
@@ -876,7 +956,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 
 
     private void setColor(ArrayList<ColorSiteId> arrayList) {
-           lay_colorIndicator.removeAllViews();
+         lay_colorIndicator.removeAllViews();
          for(int i=0;i<arrayList.size();i++) {
              LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
              View rowView = inflater.inflate(R.layout.color_indicator, null);
@@ -897,10 +977,16 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
 // since SDK_INT = 1;
         int  widthPixels = metrics.widthPixels;
         long  heightPixels = metrics.heightPixels;
+
+        float density  = getResources().getDisplayMetrics().density;
+        float dpHeight = metrics.heightPixels / density;
+        float dpWidth  = metrics.widthPixels / density;
+        Log.e("widthPixel","dpWidth="+widthPixels+" dpHeight="+heightPixels);
+
 // includes window decorations (statusbar bar/menu bar)
         if (Build.VERSION.SDK_INT >= 14 && Build.VERSION.SDK_INT < 17)
             try {
-                widthPixels = (Integer) Display.class.getMethod("getRawWidth").invoke(d)-200;
+                widthPixels = (Integer) Display.class.getMethod("getRawWidth").invoke(d)-140;  //200
                 heightPixels = (Integer) Display.class.getMethod("getRawHeight").invoke(d);
                 Log.e("widthPixels","widthPixels="+widthPixels+" heightPixels="+heightPixels);
                 return widthPixels;
@@ -912,7 +998,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             try {
                 Point realSize = new Point();
                 Display.class.getMethod("getRealSize", Point.class).invoke(d, realSize);
-                widthPixels = realSize.x-200;
+                widthPixels = realSize.x-100;  //200
                 heightPixels = realSize.y;
 
                 Log.e("widthPixels","widthPixels="+widthPixels+" heightPixels="+heightPixels);
@@ -922,6 +1008,7 @@ public class TaskListActivity extends Activity implements AsyncResponseTimeEm {
             }
         return 650;
     }
+
     private void setColorArray() {
 
         backGroundColor_array.clear();

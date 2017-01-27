@@ -18,6 +18,7 @@ public class ListSites {
 
 
 
+
     public ArrayList<mutiUserworkSiteList> getWorkSiteDates() {
         return WerksiteDates;
     }
@@ -33,7 +34,5 @@ public class ListSites {
     public void setSiteName(String SiteName) {
         this.SiteName = SiteName;
     }
-
-
 
 }

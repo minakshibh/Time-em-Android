@@ -2,7 +2,6 @@ package com.time_em.db;
 
 import java.sql.Time;
 import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
@@ -116,7 +115,6 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	private String MessageType = "MessageType";
 
 	//todo fields for GeoGraphs type table
-
 	private String hoursCount = "hoursCount";
 	private String workSiteName = "workSiteName";
 	//private String workSiteId = "workSiteId";
@@ -266,7 +264,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	}
 	public void deleteGeoGraphs() {
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(TABLE_GEOGRAPH, null, null);
+		db.delete(TABLE_GEOGRAPH_DATA, null, null);
 		db.close();
 	}
 	public void deleteUSERTASK() {
@@ -597,7 +595,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		for (int i = 0; i < team.size(); i++) {
 			User user = team.get(i);
 			String selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where "
-					+ UserId + "=" + user.getId()+ " AND "+CompanyId + "=\"" + user.getCompanyId() + "\"";;
+					+ UserId + "=" + user.getId()+ " AND "+CompanyId + "=\"" + user.getCompanyId() + "\"";
 			try {
 				ContentValues values = new ContentValues();
 
@@ -609,8 +607,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(WorkSiteId, String.valueOf(user.getWorkSiteId()));
 				values.put(ProjectId, String.valueOf(user.getProjectId()));
 				values.put(ActivityId, String.valueOf(user.getActivityId()));
-				values.put(TaskActivityId,
-						String.valueOf(user.getTaskActivityId()));
+				values.put(TaskActivityId, String.valueOf(user.getTaskActivityId()));
 				values.put(LoginID, user.getLoginID());
 				values.put(SignOutAt, user.getSignOutAt());
 				values.put(SignInAt, user.getSignInAt());
@@ -627,8 +624,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 				values.put(IsSecurityPin, user.getIsSecurityPin());
 				values.put(NfcTagId, user.getNfcTagId());
 				values.put(Token, user.getToken());
-				values.put(ReferenceCount,
-						String.valueOf(user.isReferenceCount()));
+				values.put(ReferenceCount, String.valueOf(user.isReferenceCount()));
 				values.put(IsSignedIn, String.valueOf(user.isSignedIn()));
 				values.put(IsNightShift, String.valueOf(user.isNightShift()));
 				values.put(SignedHours, String.valueOf(user.getSignedHours()));
@@ -781,7 +777,7 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 		// Select All Query
 		String selectQuery=null;
 		if(check.equalsIgnoreCase("admin")) {
-			selectQuery = "SELECT  * FROM " + TABLE_TEAM ;
+			selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + CompanyId + "=\"" + companyId + "\"";
 		}else{
 			selectQuery = "SELECT  * FROM " + TABLE_TEAM + " where " + SupervisorId + " = " + userId
 					+ CompanyId + "=\"" + companyId + "\"";
@@ -1151,6 +1147,40 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 	}
 
 	//for insert data Geo Graphs
+	public void updateGeoGraphData(String strUserId,String Alldata, String str_sitename) {
+		// Fetch only records with selected Date
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		String selectQuery = "SELECT  * FROM " + TABLE_GEOGRAPH_DATA + " where "
+				+ UserId + "=" + strUserId + " AND " + DateData + "=\"" + str_sitename + "\"";
+
+		try {
+			ContentValues values = new ContentValues();
+			values.put(UserId, strUserId);
+			values.put(allData, String.valueOf(Alldata));
+			values.put(SiteName, String.valueOf(str_sitename));
+
+			cursor = (SQLiteCursor) db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+						/*db.update(TABLE_NAME,
+								contentValues,
+								NAME + " = ? AND " + LASTNAME + " = ?",
+								new String[]{"Manas", "Bajaj"});*/
+				db.update(TABLE_GEOGRAPH, values, UserId + " = ? AND " + DateData + " = ?",new String[] { strUserId,str_sitename });
+			} else {
+				db.insert(TABLE_GEOGRAPH, null, values);
+			}
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		db.close();
+
+	}
+
+	//for insert data Geo Graphs
 	public void updateGeoGraphData1(String strUserId,String Alldata) {
 		// Fetch only records with selected Date
 
@@ -1169,8 +1199,10 @@ public class TimeEmDbHandler extends SQLiteOpenHelper {
 								contentValues,
 								NAME + " = ? AND " + LASTNAME + " = ?",
 								new String[]{"Manas", "Bajaj"});*/
-				//db.update(TABLE_GEOGRAPH_DATA, values, UserId + " = ? " ,new String[] { strUserId});
-				db.update(TABLE_GEOGRAPH, values, UserId + " = ? AND " + allData + " = ?",new String[] { strUserId,Alldata });
+
+				//db.update(TABLE_GEOGRAPH_DATA, values, UserId + " = ? AND " + allData + " = ?",new String[] { strUserId,Alldata });
+				db.update(TABLE_GEOGRAPH_DATA, values, UserId + " = ?", new String[] { strUserId });
+
 			} else {
 				db.insert(TABLE_GEOGRAPH_DATA, null, values);
 			}

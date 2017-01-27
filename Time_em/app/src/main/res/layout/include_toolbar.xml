@@ -22,7 +22,6 @@
             android:id="@+id/headerText"
             android:text="@string/my_tasks" />
 
-
     <ImageView
         android:id="@+id/AddButton"
         android:layout_width="wrap_content"
@@ -32,6 +31,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
         android:src="@drawable/add"/>
+
     <TextView
         android:textColor="@color/white"
         android:textSize="13sp"
@@ -43,4 +43,5 @@
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
         android:text="22-05-2016" />
+
 </RelativeLayout>

@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,17 +18,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.google.gson.Gson;
 import com.time_em.android.R;
 import com.time_em.asynctasks.AsyncResponseTimeEm;
 import com.time_em.asynctasks.AsyncTaskTimeEm;
-import com.time_em.dashboard.HomeActivity;
 import com.time_em.db.TimeEmDbHandler;
-import com.time_em.model.ListSites;
 import com.time_em.model.User;
-import com.time_em.model.UserWorkSite;
 import com.time_em.model.UserWorkSiteData;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.tasks.TaskListActivity;
@@ -145,7 +140,6 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 			mWebPageTask.execute();
 
 	}
-
 
 	public class TeamAdapter extends BaseSwipeAdapter {
 		private Context context;
@@ -264,7 +258,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 			if(user!=null) {
 
 				if (user.getUserType().equalsIgnoreCase("admin")) {
-					team = dbHandler.getTeam("Admin", userId,"");
+					team = dbHandler.getTeam("Admin", userId, companyId); // *****
 				} else {
 					team = dbHandler.getTeam("", userId,companyId);
 				}
@@ -283,7 +277,7 @@ public class UserListActivity extends Activity implements AsyncResponseTimeEm {
 
 			Gson gson = new Gson();
 			dbHandler.updateGeoGraphData1(SelectedUserId,gson.toJson(userdata));
-			dbHandler.getGeoGraphData1(""+SelectedUserId);
+			UserWorkSiteData data = dbHandler.getGeoGraphData1(SelectedUserId);
 			/*for(int i=0;i<array_worksite.size();i++) {
 				Gson gson = new Gson();
 				// This can be any object. Does not have to be an arraylist.

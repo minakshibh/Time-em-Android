@@ -40,7 +40,9 @@ import com.time_em.model.SpinnerData;
 import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
+import com.time_em.model.UserListWorkSiteData;
 import com.time_em.model.UserWorkSite;
+import com.time_em.model.UserWorkSiteData;
 import com.time_em.model.Widget;
 import com.time_em.parser.Time_emJsonParser;
 import com.time_em.utils.FileUtils;
@@ -155,12 +157,11 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         }catch (Exception e) {
             e.printStackTrace();
         }
-       // SetUpWigdet();
+        // SetUpWigdet();
 
     }
 
     private void SetUpWigdet() {
-
         LayoutInflater inflater = getLayoutInflater();
         View rowView = inflater.inflate(R.layout.template_add_widget_view, null);
     }
@@ -344,7 +345,7 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
         mWebPageTask.execute();
 
     }*/
-//todo api for get data active user for notification
+    //todo api for get data active user for notification
     private void loadRecipients( String getSPrefsId) {
 
       /*  String timeStamp = Utils.getSharedPrefs(HomeActivity.this, getSPrefsId + getResources().getString(R.string.activeUsersTimeStampStr));
@@ -795,23 +796,17 @@ public class HomeActivity extends BaseActivity implements AsyncResponseTimeEm, T
 
         }else if(methodName.contains(Utils.GetUserListWorksiteActivity)){
 
+            Gson gson = new Gson();
             parser = new Time_emJsonParser(HomeActivity.this);
-            ArrayList<UserWorkSite> array_worksite = parser.getUserListWorkSite(output);
-            Log.e("Array_Worksite",array_worksite.toString());
-
+            UserListWorkSiteData allData = parser.getUserListWorkSite(output);
             dbHandler.deleteGeoGraphs();
-            String userId="";
-            for(int k=0;k<array_worksite.size();k++) {
-                userId = array_worksite.get(k).getUserId();
 
-                for (int i = 0; i < array_worksite.get(k).getArraylist_multiUserWorkSiteList().size(); i++) {
-                    Gson gson = new Gson();
-                    // This can be any object. Does not have to be an arraylist.
-                    String allData = gson.toJson(array_worksite.get(k).getArraylist_multiUserWorkSiteList().get(i).getArraylist_WorkSiteList());
-                    String str_Date=array_worksite.get(k).getArraylist_multiUserWorkSiteList().get(i).getDate();
-                    dbHandler.updateGeoGraphData1(userId, allData);
+            for(int k=0; k< allData.MutipleWorksSiteUser.size(); k++){
+                UserWorkSiteData userdata = new UserWorkSiteData();
+                userdata.setListSite(allData.MutipleWorksSiteUser.get(k).mutiUserworkSiteList);
 
-                }
+                dbHandler.updateGeoGraphData1(allData.MutipleWorksSiteUser.get(k).UserId,gson.toJson(userdata));
+
             }
 
         }

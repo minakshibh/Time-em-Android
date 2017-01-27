@@ -16,10 +16,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!--  InAppBilling permission-->
+    <!-- InAppBilling permission -->
     <uses-permission android:name="com.android.vending.BILLING" />
 
     <!-- notification permission -->
@@ -67,8 +67,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.authentication.LoginActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.time_em.authentication.ChangeStatusActivity"
             android:screenOrientation="portrait"
@@ -82,13 +82,11 @@
         <activity
             android:name=".BaseActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name="com.time_em.tasks.TaskListActivity"
-            />
+        <activity android:name="com.time_em.tasks.TaskListActivity" />
         <activity
             android:name="com.time_em.team.UserListActivity"
             android:screenOrientation="portrait" />
-         <activity
+        <activity
             android:name="com.time_em.authentication.ForgotCredentials"
             android:screenOrientation="portrait" />
         <activity
@@ -96,10 +94,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.notifications.SendNotificationActivity"
-            android:windowSoftInputMode="stateHidden"
             android:label="@string/title_activity_send_notification"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.time_em.notifications.UserSelectionActivity"
             android:label="@string/title_activity_user_selection"
@@ -119,8 +117,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.time_em.profile.MyProfileActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.time_em.dashboard.GeoGraphsActivity"
             android:windowSoftInputMode="stateHidden" />
@@ -139,22 +137,25 @@
         <activity
             android:name="com.time_em.barcode.NFCReadActivity"
             android:screenOrientation="portrait">
-          <!-- <intent-filter>
+
+            <!--
+           <intent-filter>
                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                <category android:name="android.intent.category.DEFAULT" />
                <data android:mimeType="text/plain" />
            </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED"/>
-            </intent-filter>-->
+            </intent-filter>
+            -->
             <intent-filter>
-                <action android:name="android.nfc.action.TECH_DISCOVERED"/>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
 
-            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
-
 
         <receiver
             android:name="com.time_em.utils.GcmBroadcastReceiver"
@@ -166,21 +167,25 @@
             </intent-filter>
         </receiver>
 
-       <!-- services-->
+        <!-- services -->
         <service android:name="com.time_em.utils.GcmIntentService" />
         <service android:name="com.time_em.geofencing.BackgroundLocationService" />
 
-
-        <activity android:name="com.time_em.tasks.AddEditTaskEntry"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"></activity>
-
-        <activity android:name="com.time_em.inappbilling.PurchaseActivity"
-            android:windowSoftInputMode="stateHidden"
+        <activity
+            android:name="com.time_em.tasks.AddEditTaskEntry"
             android:screenOrientation="portrait"
-            android:theme="@style/UserDialog">
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.time_em.inappbilling.PurchaseActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/UserDialog"
+            android:windowSoftInputMode="stateHidden"></activity>
+        <activity
+            android:name="com.time_em.tasks.RotateDialogActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/UserDialog"
+            android:windowSoftInputMode="stateHidden"/>
 
-        </activity>
     </application>
 
 </manifest>

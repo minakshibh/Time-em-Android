@@ -7,16 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.time_em.android.R;
 import com.time_em.model.SpinnerData;
-
 import java.util.ArrayList;
 
 /**
  * Created by minakshi on 08/06/16.
  */
+
 public class SpinnerTypeAdapter extends ArrayAdapter<SpinnerData> {
 
     // Your sent context
@@ -58,7 +58,7 @@ public class SpinnerTypeAdapter extends ArrayAdapter<SpinnerData> {
         return label;
     }
 
-    // And here is when the "chooser" is popped up
+    // Aennd here is wh the "chooser" is popped up
     // Normally is the same view, but you can customize it if you want
     @Override
     public View getDropDownView(int position, View convertView,  ViewGroup parent) {
@@ -72,4 +72,5 @@ public class SpinnerTypeAdapter extends ArrayAdapter<SpinnerData> {
 
         return label;
     }
+
 }

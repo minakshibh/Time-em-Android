@@ -13,10 +13,10 @@ public class UserWorkSiteData {
     @SerializedName("ListSites")
     public ArrayList<ListSites> ListSites = new ArrayList<>();
 
+
     public ArrayList<ListSites> getListSite() {
         return ListSites;
     }
-
     public void setListSite(ArrayList<ListSites> listSite) {
         ListSites = listSite;
     }

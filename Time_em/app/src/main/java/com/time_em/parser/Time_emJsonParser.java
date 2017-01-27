@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +25,7 @@ import com.time_em.model.SpinnerData;
 import com.time_em.model.SyncData;
 import com.time_em.model.TaskEntry;
 import com.time_em.model.User;
+import com.time_em.model.UserListWorkSiteData;
 import com.time_em.model.UserWorkSite;
 import com.time_em.model.UserWorkSiteData;
 import com.time_em.model.WorkSiteList;
@@ -752,50 +755,23 @@ public class Time_emJsonParser {
 
 	}
 
-	public ArrayList<UserWorkSite> getUserWorkSite(String webResponse){
-		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
-		ArrayList<WorkSiteList> arrayWorkSiteList= null;
+	public UserListWorkSiteData getUserListWorkSite(String webResponse){
+		UserListWorkSiteData allUserData = new UserListWorkSiteData();
 
-		try{
+		try {
+			Gson gson = new Gson();
+			allUserData = gson.fromJson(webResponse, UserListWorkSiteData.class);
 
-			JSONArray mainArray = new JSONArray(webResponse);
-			for(int j = 0; j<mainArray.length(); j++) {
-				UserWorkSite userWorkSite=new UserWorkSite();
-				jObject = mainArray.getJSONObject(j);
-				//isError = jObject.getBoolean("isError");
-				//message = jObject.getString("Message");
-				arrayWorkSiteList= new ArrayList<WorkSiteList>();
-				JSONArray jArray = jObject.getJSONArray("workSiteList");
-
-				for (int i = 0; i < jArray.length(); i++) {
-
-					JSONObject userObject = jArray.getJSONObject(i);
-					WorkSiteList workSiteList = new WorkSiteList();
-					workSiteList.setWorkSiteId(userObject.getString("WorkSiteId"));
-					workSiteList.setWorkSiteName(userObject.getString("WorkSiteName"));
-					workSiteList.setWorkingHour(userObject.getString("WorkingHour"));
-					workSiteList.setTimeIn(userObject.getString("TimeIn"));
-					workSiteList.setTimeOut(userObject.getString("TimeOut"));
-					arrayWorkSiteList.add(workSiteList);
-				}
-				userWorkSite.setArraylist_WorkSiteList(arrayWorkSiteList);
-				userWorkSite.setDate(jObject.getString("CreatedDate"));
-				arrayUserWorkSite.add(userWorkSite);
-			}
-
-		}catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
-			//Utils.showToast(context, e.getMessage());
 		}
 
-		if(isError)
-			Utils.showToast(context, message);
+	    return allUserData;
 
-		return arrayUserWorkSite;
 	}
 
-	public ArrayList<UserWorkSite> getUserListWorkSite(String webResponse){
+
+	/*public ArrayList<UserWorkSite> getUserListWorkSite(String webResponse){
 		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
 		ArrayList<mutiUserworkSiteList> multiUserarrayUserWorkSite= null;
 		ArrayList<WorkSiteList> arrayWorkSiteList= null;
@@ -846,6 +822,56 @@ public class Time_emJsonParser {
 				//userWorkSite.setDate(jObject.getString("CreatedDate"));
 				arrayUserWorkSite.add(userWorkSite);
 
+			}
+
+		}catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//Utils.showToast(context, e.getMessage());
+		}
+
+		if(isError)
+			Utils.showToast(context, message);
+
+		return arrayUserWorkSite;
+	}
+
+*/
+
+
+
+
+
+
+	public ArrayList<UserWorkSite> getUserWorkSite(String webResponse){
+		ArrayList<UserWorkSite> arrayUserWorkSite = new ArrayList<UserWorkSite>();
+		ArrayList<WorkSiteList> arrayWorkSiteList= null;
+
+		try{
+
+			JSONArray mainArray = new JSONArray(webResponse);
+			for(int j = 0; j<mainArray.length(); j++) {
+				UserWorkSite userWorkSite=new UserWorkSite();
+				jObject = mainArray.getJSONObject(j);
+				//isError = jObject.getBoolean("isError");
+				//message = jObject.getString("Message");
+				arrayWorkSiteList= new ArrayList<WorkSiteList>();
+				JSONArray jArray = jObject.getJSONArray("workSiteList");
+
+				for (int i = 0; i < jArray.length(); i++) {
+
+					JSONObject userObject = jArray.getJSONObject(i);
+					WorkSiteList workSiteList = new WorkSiteList();
+					workSiteList.setWorkSiteId(userObject.getString("WorkSiteId"));
+					workSiteList.setWorkSiteName(userObject.getString("WorkSiteName"));
+					workSiteList.setWorkingHour(userObject.getString("WorkingHour"));
+					workSiteList.setTimeIn(userObject.getString("TimeIn"));
+					workSiteList.setTimeOut(userObject.getString("TimeOut"));
+					arrayWorkSiteList.add(workSiteList);
+				}
+				userWorkSite.setArraylist_WorkSiteList(arrayWorkSiteList);
+				userWorkSite.setDate(jObject.getString("CreatedDate"));
+				arrayUserWorkSite.add(userWorkSite);
 			}
 
 		}catch (Exception e) {

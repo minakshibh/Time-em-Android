@@ -16,6 +16,8 @@ public class mutiUserworkSiteList {
     @SerializedName("CreatedDate")
     public String CreatedDate;
 
+
+
     public ArrayList<WorkSiteList> getArraylist_WorkSiteList() {
         return workSiteList;
     }
