@@ -8,8 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-
 import java.io.IOException;
 
 
@@ -29,7 +27,7 @@ public class GcmUtils {
         AsyncTask<Void, Exception, String> task = new AsyncTask<Void, Exception, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                try {
+               /* try {
                     GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
                     String regId = gcm.register(Utils.PROJECT_ID);
 
@@ -38,7 +36,7 @@ public class GcmUtils {
                 } catch (Exception e) {
                     e.printStackTrace();
 
-                }
+                }*/
                 return null;
             }
 
